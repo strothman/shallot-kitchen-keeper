@@ -840,7 +840,7 @@ let firestoreInstance = null;
 let firestoreUnsubscribe = null;
 
 // Application Version
-const APP_VERSION = '1.7.5';
+const APP_VERSION = '1.7.6';
 
 // Initialize Application
 function init() {
@@ -981,14 +981,21 @@ function setSyncIndicatorStatus(status) {
 }
 
 function updateHouseholdUIState() {
+  const dashboardSyncStatusTitle = document.getElementById('dashboardSyncStatusTitle');
+  const dashboardSyncStatusSub = document.getElementById('dashboardSyncStatusSub');
+
   if (activeHouseholdId) {
     if (householdUnpairedState) householdUnpairedState.classList.add('hidden');
     if (householdPairedState) householdPairedState.classList.remove('hidden');
     if (activeHouseholdCodeDisplay) activeHouseholdCodeDisplay.textContent = activeHouseholdId;
+    if (dashboardSyncStatusTitle) dashboardSyncStatusTitle.textContent = `🟢 Shared Kitchen: ${activeHouseholdId}`;
+    if (dashboardSyncStatusSub) dashboardSyncStatusSub.textContent = "Live connected & synced with household";
     setSyncIndicatorStatus('active');
   } else {
     if (householdUnpairedState) householdUnpairedState.classList.remove('hidden');
     if (householdPairedState) householdPairedState.classList.add('hidden');
+    if (dashboardSyncStatusTitle) dashboardSyncStatusTitle.textContent = "Pair Shared Kitchen";
+    if (dashboardSyncStatusSub) dashboardSyncStatusSub.textContent = "Live sync pantry & fridge with your wife";
     setSyncIndicatorStatus('inactive');
   }
 }
@@ -2840,11 +2847,22 @@ function setupEventListeners() {
   }
 
   // Household Live Sync Modal Triggers & Actions
+  const openHouseholdModal = () => {
+    triggerHaptic('light');
+    updateHouseholdUIState();
+    householdModal.classList.remove('hidden');
+  };
+
   if (syncHouseholdBtn) {
-    syncHouseholdBtn.addEventListener('click', () => {
+    syncHouseholdBtn.addEventListener('click', openHouseholdModal);
+  }
+
+  const openHouseholdFromDashboardBtn = document.getElementById('openHouseholdFromDashboardBtn');
+  if (openHouseholdFromDashboardBtn) {
+    openHouseholdFromDashboardBtn.addEventListener('click', () => {
       triggerHaptic('light');
-      updateHouseholdUIState();
-      householdModal.classList.remove('hidden');
+      statsModal.classList.add('hidden');
+      openHouseholdModal();
     });
   }
 

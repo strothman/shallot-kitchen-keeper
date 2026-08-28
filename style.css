@@ -2692,6 +2692,11 @@ body {
    ========================================================================== */
 .sync-header-btn {
   position: relative;
+  cursor: pointer;
+}
+
+.sync-header-btn svg {
+  pointer-events: none;
 }
 
 .sync-indicator-dot {
@@ -2703,6 +2708,7 @@ body {
   border-radius: 50%;
   background: #7f8c8d;
   transition: background 0.3s ease;
+  pointer-events: none;
 }
 
 .sync-indicator-dot.active {
@@ -2718,6 +2724,57 @@ body {
 @keyframes pulse-sync {
   from { opacity: 0.4; transform: scale(0.8); }
   to { opacity: 1; transform: scale(1.2); }
+}
+
+.dashboard-sync-banner-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, rgba(212, 130, 68, 0.15), rgba(46, 204, 113, 0.15));
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.dashboard-sync-banner-btn:active {
+  transform: scale(0.98);
+}
+
+.dashboard-sync-banner-btn .banner-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dashboard-sync-banner-btn .banner-icon {
+  font-size: 1.6rem;
+}
+
+.dashboard-sync-banner-btn .banner-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dashboard-sync-banner-btn .banner-text strong {
+  font-size: 0.95rem;
+  color: var(--color-text-main);
+}
+
+.dashboard-sync-banner-btn .banner-text span {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.dashboard-sync-banner-btn .banner-chevron {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-primary);
 }
 
 .household-modal-card {
