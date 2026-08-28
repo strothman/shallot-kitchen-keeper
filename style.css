@@ -2981,6 +2981,59 @@ body {
   cursor: pointer;
 }
 
+/* ==========================================================================
+   App Version Badge & Footer
+   ========================================================================== */
+.app-version-pill {
+  font-size: 0.72rem;
+  font-weight: 800;
+  font-family: monospace;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  padding: 2px 8px;
+  border-radius: 10px;
+  letter-spacing: 0.5px;
+}
+
+.app-version-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 0 6px 0;
+  margin-top: 4px;
+  border-top: 1px solid var(--color-border);
+}
+
+.version-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-app);
+  border: 1px solid var(--color-border);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.version-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-success);
+  box-shadow: 0 0 5px var(--color-success);
+}
+
+.copyright-label {
+  font-size: 0.68rem;
+  color: var(--color-text-muted);
+  opacity: 0.7;
+}
+
+
 
 
 
