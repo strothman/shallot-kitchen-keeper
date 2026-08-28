@@ -15,6 +15,7 @@
 <p align="center">
   <a href="https://strothman.github.io/shallot-kitchen-keeper/"><strong>📱 Open Mobile App</strong></a> •
   <a href="#-mobile-exclusive-design">Mobile Design</a> •
+  <a href="THEME.md">Shallot Plum Theme</a> •
   <a href="#-key-features">Key Features</a> •
   <a href="#-mobile-installation">Phone Setup</a> •
   <a href="CHANGELOG.md">Changelog</a>
