@@ -5,6 +5,18 @@ This changelog is updated at least once per development day.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2026-08-28
+
+### Added
+- **👫 Household Real-Time Live Sync Engine**:
+  - Pair phones seamlessly using a shareable 6-character Household Code (e.g. `SHALLOT-7892`).
+  - Instant two-way cloud synchronization powered by Firebase Cloud Firestore / Realtime DB.
+  - Whenever you or your partner stocks, cooks, freezes, or checks off groceries, both phones update in real time (<200ms).
+  - Live status indicator dot in the header (`🟢 Synced`, `🟡 Syncing`, `⚪ Local`).
+  - Configurable private cloud credentials via `firebase-config.js` or in-app Cloud Settings modal.
+
+---
+
 ## [1.6.1] - 2026-08-28
 
 ### Changed & Refined

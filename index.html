@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline';">
+    content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://www.gstatic.com; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com wss://*.firebaseio.com;">
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -69,6 +69,18 @@
             <line x1="10" y1="12" x2="14" y2="12"></line>
           </svg>
           <span class="header-badge archive-badge hidden" id="archiveBadge">0</span>
+        </button>
+        <!-- Household Live Sync -->
+        <button class="header-action-btn sync-header-btn" id="syncHouseholdBtn" aria-label="Household Live Sync"
+          title="Pair & Live Sync with Household (S)">
+          <span class="sync-indicator-dot" id="syncIndicatorDot"></span>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
         </button>
         <!-- Stats & Settings -->
         <button class="stats-btn" id="statsBtn" aria-label="View Stats" title="Kitchen Dashboard & Settings (D)">
@@ -620,6 +632,83 @@
       </div>
     </div>
 
+    <!-- Household Live Sync Modal -->
+    <div class="modal-backdrop hidden" id="householdModal">
+      <div class="modal-card household-modal-card">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <h2>👫 Household Live Sync</h2>
+            <p class="modal-subtitle">Share your real-time pantry & fridge across phones</p>
+          </div>
+          <button class="close-btn" id="closeHouseholdBtn">&times;</button>
+        </div>
+        <div class="household-modal-body">
+          <!-- Unpaired State -->
+          <div class="household-unpaired-wrap" id="householdUnpairedState">
+            <div class="sync-benefit-card">
+              <div class="benefit-icon">⚡</div>
+              <div class="benefit-text">
+                <strong>Real-Time Shared Kitchen</strong>
+                <p>Whenever you or your partner stocks or cooks food, both phones update in under 200ms.</p>
+              </div>
+            </div>
+
+            <div class="sync-action-box">
+              <h3>Create a New Shared Kitchen</h3>
+              <p>Generate a unique invite code to share with your partner.</p>
+              <button type="button" class="submit-btn" id="createHouseholdBtn">Create Shared Kitchen</button>
+            </div>
+
+            <div class="sync-divider"><span>OR</span></div>
+
+            <div class="sync-action-box">
+              <h3>Join Existing Kitchen</h3>
+              <p>Enter the 6-character household code from your partner's phone:</p>
+              <div class="join-input-group">
+                <input type="text" id="joinHouseholdCodeInput" placeholder="e.g. STROTH-7" maxlength="20" autocomplete="off" autocapitalize="characters">
+                <button type="button" class="join-btn" id="joinHouseholdBtn">Connect</button>
+              </div>
+            </div>
+
+            <div class="firebase-config-toggle-wrap">
+              <button type="button" class="text-link-btn" id="toggleCloudConfigBtn">⚙️ Cloud Database Settings (Optional)</button>
+              <div class="cloud-config-box hidden" id="cloudConfigBox">
+                <p class="small-note">Paste your Firebase web config JSON below to use your own private cloud database (takes 60s):</p>
+                <textarea id="customFirebaseConfigInput" rows="4" placeholder='{"apiKey": "...", "projectId": "...", ...}'></textarea>
+                <button type="button" class="save-config-btn" id="saveFirebaseConfigBtn">Save Cloud Config</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Paired / Connected State -->
+          <div class="household-paired-wrap hidden" id="householdPairedState">
+            <div class="household-connected-badge">
+              <span class="live-pulse-dot"></span>
+              <span id="householdLiveStatusText">Live Connected to Cloud</span>
+            </div>
+
+            <div class="household-code-card">
+              <span class="code-label">Household Invite Code</span>
+              <div class="code-display" id="activeHouseholdCodeDisplay">SHALLOT-123</div>
+              <button type="button" class="copy-code-btn" id="copyHouseholdCodeBtn">📋 Copy Invite Code</button>
+              <small>Share this code with your wife so she can join this kitchen.</small>
+            </div>
+
+            <div class="paired-actions-list">
+              <button type="button" class="paired-action-btn" id="forceSyncBtn">
+                <span class="btn-icon">🔄</span>
+                <span>Force Sync Now</span>
+              </button>
+              <button type="button" class="paired-action-btn disconnect" id="leaveHouseholdBtn">
+                <span class="btn-icon">🚪</span>
+                <span>Disconnect / Leave Household</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Archive Modal -->
     <div class="modal-backdrop hidden" id="archiveModal">
       <div class="modal-card archive-modal-card">
@@ -652,6 +741,7 @@
     </div>
   </div>
 
+  <script src="firebase-config.js"></script>
   <script src="app.js"></script>
 </body>
 

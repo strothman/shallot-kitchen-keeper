@@ -5,7 +5,7 @@
 # Shallot: Kitchen Keeper 🧅🔪
 **A zero-dependency, mobile-exclusive culinary inventory tracker and food-waste prevention PWA.**
 
-[![Version](https://img.shields.io/badge/version-1.6.1-blue.svg?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.7.0-blue.svg?style=flat-square)](CHANGELOG.md)
 [![Platform](https://img.shields.io/badge/Platform-Mobile%20Only%20(iOS%20%26%20Android)-orange.svg?style=flat-square)](#-mobile-exclusive-design)
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg?style=flat-square)](LICENSE)
 [![PWA Ready](https://img.shields.io/badge/PWA-Installable-success.svg?style=flat-square)](manifest.json)
@@ -16,6 +16,7 @@
   <a href="https://strothman.github.io/shallot-kitchen-keeper/"><strong>📱 Open Mobile App</strong></a> •
   <a href="#-mobile-exclusive-design">Mobile Design</a> •
   <a href="THEME.md">Shallot Plum Theme</a> •
+  <a href="#-household-live-sync">Household Sync</a> •
   <a href="#-key-features">Key Features</a> •
   <a href="#-mobile-installation">Phone Setup</a> •
   <a href="CHANGELOG.md">Changelog</a>
@@ -35,6 +36,15 @@
 - **Touch-First Physics**: Silky 60fps dual-swipe card gestures (swipe left to archive, swipe right to restock) with native haptic vibration feedback.
 - **Offline Reliability**: Works 100% offline inside walk-in pantries or basements with no cell signal.
 - **Home Screen App**: Installs directly onto your iOS or Android home screen with app icon badging for expiring items.
+
+---
+
+## 👫 Household Real-Time Live Sync
+
+Keep your pantry, fridge, and freezer synchronized across multiple phones in real-time:
+- **6-Digit Invite Code**: Tap the household icon (`👫`) in the header to generate a shareable code (e.g. `SHALLOT-8492`).
+- **Instant Sub-Second Sync**: Whenever either of you adds an item, cooks dinner, or edits a shelf-life, both devices update instantly (<200ms).
+- **Private Cloud Database**: Connects to your own free Firebase Firestore instance via [`firebase-config.js`](firebase-config.js) or the in-app cloud configuration dialog.
 
 ---
 

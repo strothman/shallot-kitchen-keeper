@@ -2683,6 +2683,305 @@ body {
   border-color: var(--color-primary);
 }
 
+/* ==========================================================================
+   Household Live Sync & Pairing System
+   ========================================================================== */
+.sync-header-btn {
+  position: relative;
+}
+
+.sync-indicator-dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #7f8c8d;
+  transition: background 0.3s ease;
+}
+
+.sync-indicator-dot.active {
+  background: var(--color-success);
+  box-shadow: 0 0 6px var(--color-success);
+}
+
+.sync-indicator-dot.syncing {
+  background: var(--color-warning);
+  animation: pulse-sync 1s infinite alternate;
+}
+
+@keyframes pulse-sync {
+  from { opacity: 0.4; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1.2); }
+}
+
+.household-modal-card {
+  max-width: 440px;
+}
+
+.household-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sync-benefit-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: linear-gradient(135deg, rgba(212, 130, 68, 0.1), rgba(46, 204, 113, 0.1));
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 14px;
+}
+
+.benefit-icon {
+  font-size: 1.5rem;
+}
+
+.benefit-text strong {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--color-text-main);
+  margin-bottom: 2px;
+}
+
+.benefit-text p {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  line-height: 1.3;
+  margin: 0;
+}
+
+.sync-action-box {
+  background: var(--bg-app);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sync-action-box h3 {
+  font-size: 0.95rem;
+  color: var(--color-text-main);
+  margin: 0;
+}
+
+.sync-action-box p {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.sync-divider {
+  text-align: center;
+  position: relative;
+  margin: 4px 0;
+}
+
+.sync-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--color-border);
+}
+
+.sync-divider span {
+  position: relative;
+  background: var(--bg-card);
+  padding: 0 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.join-input-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.join-input-group input {
+  flex: 1;
+  background: var(--bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-family: monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  outline: none;
+}
+
+.join-btn {
+  background: var(--color-primary);
+  color: #180d21;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0 16px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.household-paired-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.household-connected-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(46, 204, 113, 0.15);
+  border: 1px solid rgba(46, 204, 113, 0.3);
+  padding: 10px 14px;
+  border-radius: 12px;
+  color: var(--color-success);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.live-pulse-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-success);
+  box-shadow: 0 0 8px var(--color-success);
+  animation: pulse-sync 1.2s infinite alternate;
+}
+
+.household-code-card {
+  background: var(--bg-app);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.code-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-text-muted);
+  font-weight: 700;
+}
+
+.code-display {
+  font-family: monospace;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: var(--color-primary);
+  background: var(--bg-card);
+  border: 1px dashed var(--color-primary);
+  padding: 8px 18px;
+  border-radius: 10px;
+}
+
+.copy-code-btn {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+.paired-actions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.paired-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-app);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  color: var(--color-text-main);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.paired-action-btn.disconnect {
+  color: var(--color-danger);
+  border-color: rgba(231, 76, 60, 0.3);
+}
+
+.firebase-config-toggle-wrap {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.text-link-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.cloud-config-box {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--bg-app);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+}
+
+.cloud-config-box textarea {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 8px;
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: var(--color-text-main);
+  resize: vertical;
+}
+
+.save-config-btn {
+  background: var(--color-primary);
+  color: #180d21;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+
 
 
 

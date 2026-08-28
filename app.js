@@ -813,6 +813,32 @@ const recipeModal = document.getElementById('recipeModal');
 const closeRecipeBtn = document.getElementById('closeRecipeBtn');
 const recipeSuggestionsContainer = document.getElementById('recipeSuggestionsContainer');
 
+// Household Live Sync DOM
+const syncHouseholdBtn = document.getElementById('syncHouseholdBtn');
+const syncIndicatorDot = document.getElementById('syncIndicatorDot');
+const householdModal = document.getElementById('householdModal');
+const closeHouseholdBtn = document.getElementById('closeHouseholdBtn');
+const householdUnpairedState = document.getElementById('householdUnpairedState');
+const householdPairedState = document.getElementById('householdPairedState');
+const createHouseholdBtn = document.getElementById('createHouseholdBtn');
+const joinHouseholdCodeInput = document.getElementById('joinHouseholdCodeInput');
+const joinHouseholdBtn = document.getElementById('joinHouseholdBtn');
+const toggleCloudConfigBtn = document.getElementById('toggleCloudConfigBtn');
+const cloudConfigBox = document.getElementById('cloudConfigBox');
+const customFirebaseConfigInput = document.getElementById('customFirebaseConfigInput');
+const saveFirebaseConfigBtn = document.getElementById('saveFirebaseConfigBtn');
+const activeHouseholdCodeDisplay = document.getElementById('activeHouseholdCodeDisplay');
+const copyHouseholdCodeBtn = document.getElementById('copyHouseholdCodeBtn');
+const forceSyncBtn = document.getElementById('forceSyncBtn');
+const leaveHouseholdBtn = document.getElementById('leaveHouseholdBtn');
+const householdLiveStatusText = document.getElementById('householdLiveStatusText');
+
+// Household Sync State
+let activeHouseholdId = localStorage.getItem('kk_household_id') || null;
+let isRemoteCloudUpdate = false;
+let firestoreInstance = null;
+let firestoreUnsubscribe = null;
+
 // Initialize Application
 function init() {
   loadData();
@@ -821,6 +847,7 @@ function init() {
   setupEventListeners();
   registerServiceWorker();
   checkDailyNotifications();
+  initFirebaseSync();
 }
 
 // Apply selected theme & sync status bar
@@ -906,11 +933,11 @@ function loadData() {
     notifToggle.checked = notificationsEnabled;
   }
 
-  saveData();
+  saveData(false);
 }
 
-// Save data
-function saveData() {
+// Save data (with automatic Cloud Live Sync)
+function saveData(syncToCloud = true) {
   localStorage.setItem('kk_food_items', JSON.stringify(foodItems));
   localStorage.setItem('kk_cooked_items', JSON.stringify(cookedItems));
   localStorage.setItem('kk_archived_items', JSON.stringify(archivedItems));
@@ -2620,6 +2647,131 @@ function setupEventListeners() {
       } catch (err) {
         alert('Invalid JSON text. Please check the backup string you pasted.');
         console.error(err);
+      }
+    });
+  }
+
+  // Household Live Sync Modal Triggers & Actions
+  if (syncHouseholdBtn) {
+    syncHouseholdBtn.addEventListener('click', () => {
+      triggerHaptic('light');
+      updateHouseholdUIState();
+      householdModal.classList.remove('hidden');
+    });
+  }
+
+  if (closeHouseholdBtn) {
+    closeHouseholdBtn.addEventListener('click', () => {
+      householdModal.classList.add('hidden');
+    });
+  }
+
+  // Create New Shared Household
+  if (createHouseholdBtn) {
+    createHouseholdBtn.addEventListener('click', async () => {
+      triggerHaptic('medium');
+      const newCode = generateHouseholdCode();
+      activeHouseholdId = newCode;
+      localStorage.setItem('kk_household_id', newCode);
+      updateHouseholdUIState();
+      
+      const config = getActiveFirebaseConfig();
+      if (!config) {
+        showToast('⚙️', `Household code created: ${newCode}!`);
+        return;
+      }
+
+      await initFirebaseSync();
+      await pushStateToCloud();
+      showToast('👫', `Shared kitchen created: ${newCode}!`);
+    });
+  }
+
+  // Join Existing Shared Household
+  if (joinHouseholdBtn) {
+    joinHouseholdBtn.addEventListener('click', async () => {
+      triggerHaptic('medium');
+      const code = (joinHouseholdCodeInput.value || '').trim().toUpperCase();
+      if (!code) {
+        showToast('⚠️', 'Please enter a valid household code.');
+        return;
+      }
+
+      activeHouseholdId = code;
+      localStorage.setItem('kk_household_id', code);
+      updateHouseholdUIState();
+
+      const config = getActiveFirebaseConfig();
+      if (!config) {
+        showToast('⚙️', `Joined ${code}!`);
+        return;
+      }
+
+      await initFirebaseSync();
+      showToast('🎉', `Connected to household ${code}!`);
+    });
+  }
+
+  // Copy Household Code
+  if (copyHouseholdCodeBtn) {
+    copyHouseholdCodeBtn.addEventListener('click', async () => {
+      if (!activeHouseholdId) return;
+      try {
+        await navigator.clipboard.writeText(activeHouseholdId);
+        showToast('📋', `Code "${activeHouseholdId}" copied to clipboard!`);
+      } catch {
+        showToast('📋', activeHouseholdId);
+      }
+    });
+  }
+
+  // Force Sync Button
+  if (forceSyncBtn) {
+    forceSyncBtn.addEventListener('click', async () => {
+      triggerHaptic('light');
+      if (activeHouseholdId) {
+        await pushStateToCloud();
+        showToast('🔄', 'Inventory synced with cloud!');
+      }
+    });
+  }
+
+  // Leave / Disconnect Household
+  if (leaveHouseholdBtn) {
+    leaveHouseholdBtn.addEventListener('click', () => {
+      triggerHaptic('heavy');
+      if (confirm('Disconnect from this shared household? Your phone will return to local-only mode.')) {
+        if (firestoreUnsubscribe) {
+          firestoreUnsubscribe();
+          firestoreUnsubscribe = null;
+        }
+        activeHouseholdId = null;
+        localStorage.removeItem('kk_household_id');
+        updateHouseholdUIState();
+        showToast('🚪', 'Disconnected from shared household.');
+      }
+    });
+  }
+
+  // Toggle & Save Cloud Config
+  if (toggleCloudConfigBtn) {
+    toggleCloudConfigBtn.addEventListener('click', () => {
+      cloudConfigBox.classList.toggle('hidden');
+    });
+  }
+
+  if (saveFirebaseConfigBtn) {
+    saveFirebaseConfigBtn.addEventListener('click', async () => {
+      const val = customFirebaseConfigInput.value.trim();
+      if (!val) return;
+      try {
+        const parsed = JSON.parse(val);
+        localStorage.setItem('kk_custom_firebase_config', JSON.stringify(parsed));
+        showToast('✅', 'Firebase cloud configuration saved!');
+        cloudConfigBox.classList.add('hidden');
+        await initFirebaseSync();
+      } catch (e) {
+        alert('Invalid JSON configuration. Please ensure you copied the valid Firebase config object.');
       }
     });
   }
