@@ -1,18 +1,14 @@
 /**
  * Shallot Kitchen Keeper — Firebase Cloud Sync Configuration
- * 
- * To enable real-time 2-way live sync with your partner:
- * 1. Create a free project at https://console.firebase.google.com/
- * 2. Click 'Firestore Database' -> 'Create Database' (Start in test mode)
- * 3. In Project Settings (⚙️) -> 'Add Web App', copy the config object below.
+ * Signature Real-Time 2-Way Household Live Sync
+ * Copyright (c) 2026 Shallot (strothman)
  */
 
 window.SHALLOT_FIREBASE_CONFIG = {
-  // Paste your Firebase Web App configuration here:
-  // apiKey: "AIzaSy...",
-  // authDomain: "your-app.firebaseapp.com",
-  // projectId: "your-app",
-  // storageBucket: "your-app.appspot.com",
-  // messagingSenderId: "...",
-  // appId: "1:...:web:..."
+  apiKey: "AIzaSyDw8wcV1-RqTzAfMCeHAkSgKroMB5C8310",
+  authDomain: "shallot-1a8c8.firebaseapp.com",
+  projectId: "shallot-1a8c8",
+  storageBucket: "shallot-1a8c8.firebasestorage.app",
+  messagingSenderId: "884618824709",
+  appId: "1:884618824709:web:dcfc4b773047e9e4d3e06c"
 };
