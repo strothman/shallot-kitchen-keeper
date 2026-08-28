@@ -856,7 +856,7 @@ let firestoreInstance = null;
 let firestoreUnsubscribe = null;
 
 // Application Version
-const APP_VERSION = '1.8.0';
+const APP_VERSION = '1.8.1';
 
 // Initialize Application
 function init() {
@@ -2696,6 +2696,20 @@ function setupEventListeners() {
 
   closeRecipeBtn.addEventListener('click', () => {
     recipeModal.classList.add('hidden');
+  });
+
+  // Universal Modal Dismissal on Backdrop Tap/Click
+  document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
+    backdrop.addEventListener('click', (e) => {
+      // Only dismiss if the click/tap was directly on the blurred background backdrop
+      if (e.target === backdrop) {
+        triggerHaptic('light');
+        backdrop.classList.add('hidden');
+        if (backdrop.id === 'itemModal') {
+          clearForm();
+        }
+      }
+    });
   });
 
   // Shopping List Modal

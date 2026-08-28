@@ -5,6 +5,14 @@ This changelog is updated at least once per development day.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.1] - 2026-08-28
+
+### Added & Enhanced
+- **Universal Backdrop Dismissal**:
+  - Tapping or clicking anywhere on the blurred background outside any open sheet or modal (Shopping list, Add/Edit item, Dashboard, Household Live Sync, Recipe Rescue, etc.) now smoothly dismisses the modal.
+
+---
+
 ## [1.8.0] - 2026-08-28
 
 ### Fixed & Enhanced
