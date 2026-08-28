@@ -856,7 +856,7 @@ let firestoreInstance = null;
 let firestoreUnsubscribe = null;
 
 // Application Version
-const APP_VERSION = '1.8.2';
+const APP_VERSION = '1.8.3';
 
 // Initialize Application
 function init() {
@@ -1340,7 +1340,7 @@ function initDualSwipeGestures(wrapper, card, item) {
       currentDx = dx;
 
       card.style.transform = `translateX(${currentDx}px)`;
-      const threshold = wrapper.offsetWidth * 0.35;
+      const threshold = Math.min(wrapper.offsetWidth * 0.25, 90);
 
       if (dx < 0) {
         // Dragging Left -> Archive
@@ -1369,11 +1369,36 @@ function initDualSwipeGestures(wrapper, card, item) {
 
     const elapsed = Date.now() - touchStartTime;
 
-    // If user was scrolling vertically or moved more than 10px, do NOT open modal!
-    if (hasMovedVertically || maxMovement > 10 || elapsed > 450) {
-      if (isDragging) {
-        wrapper.classList.remove('is-dragging');
-        wrapper.classList.add('animating');
+    if (isDragging) {
+      wrapper.classList.remove('is-dragging');
+      wrapper.classList.add('animating');
+      const threshold = Math.min(wrapper.offsetWidth * 0.25, 90);
+
+      if (currentDx < -threshold) {
+        // SWIPE LEFT -> ARCHIVE
+        isCompleted = true;
+        triggerHaptic('success');
+        card.style.transform = 'translateX(-105%)';
+        setTimeout(() => wrapper.classList.add('item-archived-collapse'), 120);
+        setTimeout(() => archiveItem(item, { showUndo: true }), 350);
+      } else if (currentDx > threshold) {
+        // SWIPE RIGHT -> ADD TO SHOPPING LIST
+        isCompleted = true;
+        triggerHaptic('success');
+        card.style.transform = 'translateX(105%)';
+        setTimeout(() => {
+          addToShoppingList(item.name, item.quantity, item.unit);
+          // Snap back card
+          card.style.transform = 'translateX(0px)';
+          restockBg.classList.remove('threshold-reached');
+          setTimeout(() => {
+            wrapper.classList.remove('animating');
+            card.style.transform = '';
+            isCompleted = false;
+          }, 250);
+        }, 250);
+      } else {
+        // Snap back
         card.style.transform = 'translateX(0px)';
         archiveBg.classList.remove('threshold-reached');
         restockBg.classList.remove('threshold-reached');
@@ -1385,9 +1410,9 @@ function initDualSwipeGestures(wrapper, card, item) {
       return;
     }
 
-    if (!isDragging) {
-      // Clean Stationary Tap (<10px movement, <450ms)
-      if (!e.target.closest('.item-btn') && !e.target.closest('.food-card-select-check') && !isCompleted) {
+    // If NOT dragging: Only handle as a tap if stationary (<8px total movement, <350ms duration, and didn't scroll)
+    if (!hasMovedVertically && maxMovement < 8 && elapsed < 350 && !isCompleted) {
+      if (!e.target.closest('.item-btn') && !e.target.closest('.food-card-select-check')) {
         triggerHaptic('light');
         if (isBatchModeActive) {
           const chk = wrapper.querySelector('.food-card-select-check');
@@ -1399,45 +1424,6 @@ function initDualSwipeGestures(wrapper, card, item) {
           openEditModal(item);
         }
       }
-      return;
-    }
-
-    wrapper.classList.remove('is-dragging');
-    wrapper.classList.add('animating');
-    const threshold = wrapper.offsetWidth * 0.35;
-
-    if (currentDx < -threshold) {
-      // SWIPE LEFT -> ARCHIVE
-      isCompleted = true;
-      triggerHaptic('success');
-      card.style.transform = 'translateX(-105%)';
-      setTimeout(() => wrapper.classList.add('item-archived-collapse'), 120);
-      setTimeout(() => archiveItem(item, { showUndo: true }), 350);
-    } else if (currentDx > threshold) {
-      // SWIPE RIGHT -> ADD TO SHOPPING LIST
-      isCompleted = true;
-      triggerHaptic('success');
-      card.style.transform = 'translateX(105%)';
-      setTimeout(() => {
-        addToShoppingList(item.name, item.quantity, item.unit);
-        // Snap back card
-        card.style.transform = 'translateX(0px)';
-        restockBg.classList.remove('threshold-reached');
-        setTimeout(() => {
-          wrapper.classList.remove('animating');
-          card.style.transform = '';
-          isCompleted = false;
-        }, 250);
-      }, 250);
-    } else {
-      // Snap back
-      card.style.transform = 'translateX(0px)';
-      archiveBg.classList.remove('threshold-reached');
-      restockBg.classList.remove('threshold-reached');
-      setTimeout(() => {
-        wrapper.classList.remove('animating');
-        card.style.transform = '';
-      }, 250);
     }
   };
 

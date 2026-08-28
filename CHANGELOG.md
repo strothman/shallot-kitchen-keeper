@@ -5,6 +5,15 @@ This changelog is updated at least once per development day.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.3] - 2026-08-28
+
+### Fixed & Enhanced
+- **Swipe-to-Archive Sensitivity & Reliability**:
+  - Fixed a swipe completion check where drag distance was incorrectly treated as a tap movement cancelation.
+  - Optimized swipe threshold to a responsive 25% (or 90px max) for effortless, natural archive swipes on mobile.
+
+---
+
 ## [1.8.1] - 2026-08-28
 
 ### Added & Enhanced
