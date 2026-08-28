@@ -2430,6 +2430,113 @@ body {
   border-color: #3498db;
 }
 
+/* ==========================================================================
+   Curator / Missing Icons Dev Feed
+   ========================================================================== */
+.curator-feed-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.refresh-curator-btn {
+  background: var(--bg-app);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-main);
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.refresh-curator-btn:active {
+  transform: scale(0.94);
+}
+
+.curator-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.curator-card {
+  background: var(--bg-app);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.curator-card-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.curator-emoji {
+  font-size: 1.3rem;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.curator-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.curator-name {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--color-text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.curator-sub {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.curator-badge {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.curator-loading-state {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  padding: 16px;
+  background: var(--bg-app);
+  border-radius: 12px;
+}
+
 .import-choice-card {
   max-width: 420px;
 }

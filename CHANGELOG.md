@@ -5,6 +5,15 @@ This changelog is updated at least once per development day.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.7] - 2026-08-28
+
+### Added & Enhanced
+- **Community Food Registry & Developer Telemetry**:
+  - Automatically captures uncataloged custom food entries entered by users and logs them to the Firestore `uncataloged_foods` collection.
+  - Added a **Missing Food Icons (Dev Feed)** section inside the Kitchen Dashboard to view live community requests ordered by popularity.
+
+---
+
 ## [1.8.6] - 2026-08-28
 
 ### Fixed & Enhanced

@@ -627,6 +627,12 @@ function learnGroceryItem(name, zone, days, unit, customEmoji = null) {
   } catch {
     // Ignored
   }
+
+  // Cloud Telemetry: Check if this item is uncataloged in standard GROCERY_DATABASE
+  const isUncataloged = !GROCERY_DATABASE[norm] && !GROCERY_DATABASE[targetKey];
+  if (isUncataloged) {
+    reportUncatalogedFoodToCloud(name, zone, days, unit, emoji);
+  }
 }
 
 // --- App State ---
@@ -848,7 +854,7 @@ let firestoreInstance = null;
 let firestoreUnsubscribe = null;
 
 // Application Version
-const APP_VERSION = '1.8.6';
+const APP_VERSION = '1.8.7';
 
 // Initialize Application
 function init() {
@@ -1109,6 +1115,93 @@ function generateHouseholdCode() {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return code;
+}
+
+// --- Automated Community Food Registry (Developer Telemetry & Curator Feed) ---
+async function reportUncatalogedFoodToCloud(name, zone, days, unit, emoji) {
+  const config = getActiveFirebaseConfig();
+  if (!config || typeof firebase === 'undefined') return;
+
+  try {
+    if (!firestoreInstance) {
+      if (!firebase.apps || !firebase.apps.length) {
+        firebase.initializeApp(config);
+      }
+      firestoreInstance = firebase.firestore();
+    }
+    if (!firestoreInstance) return;
+
+    const normalizedDocId = name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '_').slice(0, 40);
+    if (!normalizedDocId) return;
+
+    const docRef = firestoreInstance.collection('uncataloged_foods').doc(normalizedDocId);
+    await docRef.set({
+      name: name.trim(),
+      requestCount: firebase.firestore.FieldValue.increment(1),
+      lastRequested: Date.now(),
+      userChosenEmoji: emoji || '🥗',
+      suggestedZone: zone || 'fridge',
+      suggestedShelfLife: parseInt(days, 10) || 7,
+      suggestedUnit: unit || 'pcs'
+    }, { merge: true });
+
+    console.log(`📡 Logged uncataloged food request for developer: "${name}"`);
+  } catch (err) {
+    console.debug('Food telemetry ping notice:', err);
+  }
+}
+
+async function renderCuratorFeed() {
+  const container = document.getElementById('curatorItemsList');
+  if (!container) return;
+
+  const config = getActiveFirebaseConfig();
+  if (!config || typeof firebase === 'undefined') {
+    container.innerHTML = '<div class="curator-loading-state">Cloud database config needed to load missing icons feed.</div>';
+    return;
+  }
+
+  try {
+    if (!firestoreInstance) {
+      if (!firebase.apps || !firebase.apps.length) {
+        firebase.initializeApp(config);
+      }
+      firestoreInstance = firebase.firestore();
+    }
+
+    container.innerHTML = '<div class="curator-loading-state">Fetching community requests from cloud...</div>';
+
+    const snap = await firestoreInstance.collection('uncataloged_foods')
+      .orderBy('requestCount', 'desc')
+      .limit(20)
+      .get();
+
+    if (snap.empty) {
+      container.innerHTML = '<div class="curator-loading-state">✨ All food items tracked by users currently match known presets! No missing icons requested yet.</div>';
+      return;
+    }
+
+    container.innerHTML = '';
+    snap.forEach(docSnap => {
+      const data = docSnap.data();
+      const card = document.createElement('div');
+      card.className = 'curator-card';
+      card.innerHTML = `
+        <div class="curator-card-left">
+          <span class="curator-emoji">${escapeHTML(data.userChosenEmoji || '🥗')}</span>
+          <div class="curator-details">
+            <span class="curator-name">${escapeHTML(data.name)}</span>
+            <span class="curator-sub">${escapeHTML((data.suggestedZone || 'fridge').toUpperCase())} • ${data.suggestedShelfLife || 7}d • ${escapeHTML(data.suggestedUnit || 'pcs')}</span>
+          </div>
+        </div>
+        <span class="curator-badge">🔥 ${data.requestCount || 1} ${data.requestCount === 1 ? 'request' : 'requests'}</span>
+      `;
+      container.appendChild(card);
+    });
+  } catch (err) {
+    container.innerHTML = '<div class="curator-loading-state">Unable to load feed (offline or reconnecting).</div>';
+    console.debug('Curator feed notice:', err);
+  }
 }
 
 // Calculate remaining days
@@ -2636,12 +2729,21 @@ function setupEventListeners() {
   statsBtn.addEventListener('click', () => {
     renderCookedLog();
     updateStatsCounters();
+    renderCuratorFeed();
     statsModal.classList.remove('hidden');
   });
 
   closeStatsBtn.addEventListener('click', () => {
     statsModal.classList.add('hidden');
   });
+
+  const refreshCuratorFeedBtn = document.getElementById('refreshCuratorFeedBtn');
+  if (refreshCuratorFeedBtn) {
+    refreshCuratorFeedBtn.addEventListener('click', () => {
+      triggerHaptic('light');
+      renderCuratorFeed();
+    });
+  }
 
   // Notifications Opt-in Toggle
   if (notifToggle) {
