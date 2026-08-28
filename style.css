@@ -2505,5 +2505,113 @@ body {
   background: linear-gradient(135deg, var(--bg-app), var(--color-primary-light));
 }
 
+/* ==========================================================================
+   Interactive Food Emoji Customizer & Tray Modal
+   ========================================================================== */
+.form-header-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon-picker-preview-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-icon-preview-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary-light), var(--bg-card));
+  border: 2px solid var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-icon-preview-btn:active {
+  transform: scale(0.9);
+}
+
+.icon-edit-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  font-size: 0.65rem;
+  background: var(--bg-app);
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-name-group {
+  flex: 1;
+}
+
+.emoji-picker-card {
+  max-width: 440px;
+  max-height: 80vh;
+}
+
+.emoji-picker-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.emoji-search-wrapper input {
+  width: 100%;
+  background: var(--bg-app);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-family: var(--font-main);
+  font-size: 0.85rem;
+  color: var(--color-text-main);
+  outline: none;
+}
+
+.emoji-grid-container {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 4px 2px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.emoji-picker-item {
+  background: var(--bg-app);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 8px 4px;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.emoji-picker-item:active {
+  transform: scale(0.85);
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
+
 
 

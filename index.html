@@ -224,24 +224,32 @@
         <form id="itemForm" autocomplete="off">
           <input type="hidden" id="editItemId">
 
-          <div class="form-group">
-            <label for="itemName">Food Name</label>
-            <input type="text" id="itemName" placeholder="e.g. Tomato, Milk, Chicken" required>
-
-            <!-- Live Smart Auto-Preset Pill -->
-            <div class="auto-preset-pill hidden" id="autoPresetPill">
-              <span class="preset-sparkle">✨</span>
-              <span id="autoPresetText">Auto-preset</span>
+          <div class="form-header-row">
+            <div class="icon-picker-preview-wrapper">
+              <button type="button" class="form-icon-preview-btn" id="formIconPreviewBtn" title="Tap to customize food emoji">
+                <span id="formIconPreviewEmoji">🥗</span>
+                <span class="icon-edit-badge">✏️</span>
+              </button>
             </div>
-
-            <div class="veggie-suggestions" id="veggieSuggestions">
-              <span class="suggestion-tag" data-val="Tomato">🍅 Tomato</span>
-              <span class="suggestion-tag" data-val="Carrot">🥕 Carrot</span>
-              <span class="suggestion-tag" data-val="Broccoli">🥦 Broccoli</span>
-              <span class="suggestion-tag" data-val="Apple">🍎 Apple</span>
-              <span class="suggestion-tag" data-val="Milk">🥛 Milk</span>
-              <span class="suggestion-tag" data-val="Egg">🥚 Egg</span>
+            <div class="form-group form-name-group">
+              <label for="itemName">Food Name</label>
+              <input type="text" id="itemName" placeholder="e.g. Tomato, Milk, Chicken" required>
             </div>
+          </div>
+
+          <!-- Live Smart Auto-Preset Pill -->
+          <div class="auto-preset-pill hidden" id="autoPresetPill">
+            <span class="preset-sparkle">✨</span>
+            <span id="autoPresetText">Auto-preset</span>
+          </div>
+
+          <div class="veggie-suggestions" id="veggieSuggestions">
+            <span class="suggestion-tag" data-val="Tomato">🍅 Tomato</span>
+            <span class="suggestion-tag" data-val="Carrot">🥕 Carrot</span>
+            <span class="suggestion-tag" data-val="Broccoli">🥦 Broccoli</span>
+            <span class="suggestion-tag" data-val="Apple">🍎 Apple</span>
+            <span class="suggestion-tag" data-val="Milk">🥛 Milk</span>
+            <span class="suggestion-tag" data-val="Egg">🥚 Egg</span>
           </div>
 
           <div class="form-row">
@@ -558,6 +566,27 @@
         <div class="quick-stock-body">
           <textarea id="pasteBackupInput" rows="5" placeholder="Paste your JSON backup text here..."></textarea>
           <button type="button" class="submit-btn" id="submitPasteBackupBtn">Parse & Restore</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1-Tap Emoji Picker Tray Modal -->
+    <div class="modal-backdrop hidden" id="emojiPickerModal">
+      <div class="modal-card emoji-picker-card">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <h2>Select Food Emoji</h2>
+            <p class="modal-subtitle">Pick an icon for this food</p>
+          </div>
+          <button class="close-btn" id="closeEmojiPickerBtn">&times;</button>
+        </div>
+        <div class="emoji-picker-body">
+          <div class="emoji-search-wrapper">
+            <input type="text" id="emojiSearchInput" placeholder="Filter emojis (e.g. meat, soup, bread)...">
+          </div>
+          <div class="emoji-grid-container" id="emojiGrid">
+            <!-- Dynamically populated food emojis -->
+          </div>
         </div>
       </div>
     </div>

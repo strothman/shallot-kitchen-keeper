@@ -5,6 +5,18 @@ This changelog is updated at least once per development day.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2026-08-28
+
+### Added
+- **500+ Global Culinary Database**:
+  - Expanded the built-in grocery knowledge base with 500+ ingredients, international specialties, Asian noodles/dumplings, meats, cheeses, fresh produce, and beverages.
+- **Fuzzy Root Stemmer & Token Extractor**:
+  - Automatically strips brand names, packaging keywords (*"bag", "can", "carton", "sliced", "organic"*), and plural endings (*"gnocchis" $\rightarrow$ "gnocchi"*, *"noodles" $\rightarrow$ "noodle"*) to match the true root food icon automatically.
+- **1-Tap Interactive Emoji Picker Tray**:
+  - Tap the icon button in the Stock or Edit form to open a categorized emoji tray with fast real-time search. Picked emojis are remembered permanently in memory.
+- **Service Worker v1.6.0**:
+  - Bumped cache to v1.6.0 for instant over-the-air deployment.
+
 ---
 
 ## [1.5.0] - 2026-08-28

@@ -5,7 +5,7 @@
 # Shallot: Kitchen Keeper 🧅🔪
 **A zero-dependency, mobile-first culinary inventory tracker and food-waste prevention PWA.**
 
-[![Version](https://img.shields.io/badge/version-1.5.0-blue.svg?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.6.0-blue.svg?style=flat-square)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg?style=flat-square)](LICENSE)
 [![PWA Ready](https://img.shields.io/badge/PWA-Installable-success.svg?style=flat-square)](manifest.json)
 [![Security: CSP Hardened](https://img.shields.io/badge/Security-CSP%20Hardened-green.svg?style=flat-square)](index.html)
@@ -34,9 +34,10 @@ Built with a **zero-dependency vanilla architecture**, the app delivers sub-50ms
 
 ## ✨ Key Features
 
-### 1. 🧠 Self-Learning Food Knowledge Base & Dynamic Icons
-- **Personal Learned Database**: Whenever you stock or edit groceries, Shallot learns and remembers their storage zones, shelf lives, and units for future one-tap stocking.
-- **Smart Category Icons & Deterministic Color Engine**: Dedicated recognition for noodles, gnocchi, spam, dumplings, snacks, and bakery items. Unknown items automatically generate unique, distinct vibrant gradient colors so no two foods look the same.
+### 1. 🧠 500+ Global Culinary Database & Fuzzy Stemmer
+- **Massive Built-in Knowledge Base**: 500+ ingredients, international staples, meats, cheeses, and produce.
+- **Fuzzy Root Stemmer NLP**: Strips brand names (*"Trader Joe's"*), packaging (*"bag", "can", "carton"*), and plural forms (*"gnocchis" $\rightarrow$ "gnocchi"*, *"noodles" $\rightarrow$ "noodle"*) to match true food icons automatically.
+- **1-Tap Interactive Emoji Picker**: Tap any food icon to customize its emoji from an interactive tray with instant real-time search.
 
 ### 2. 🎛️ Hybrid Precision Shelf-Life Stepper & Preset Chips
 - Effortlessly adjust freshness timelines using **`[-]` / `[+]` precision steppers**, **direct tap-to-type input**, or **one-tap preset chips** (*3d, 5d, 7d, 14d, 30d, 90d*).
