@@ -813,6 +813,22 @@ const recipeModal = document.getElementById('recipeModal');
 const closeRecipeBtn = document.getElementById('closeRecipeBtn');
 const recipeSuggestionsContainer = document.getElementById('recipeSuggestionsContainer');
 
+// Backup & Data Transfer DOM
+const exportBtn = document.getElementById('exportBtn');
+const exportCsvBtn = document.getElementById('exportCsvBtn');
+const copyBackupBtn = document.getElementById('copyBackupBtn');
+const pasteBackupBtn = document.getElementById('pasteBackupBtn');
+const importBtn = document.getElementById('importBtn');
+const importFile = document.getElementById('importFile');
+const pasteBackupModal = document.getElementById('pasteBackupModal');
+const closePasteBackupBtn = document.getElementById('closePasteBackupBtn');
+const pasteBackupInput = document.getElementById('pasteBackupInput');
+const submitPasteBackupBtn = document.getElementById('submitPasteBackupBtn');
+const importChoiceModal = document.getElementById('importChoiceModal');
+const confirmMergeBtn = document.getElementById('confirmMergeBtn');
+const confirmReplaceBtn = document.getElementById('confirmReplaceBtn');
+const closeImportChoiceBtn = document.getElementById('closeImportChoiceBtn');
+
 // Household Live Sync DOM
 const syncHouseholdBtn = document.getElementById('syncHouseholdBtn');
 const syncIndicatorDot = document.getElementById('syncIndicatorDot');
@@ -840,7 +856,7 @@ let firestoreInstance = null;
 let firestoreUnsubscribe = null;
 
 // Application Version
-const APP_VERSION = '1.7.6';
+const APP_VERSION = '1.8.0';
 
 // Initialize Application
 function init() {
@@ -1011,22 +1027,22 @@ async function initFirebaseSync() {
   }
 
   try {
-    const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js");
-    const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-
-    const app = getApps().length > 0 ? getApps()[0] : initializeApp(config);
-    firestoreInstance = getFirestore(app);
-
-    if (activeHouseholdId) {
-      listenToHousehold(activeHouseholdId);
+    if (typeof firebase !== 'undefined') {
+      if (!firebase.apps || !firebase.apps.length) {
+        firebase.initializeApp(config);
+      }
+      firestoreInstance = firebase.firestore();
+      if (activeHouseholdId) {
+        listenToHousehold(activeHouseholdId);
+      }
     }
   } catch (err) {
-    console.warn("Firebase Live Sync initialization failed:", err);
+    console.warn("Firebase Live Sync initialization notice:", err);
     setSyncIndicatorStatus('inactive');
   }
 }
 
-async function listenToHousehold(householdId) {
+function listenToHousehold(householdId) {
   if (!firestoreInstance || !householdId) return;
   if (firestoreUnsubscribe) {
     firestoreUnsubscribe();
@@ -1035,23 +1051,21 @@ async function listenToHousehold(householdId) {
 
   setSyncIndicatorStatus('syncing');
   try {
-    const { doc, onSnapshot } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-    const docRef = doc(firestoreInstance, "households", householdId);
-
-    firestoreUnsubscribe = onSnapshot(docRef, (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        if (data && data.updatedAt) {
-          applyRemoteCloudData(data);
+    firestoreUnsubscribe = firestoreInstance.collection("households").doc(householdId)
+      .onSnapshot((docSnap) => {
+        if (docSnap.exists) {
+          const data = docSnap.data();
+          if (data && data.updatedAt) {
+            applyRemoteCloudData(data);
+          }
         }
-      }
-      setSyncIndicatorStatus('active');
-      if (householdLiveStatusText) householdLiveStatusText.textContent = "Live Connected to Cloud";
-    }, (err) => {
-      console.warn("Snapshot listener notice:", err);
-      setSyncIndicatorStatus('inactive');
-      if (householdLiveStatusText) householdLiveStatusText.textContent = "Sync Standby (Offline/Reconnecting)";
-    });
+        setSyncIndicatorStatus('active');
+        if (householdLiveStatusText) householdLiveStatusText.textContent = "Live Connected to Cloud";
+      }, (err) => {
+        console.warn("Snapshot listener notice:", err);
+        setSyncIndicatorStatus('inactive');
+        if (householdLiveStatusText) householdLiveStatusText.textContent = "Sync Standby (Offline/Reconnecting)";
+      });
   } catch (err) {
     console.warn("Failed to listen to household:", err);
   }
@@ -1073,16 +1087,14 @@ function applyRemoteCloudData(data) {
 }
 
 let pushDebounceTimer = null;
-async function pushStateToCloud() {
+function pushStateToCloud() {
   if (!firestoreInstance || !activeHouseholdId || isRemoteCloudUpdate) return;
   setSyncIndicatorStatus('syncing');
 
   clearTimeout(pushDebounceTimer);
   pushDebounceTimer = setTimeout(async () => {
     try {
-      const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-      const docRef = doc(firestoreInstance, "households", activeHouseholdId);
-      await setDoc(docRef, {
+      await firestoreInstance.collection("households").doc(activeHouseholdId).set({
         foodItems,
         cookedItems,
         archivedItems,
@@ -2785,28 +2797,10 @@ function setupEventListeners() {
     });
   });
 
-  // Seed Demo Items
-  if (seedDemoBtn) {
-    seedDemoBtn.addEventListener('click', () => {
-      if (confirm('Load 10 sample development items?')) {
-        foodItems = getInitialDummyItems();
-        cookedItems = getInitialDummyCooked();
-        archivedItems = [];
-        shoppingList = [];
-        saveData();
-        render();
-        renderCookedLog();
-        renderArchiveModal();
-        renderShoppingModal();
-        showToast('✨', '10 sample items loaded successfully!');
-      }
-    });
-  }
-
   // Backup Suite Listeners
   if (exportBtn) exportBtn.addEventListener('click', exportBackupData);
   if (exportCsvBtn) exportCsvBtn.addEventListener('click', exportCsvData);
-  if (copyBackupBtn) exportCsvBtn && copyBackupBtn.addEventListener('click', copyBackupCode);
+  if (copyBackupBtn) copyBackupBtn.addEventListener('click', copyBackupCode);
   if (importBtn) importBtn.addEventListener('click', () => importFile.click());
   if (importFile) {
     importFile.addEventListener('change', (e) => {

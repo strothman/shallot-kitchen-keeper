@@ -5,6 +5,17 @@ This changelog is updated at least once per development day.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - 2026-08-28
+
+### Fixed & Enhanced
+- **👫 Household Live Sync Overhaul & Fix**:
+  - Resolved JavaScript initialization `ReferenceError` caused by legacy button references.
+  - Upgraded Firebase Firestore integration to Firebase Compat SDK with direct script inclusion.
+  - Verified modal opening from both header icon and the Kitchen Dashboard settings card.
+  - Tested live code generation (`SHALLOT-XXXX`) and two-way cloud persistence.
+
+---
+
 ## [1.7.5] - 2026-08-28
 
 ### Fixed & Enhanced
