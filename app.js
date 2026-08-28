@@ -839,6 +839,9 @@ let isRemoteCloudUpdate = false;
 let firestoreInstance = null;
 let firestoreUnsubscribe = null;
 
+// Application Version
+const APP_VERSION = '1.7.2';
+
 // Initialize Application
 function init() {
   loadData();
@@ -848,6 +851,12 @@ function init() {
   registerServiceWorker();
   checkDailyNotifications();
   initFirebaseSync();
+
+  // Dynamic Version Sync
+  const appVersionPill = document.getElementById('appVersionPill');
+  const appVersionFooterLabel = document.getElementById('appVersionFooterLabel');
+  if (appVersionPill) appVersionPill.textContent = 'v' + APP_VERSION;
+  if (appVersionFooterLabel) appVersionFooterLabel.textContent = `Shallot v${APP_VERSION} • Mobile Edition`;
 }
 
 // Apply selected theme & sync status bar
