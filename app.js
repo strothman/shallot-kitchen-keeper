@@ -220,10 +220,27 @@ const expiringSoonCount = document.getElementById('expiringSoonCount');
 const cookedTotalCount = document.getElementById('cookedTotalCount');
 const cookedLogList = document.getElementById('cookedLogList');
 const exportBtn = document.getElementById('exportBtn');
+const exportCsvBtn = document.getElementById('exportCsvBtn');
+const copyBackupBtn = document.getElementById('copyBackupBtn');
 const importBtn = document.getElementById('importBtn');
+const pasteBackupBtn = document.getElementById('pasteBackupBtn');
 const importFile = document.getElementById('importFile');
 const seedDemoBtn = document.getElementById('seedDemoBtn');
 const notifToggle = document.getElementById('notifToggle');
+const storageHealthPill = document.getElementById('storageHealthPill');
+
+// Import Choice Modal DOM
+const importChoiceModal = document.getElementById('importChoiceModal');
+const closeImportChoiceBtn = document.getElementById('closeImportChoiceBtn');
+const importSummarySubtitle = document.getElementById('importSummarySubtitle');
+const confirmMergeBtn = document.getElementById('confirmMergeBtn');
+const confirmReplaceBtn = document.getElementById('confirmReplaceBtn');
+
+// Paste Backup Modal DOM
+const pasteBackupModal = document.getElementById('pasteBackupModal');
+const closePasteBackupBtn = document.getElementById('closePasteBackupBtn');
+const pasteBackupInput = document.getElementById('pasteBackupInput');
+const submitPasteBackupBtn = document.getElementById('submitPasteBackupBtn');
 
 // Freshness Score Card DOM
 const freshnessScoreBadge = document.getElementById('freshnessScoreBadge');
@@ -1265,6 +1282,8 @@ function updateStatsCounters() {
     roiMoneySaved.textContent = `$${dollars}`;
     roiLbsSaved.textContent = `${weight} lbs`;
   }
+
+  updateStorageHealth();
 }
 
 // Delete Active Item
@@ -1348,10 +1367,27 @@ function openEditModal(item) {
   itemModal.classList.remove('hidden');
 }
 
-// --- Backup & Restore with Schema Validation ---
+// Pending import data container for Merge/Replace choice
+let pendingImportData = null;
+
+// Storage Health Quota Calculator
+function updateStorageHealth() {
+  if (!storageHealthPill) return;
+  let totalBytes = 0;
+  for (let key in localStorage) {
+    if (localStorage.hasOwnProperty(key) && key.startsWith('kk_')) {
+      totalBytes += (localStorage[key].length + key.length) * 2;
+    }
+  }
+  const kb = (totalBytes / 1024).toFixed(1);
+  storageHealthPill.textContent = `💾 ${kb} KB used • Offline`;
+}
+
+// --- Backup & Restore Suite ---
 function exportBackupData() {
   const backup = {
-    version: '1.3.0',
+    version: '1.4.0',
+    app: 'Shallot: Kitchen Keeper',
     foodItems,
     cookedItems,
     archivedItems,
@@ -1367,95 +1403,184 @@ function exportBackupData() {
   document.body.appendChild(downloadAnchor);
   downloadAnchor.click();
   downloadAnchor.remove();
+  showToast('📥', 'JSON backup downloaded!');
+}
+
+function exportCsvData() {
+  if (foodItems.length === 0) {
+    alert('Your kitchen inventory is currently empty.');
+    return;
+  }
+  let csv = 'Name,Quantity,Unit,Storage Zone,Days Remaining,Shelf Life (Days),Added Date\n';
+  foodItems.forEach(item => {
+    const daysLeft = calculateDaysRemaining(item);
+    const dateStr = item.addedDate ? new Date(item.addedDate).toLocaleDateString() : '';
+    csv += `"${item.name.replace(/"/g, '""')}",${item.quantity},"${item.unit}","${item.zone}",${daysLeft},${item.shelfLife},"${dateStr}"\n`;
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = `shallot_inventory_${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
+  showToast('📊', 'Inventory exported as CSV for Sheets/Excel!');
+}
+
+function copyBackupCode() {
+  const backup = {
+    version: '1.4.0',
+    app: 'Shallot: Kitchen Keeper',
+    foodItems,
+    cookedItems,
+    archivedItems,
+    shoppingList,
+    theme: currentTheme,
+    exportedAt: new Date().toISOString()
+  };
+  const jsonStr = JSON.stringify(backup);
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(jsonStr).then(() => {
+      showToast('📋', 'Backup code copied to clipboard!');
+    }).catch(() => {
+      prompt('Copy your backup code:', jsonStr);
+    });
+  } else {
+    prompt('Copy your backup code:', jsonStr);
+  }
+}
+
+function prepareImportData(data) {
+  if (!data || (typeof data !== 'object' && !Array.isArray(data))) {
+    alert("Invalid backup format. Please select a valid JSON backup.");
+    return;
+  }
+
+  const rawFood = Array.isArray(data) 
+    ? data 
+    : (data.foodItems || data.items || data.foodList || data.groceries || []);
+  const rawCooked = data.cookedItems || data.cookedLog || data.cookedHistory || [];
+  const rawArchived = data.archivedItems || data.archive || data.archived || [];
+  const rawShopping = data.shoppingList || data.restockList || data.shopping || [];
+
+  const cleanFood = Array.isArray(rawFood) ? rawFood.map(item => ({
+    id: String(item.id || 'food_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4)),
+    name: String(item.name || 'Unnamed Grocery').trim().slice(0, 100),
+    quantity: parseFloat(item.quantity) || 1,
+    unit: String(item.unit || 'pcs').trim().slice(0, 20),
+    shelfLife: parseInt(item.shelfLife, 10) || 7,
+    zone: ['fridge', 'pantry', 'freezer'].includes(String(item.zone).toLowerCase()) ? String(item.zone).toLowerCase() : 'fridge',
+    addedDate: item.addedDate ? new Date(item.addedDate).toISOString() : new Date().toISOString()
+  })) : [];
+
+  const cleanCooked = Array.isArray(rawCooked) ? rawCooked.map(item => ({
+    id: String(item.id || 'cooked_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4)),
+    name: String(item.name || 'Unnamed Grocery').trim().slice(0, 100),
+    quantity: parseFloat(item.quantity) || 1,
+    unit: String(item.unit || 'pcs').trim().slice(0, 20),
+    cookedDate: String(item.cookedDate || new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })).slice(0, 50)
+  })) : [];
+
+  const cleanArchived = Array.isArray(rawArchived) ? rawArchived.map(item => ({
+    id: String(item.id || 'archived_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4)),
+    name: String(item.name || 'Unnamed Grocery').trim().slice(0, 100),
+    quantity: parseFloat(item.quantity) || 1,
+    unit: String(item.unit || 'pcs').trim().slice(0, 20),
+    shelfLife: parseInt(item.shelfLife, 10) || 7,
+    zone: ['fridge', 'pantry', 'freezer'].includes(String(item.zone).toLowerCase()) ? String(item.zone).toLowerCase() : 'fridge',
+    archivedDate: item.archivedDate || new Date().toISOString(),
+    archivedDisplayDate: item.archivedDisplayDate || 'Archived'
+  })) : [];
+
+  const cleanShopping = Array.isArray(rawShopping) ? rawShopping.map(item => ({
+    id: String(item.id || 'shop_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4)),
+    name: String(item.name || 'Unnamed Grocery').trim().slice(0, 100),
+    quantity: parseFloat(item.quantity) || 1,
+    unit: String(item.unit || 'pcs').trim().slice(0, 20),
+    bought: Boolean(item.bought),
+    addedDate: item.addedDate || new Date().toISOString()
+  })) : [];
+
+  let targetTheme = 'shallot';
+  if (data.theme) {
+    if (data.theme === 'cabin' || data.theme === 'forest' || data.theme === 'shallot') targetTheme = 'shallot';
+    else if (data.theme === 'sunshine' || data.theme === 'shallot-light') targetTheme = 'shallot-light';
+    else if (data.theme === 'midnight') targetTheme = 'midnight';
+  }
+
+  pendingImportData = { cleanFood, cleanCooked, cleanArchived, cleanShopping, targetTheme };
+  importSummarySubtitle.textContent = `Found ${cleanFood.length} groceries, ${cleanArchived.length} archived, ${cleanShopping.length} shopping`;
+  importChoiceModal.classList.remove('hidden');
+}
+
+function executeMergeImport() {
+  if (!pendingImportData) return;
+  triggerHaptic('success');
+
+  // Merge Food: append or add quantity to matching items
+  pendingImportData.cleanFood.forEach(newItem => {
+    const existing = foodItems.find(f => f.name.toLowerCase() === newItem.name.toLowerCase() && f.zone === newItem.zone);
+    if (existing) {
+      existing.quantity += newItem.quantity;
+    } else {
+      foodItems.unshift(newItem);
+    }
+  });
+
+  pendingImportData.cleanCooked.forEach(item => cookedItems.unshift(item));
+  pendingImportData.cleanArchived.forEach(item => archivedItems.unshift(item));
+  pendingImportData.cleanShopping.forEach(newItem => {
+    const existing = shoppingList.find(s => s.name.toLowerCase() === newItem.name.toLowerCase() && !s.bought);
+    if (existing) existing.quantity += newItem.quantity;
+    else shoppingList.unshift(newItem);
+  });
+
+  saveData();
+  render();
+  renderCookedLog();
+  renderArchiveModal();
+  renderShoppingModal();
+  updateStatsCounters();
+  updateStorageHealth();
+
+  importChoiceModal.classList.add('hidden');
+  pendingImportData = null;
+  showToast('➕', 'Backup successfully merged with your kitchen!');
+}
+
+function executeReplaceImport() {
+  if (!pendingImportData) return;
+  triggerHaptic('success');
+
+  foodItems = pendingImportData.cleanFood;
+  cookedItems = pendingImportData.cleanCooked;
+  archivedItems = pendingImportData.cleanArchived;
+  shoppingList = pendingImportData.cleanShopping;
+  applyTheme(pendingImportData.targetTheme);
+
+  saveData();
+  render();
+  renderCookedLog();
+  renderArchiveModal();
+  renderShoppingModal();
+  updateStatsCounters();
+  updateStorageHealth();
+
+  importChoiceModal.classList.add('hidden');
+  pendingImportData = null;
+  showToast('🔄', 'Kitchen completely restored from backup!');
 }
 
 function importBackupData(file) {
   if (!file) return;
-
   const reader = new FileReader();
   reader.onload = function (e) {
     try {
       const data = JSON.parse(e.target.result);
-
-      if (!data || (typeof data !== 'object' && !Array.isArray(data))) {
-        alert("Invalid backup file format. Please select a valid JSON backup file.");
-        return;
-      }
-
-      // Universal Field Resolution (Supports v1.0, v1.1, v1.2, v1.3, v1.4 and raw arrays)
-      const rawFood = Array.isArray(data) 
-        ? data 
-        : (data.foodItems || data.items || data.foodList || data.groceries || []);
-
-      const rawCooked = data.cookedItems || data.cookedLog || data.cookedHistory || [];
-      const rawArchived = data.archivedItems || data.archive || data.archived || [];
-      const rawShopping = data.shoppingList || data.restockList || data.shopping || [];
-
-      // 1. Sanitize & Normalize Active Items
-      const cleanFood = Array.isArray(rawFood) ? rawFood.map(item => ({
-        id: String(item.id || 'food_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4)),
-        name: String(item.name || 'Unnamed Grocery').trim().slice(0, 100),
-        quantity: parseFloat(item.quantity) || 1,
-        unit: String(item.unit || 'pcs').trim().slice(0, 20),
-        shelfLife: parseInt(item.shelfLife, 10) || 7,
-        zone: ['fridge', 'pantry', 'freezer'].includes(String(item.zone).toLowerCase()) ? String(item.zone).toLowerCase() : 'fridge',
-        addedDate: item.addedDate ? new Date(item.addedDate).toISOString() : new Date().toISOString()
-      })) : [];
-
-      // 2. Sanitize & Normalize Cooked Items
-      const cleanCooked = Array.isArray(rawCooked) ? rawCooked.map(item => ({
-        id: String(item.id || 'cooked_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4)),
-        name: String(item.name || 'Unnamed Grocery').trim().slice(0, 100),
-        quantity: parseFloat(item.quantity) || 1,
-        unit: String(item.unit || 'pcs').trim().slice(0, 20),
-        cookedDate: String(item.cookedDate || new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })).slice(0, 50)
-      })) : [];
-
-      // 3. Sanitize & Normalize Archived Items
-      const cleanArchived = Array.isArray(rawArchived) ? rawArchived.map(item => ({
-        id: String(item.id || 'archived_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4)),
-        name: String(item.name || 'Unnamed Grocery').trim().slice(0, 100),
-        quantity: parseFloat(item.quantity) || 1,
-        unit: String(item.unit || 'pcs').trim().slice(0, 20),
-        shelfLife: parseInt(item.shelfLife, 10) || 7,
-        zone: ['fridge', 'pantry', 'freezer'].includes(String(item.zone).toLowerCase()) ? String(item.zone).toLowerCase() : 'fridge',
-        archivedDate: item.archivedDate || new Date().toISOString(),
-        archivedDisplayDate: item.archivedDisplayDate || 'Archived'
-      })) : [];
-
-      // 4. Sanitize & Normalize Shopping List
-      const cleanShopping = Array.isArray(rawShopping) ? rawShopping.map(item => ({
-        id: String(item.id || 'shop_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4)),
-        name: String(item.name || 'Unnamed Grocery').trim().slice(0, 100),
-        quantity: parseFloat(item.quantity) || 1,
-        unit: String(item.unit || 'pcs').trim().slice(0, 20),
-        bought: Boolean(item.bought),
-        addedDate: item.addedDate || new Date().toISOString()
-      })) : [];
-
-      // 5. Theme Migration
-      let targetTheme = 'shallot';
-      if (data.theme) {
-        if (data.theme === 'cabin' || data.theme === 'forest' || data.theme === 'shallot') targetTheme = 'shallot';
-        else if (data.theme === 'sunshine' || data.theme === 'shallot-light') targetTheme = 'shallot-light';
-        else if (data.theme === 'midnight') targetTheme = 'midnight';
-      }
-
-      if (confirm(`Restore ${cleanFood.length} active groceries, ${cleanArchived.length} archived items, and ${cleanShopping.length} shopping items?`)) {
-        foodItems = cleanFood;
-        cookedItems = cleanCooked;
-        archivedItems = cleanArchived;
-        shoppingList = cleanShopping;
-        applyTheme(targetTheme);
-
-        saveData();
-        render();
-        renderCookedLog();
-        renderArchiveModal();
-        renderShoppingModal();
-        updateStatsCounters();
-        showToast('✨', 'Backup data successfully restored and upgraded!');
-      }
+      prepareImportData(data);
     } catch (err) {
       alert("Error parsing backup file. Please ensure it is valid JSON.");
       console.error(err);
@@ -1842,13 +1967,58 @@ function setupEventListeners() {
     });
   }
 
-  // Backup Import & Export
-  exportBtn.addEventListener('click', exportBackupData);
-  importBtn.addEventListener('click', () => importFile.click());
-  importFile.addEventListener('change', (e) => {
-    importBackupData(e.target.files[0]);
-    importFile.value = '';
-  });
+  // Backup Suite Listeners
+  if (exportBtn) exportBtn.addEventListener('click', exportBackupData);
+  if (exportCsvBtn) exportCsvBtn.addEventListener('click', exportCsvData);
+  if (copyBackupBtn) exportCsvBtn && copyBackupBtn.addEventListener('click', copyBackupCode);
+  if (importBtn) importBtn.addEventListener('click', () => importFile.click());
+  if (importFile) {
+    importFile.addEventListener('change', (e) => {
+      importBackupData(e.target.files[0]);
+      importFile.value = '';
+    });
+  }
+
+  // Paste Backup Code Modal Listeners
+  if (pasteBackupBtn) {
+    pasteBackupBtn.addEventListener('click', () => {
+      pasteBackupInput.value = '';
+      pasteBackupModal.classList.remove('hidden');
+      pasteBackupInput.focus();
+    });
+  }
+  if (closePasteBackupBtn) {
+    closePasteBackupBtn.addEventListener('click', () => {
+      pasteBackupModal.classList.add('hidden');
+    });
+  }
+  if (submitPasteBackupBtn) {
+    submitPasteBackupBtn.addEventListener('click', () => {
+      const val = pasteBackupInput.value.trim();
+      if (!val) {
+        alert('Please paste a backup string first.');
+        return;
+      }
+      try {
+        const parsed = JSON.parse(val);
+        pasteBackupModal.classList.add('hidden');
+        prepareImportData(parsed);
+      } catch (err) {
+        alert('Invalid JSON text. Please check the backup string you pasted.');
+        console.error(err);
+      }
+    });
+  }
+
+  // Import Choice (Merge vs Replace) Modal Listeners
+  if (confirmMergeBtn) confirmMergeBtn.addEventListener('click', executeMergeImport);
+  if (confirmReplaceBtn) confirmReplaceBtn.addEventListener('click', executeReplaceImport);
+  if (closeImportChoiceBtn) {
+    closeImportChoiceBtn.addEventListener('click', () => {
+      importChoiceModal.classList.add('hidden');
+      pendingImportData = null;
+    });
+  }
 
   // Desktop Power-User Keyboard Shortcuts
   window.addEventListener('keydown', (e) => {

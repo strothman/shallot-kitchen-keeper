@@ -10,6 +10,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [1.4.0] - 2026-08-28
 
 ### Added
+- **"Merge vs. Replace" Backup Import Suite**:
+  - Restoring a backup now presents a prompt allowing users to either **Merge** (combine with current inventory without data loss) or **Replace** (clean complete restore).
+- **Clipboard Quick Backup & Sync**:
+  - Added **Copy Backup Code** and **Paste Backup Code** buttons for instant copy/paste backup sharing across devices.
+- **Export to CSV / Spreadsheets**:
+  - Added **Export CSV** button allowing users to export their pantry/inventory directly into Excel, Apple Numbers, or Google Sheets.
+- **Local Storage Health & Quota Monitor**:
+  - Real-time indicator displaying storage usage in KB and offline synchronization status.
 - **Multi-Item "Quick Stock" NLP Parser (⚡)**:
   - Added floating Quick-Stock button and modal accepting comma/newline separated grocery receipts or lists (e.g. *"2 milk, 6 eggs, 500g chicken, spinach, sourdough bread, pasta"*).
   - Automatically parses item quantities, units, assigns storage zones, and calculates shelf life.

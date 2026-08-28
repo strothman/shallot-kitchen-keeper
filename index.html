@@ -417,29 +417,55 @@
           </div>
           
           <div class="backup-section">
-            <h3>Data Management & Dev</h3>
-            <div class="backup-actions">
-              <button type="button" class="backup-btn" id="seedDemoBtn">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-                </svg>
-                Load 10 Samples
-              </button>
-              <button type="button" class="backup-btn" id="importBtn">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                  <polyline points="17 8 12 3 7 8"></polyline>
-                  <line x1="12" y1="3" x2="12" y2="15"></line>
-                </svg>
-                Import Data
-              </button>
-              <button type="button" class="backup-btn" id="exportBtn">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <div class="backup-section-header">
+              <h3>Data Management</h3>
+              <span class="storage-health-pill" id="storageHealthPill">💾 0 KB used</span>
+            </div>
+            <div class="backup-actions-grid">
+              <button type="button" class="backup-btn" id="exportBtn" title="Export complete JSON backup">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                   <polyline points="7 10 12 15 17 10"></polyline>
                   <line x1="12" y1="15" x2="12" y2="3"></line>
                 </svg>
-                Export Data
+                Export JSON
+              </button>
+              <button type="button" class="backup-btn" id="exportCsvBtn" title="Download inventory for Excel/Sheets">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="8" y1="13" x2="16" y2="13"></line>
+                  <line x1="8" y1="17" x2="16" y2="17"></line>
+                </svg>
+                Export CSV
+              </button>
+              <button type="button" class="backup-btn" id="copyBackupBtn" title="Copy backup code to clipboard">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                Copy Code
+              </button>
+              <button type="button" class="backup-btn" id="importBtn" title="Upload JSON backup file">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                Import File
+              </button>
+              <button type="button" class="backup-btn" id="pasteBackupBtn" title="Paste backup code from clipboard">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                </svg>
+                Paste Code
+              </button>
+              <button type="button" class="backup-btn" id="seedDemoBtn" title="Load sample development items">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                </svg>
+                Load Samples
               </button>
               <input type="file" id="importFile" accept=".json" style="display: none;">
             </div>
@@ -451,6 +477,55 @@
               <!-- Injected cooked history -->
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Import Mode Choice Modal (Merge vs Replace) -->
+    <div class="modal-backdrop hidden" id="importChoiceModal">
+      <div class="modal-card import-choice-card">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <h2>Restore Backup</h2>
+            <p class="modal-subtitle" id="importSummarySubtitle">Found 0 items in backup</p>
+          </div>
+          <button class="close-btn" id="closeImportChoiceBtn">&times;</button>
+        </div>
+        <div class="import-choice-body">
+          <p class="import-choice-text">Choose how you would like to apply this backup to your kitchen:</p>
+          <div class="import-choice-actions">
+            <button type="button" class="import-choice-btn merge-btn" id="confirmMergeBtn">
+              <div class="btn-icon">➕</div>
+              <div class="btn-text-block">
+                <strong>Merge with Current</strong>
+                <small>Combines backup items without deleting what is currently in your kitchen.</small>
+              </div>
+            </button>
+            <button type="button" class="import-choice-btn replace-btn" id="confirmReplaceBtn">
+              <div class="btn-icon">🔄</div>
+              <div class="btn-text-block">
+                <strong>Replace Everything</strong>
+                <small>Overwrites current kitchen with this backup (Clean restore).</small>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Paste Backup Code Modal -->
+    <div class="modal-backdrop hidden" id="pasteBackupModal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <h2>Paste Backup Code</h2>
+            <p class="modal-subtitle">Paste a Shallot backup string from your clipboard or notes.</p>
+          </div>
+          <button class="close-btn" id="closePasteBackupBtn">&times;</button>
+        </div>
+        <div class="quick-stock-body">
+          <textarea id="pasteBackupInput" rows="5" placeholder="Paste your JSON backup text here..."></textarea>
+          <button type="button" class="submit-btn" id="submitPasteBackupBtn">Parse & Restore</button>
         </div>
       </div>
     </div>
