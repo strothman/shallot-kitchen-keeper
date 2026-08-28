@@ -436,7 +436,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding-bottom: calc(96px + env(safe-area-inset-bottom)); /* Safe space for FAB + Bottom home indicator */
+  padding-bottom: calc(105px + env(safe-area-inset-bottom)); /* Generous clearance for bottom action dock */
 }
 
 /* Search and Sort */
@@ -1996,49 +1996,62 @@ body {
 }
 
 /* ==========================================================================
-   FAB Cluster (Quick Stock & Add Item)
+   Bottom Action Dock (Quick Stock & Add Item)
    ========================================================================== */
 .fab-cluster {
   position: absolute;
-  bottom: calc(24px + env(safe-area-inset-bottom));
-  right: 20px;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  left: 0;
+  right: 0;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   z-index: 90;
+  pointer-events: none;
 }
 
 .fab-btn {
+  pointer-events: auto;
   border: none;
-  border-radius: 50%;
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  gap: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s ease;
   touch-action: manipulation;
 }
 
 .fab-btn:active {
-  transform: scale(0.9);
+  transform: scale(0.94);
 }
 
 .add-fab {
-  width: 56px;
-  height: 56px;
+  height: 48px;
+  padding: 0 20px;
+  border-radius: 24px;
   background: var(--color-primary);
   color: #ffffff;
+  font-family: var(--font-main);
+  font-size: 0.9rem;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .quick-stock-fab {
-  width: 44px;
-  height: 44px;
+  height: 48px;
+  padding: 0 16px;
+  border-radius: 24px;
   background: var(--bg-card);
-  color: var(--color-accent);
+  color: var(--color-text-main);
   border: 1px solid var(--color-border);
-  font-size: 1.2rem;
+  font-family: var(--font-main);
+  font-size: 0.85rem;
+  font-weight: 700;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 /* ==========================================================================

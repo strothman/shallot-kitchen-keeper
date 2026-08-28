@@ -5,6 +5,15 @@ This changelog is updated at least once per development day.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.4] - 2026-08-28
+
+### Added & Enhanced
+- **Centered Bottom Action Dock (Zero Overlap)**:
+  - Replaced the corner-floating FAB with a sleek, centered bottom action dock (`[⚡ Quick Stock]` + `[＋ Add Food]`).
+  - Increased scroll clearance so all food cards, action buttons, and freshness badges remain 100% visible and unblocked when scrolling to the bottom.
+
+---
+
 ## [1.8.3] - 2026-08-28
 
 ### Fixed & Enhanced

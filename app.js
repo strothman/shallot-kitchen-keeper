@@ -856,7 +856,7 @@ let firestoreInstance = null;
 let firestoreUnsubscribe = null;
 
 // Application Version
-const APP_VERSION = '1.8.3';
+const APP_VERSION = '1.8.4';
 
 // Initialize Application
 function init() {
