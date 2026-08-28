@@ -40,40 +40,67 @@
 
 /* --- THEME OVERRIDES --- */
 
-/* Cozy Cabin (Warm, wooden, cozy dark mode) */
-.app-container[data-theme="cabin"] {
-  --bg-app: #281912;
-  --bg-card: #38251a;
-  --bg-header: rgba(56, 37, 26, 0.95);
-  --color-primary: #d37d32; /* Warm amber glow */
-  --color-primary-light: #523727;
-  --color-accent: #e58e26;
-  --color-text-main: #f4ebd9;
-  --color-text-muted: #bc9c82;
-  --color-border: rgba(211, 125, 50, 0.2);
+/* 1. Shallot Plum (Signature Dark Mode matching the App Icon) */
+.app-container[data-theme="shallot"],
+:root {
+  --bg-app: #180d21;
+  --bg-card: #261533;
+  --bg-header: rgba(38, 21, 51, 0.95);
+  --color-primary: #d48244; /* Warm Shallot Copper Glow */
+  --color-primary-light: #3d234a;
+  --color-accent: #f39c12; /* Golden core */
+  --color-text-main: #f5eff9;
+  --color-text-muted: #bda8c7;
+  --color-border: rgba(212, 130, 68, 0.22);
   
   --color-danger: #e74c3c;
-  --color-danger-light: #4c2222;
-  --color-warning: #f39c12;
-  --color-warning-light: #4f341b;
-  --color-success: #2ecc71;
-  --color-success-light: #22422c;
+  --color-danger-light: #4c1f24;
+  --color-warning: #e67e22;
+  --color-warning-light: #4d2f19;
+  --color-success: #2ecc71; /* Sprout green */
+  --color-success-light: #1c402b;
   --color-ice: #3498db;
-  --color-ice-light: #1f3647;
+  --color-ice-light: #1b2f42;
 
-  /* Wooden feel overrides */
-  --color-wood-dark: #22120a;
-  --color-wood-light: #4a2f1c;
-  --color-wood-board: #965b38;
-  --color-wood-board-border: #754425;
+  --color-wood-dark: #1e0f29;
+  --color-wood-light: #361c47;
+  --color-wood-board: #5a2e76;
+  --color-wood-board-border: #753c99;
 }
 
-/* Midnight Harvest (Sleek modern dark mode) */
+/* 2. Shallot Linen (Signature Clean Light Mode) */
+.app-container[data-theme="shallot-light"] {
+  --bg-app: #fbf9fc;
+  --bg-card: #ffffff;
+  --bg-header: rgba(255, 255, 255, 0.92);
+  --color-primary: #4a1d6a; /* Royal Shallot Plum */
+  --color-primary-light: #f3eaf8;
+  --color-accent: #d48244; /* Warm Copper */
+  --color-text-main: #251233;
+  --color-text-muted: #6e5a7a;
+  --color-border: rgba(74, 29, 106, 0.12);
+  
+  --color-danger: #c0392b;
+  --color-danger-light: #fde8e8;
+  --color-warning: #d35400;
+  --color-warning-light: #fef5e7;
+  --color-success: #27ae60;
+  --color-success-light: #e8f8f5;
+  --color-ice: #2980b9;
+  --color-ice-light: #ebf5fb;
+
+  --color-wood-dark: #5c3a21;
+  --color-wood-light: #8e623f;
+  --color-wood-board: #d7a15c;
+  --color-wood-board-border: #bd843c;
+}
+
+/* 3. Midnight OLED (Minimalist Stealth Dark) */
 .app-container[data-theme="midnight"] {
   --bg-app: #121212;
   --bg-card: #1e1e1e;
   --bg-header: rgba(30, 30, 30, 0.95);
-  --color-primary: #52a447; /* Bright forest green */
+  --color-primary: #52a447; /* Crisp Green */
   --color-primary-light: #223220;
   --color-accent: #f1c40f;
   --color-text-main: #e0e0e0;
@@ -88,28 +115,6 @@
   --color-success-light: #1e3c27;
   --color-ice: #3498db;
   --color-ice-light: #182c3c;
-}
-
-/* Sunshine Meadow (Cheerful warm light theme) */
-.app-container[data-theme="sunshine"] {
-  --bg-app: #fefcf3;
-  --bg-card: #ffffff;
-  --bg-header: rgba(255, 255, 255, 0.85);
-  --color-primary: #d48c00; /* Honey Gold */
-  --color-primary-light: #fef5e1;
-  --color-accent: #9b59b6; /* Lavender */
-  --color-text-main: #3d3020; /* Dark warm brown */
-  --color-text-muted: #7d6b58;
-  --color-border: rgba(212, 140, 0, 0.15);
-
-  --color-danger: #e74c3c;
-  --color-danger-light: #fde8e8;
-  --color-warning: #e67e22;
-  --color-warning-light: #fdf2e9;
-  --color-success: #2ecc71;
-  --color-success-light: #eafaf1;
-  --color-ice: #3498db;
-  --color-ice-light: #ebf5fb;
 }
 
 /* Reset & Base Styles */
@@ -128,8 +133,10 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  min-height: 100dvh;
   margin: 0;
   overflow: hidden;
+  overscroll-behavior: none;
 }
 
 /* App Container (Simulating Mobile Frame in Desktop, Full Screen on Mobile) */
@@ -137,6 +144,7 @@ body {
   width: 100%;
   max-width: var(--max-width);
   height: 100vh;
+  height: 100dvh;
   background-color: var(--bg-app);
   display: flex;
   flex-direction: column;
@@ -155,9 +163,10 @@ body {
 
 /* Header */
 .app-header {
-  padding: 16px 20px;
+  padding: max(14px, env(safe-area-inset-top)) 16px 14px 16px;
   background: var(--bg-header);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -173,16 +182,32 @@ body {
   color: var(--color-primary);
 }
 
-.logo-icon {
+.logo-img {
   width: 28px;
   height: 28px;
+  border-radius: 7px;
+  object-fit: cover;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
 
 .app-header h1 {
   font-family: var(--font-display);
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   font-weight: 700;
   letter-spacing: -0.5px;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.logo-subtitle {
+  font-family: var(--font-main);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  opacity: 0.85;
 }
 
 .stats-btn {
@@ -405,11 +430,13 @@ body {
 .inventory-section {
   flex: 1;
   overflow-y: auto;
-  padding: 16px;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding-bottom: 80px; /* Safe space for FAB */
+  padding-bottom: calc(96px + env(safe-area-inset-bottom)); /* Safe space for FAB + Bottom home indicator */
 }
 
 /* Search and Sort */
@@ -651,20 +678,21 @@ body {
 /* Float Add Button (FAB) */
 .add-fab {
   position: absolute;
-  bottom: 24px;
-  right: 24px;
-  width: 60px;
-  height: 60px;
-  border-radius: 30px;
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  right: 20px;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
   background: var(--color-primary);
   color: var(--bg-card);
   border: none;
-  box-shadow: 0 6px 12px rgba(45, 90, 39, 0.3);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 5;
+  z-index: 20;
+  touch-action: manipulation;
   transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s;
 }
 
@@ -679,8 +707,9 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   z-index: 100;
   display: flex;
   align-items: flex-end;
@@ -691,12 +720,14 @@ body {
   width: 100%;
   background: var(--bg-card);
   color: var(--color-text-main);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  padding: 24px;
-  box-shadow: 0 -8px 24px rgba(0,0,0,0.15);
+  border-radius: 28px 28px 0 0;
+  padding: 24px 20px calc(28px + env(safe-area-inset-bottom)) 20px;
+  box-shadow: 0 -10px 30px rgba(0,0,0,0.25);
   animation: slideUp 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  max-height: 90vh;
+  max-height: 88vh;
+  max-height: 88dvh;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .modal-header {
@@ -737,18 +768,20 @@ body {
   letter-spacing: 0.5px;
 }
 
-.form-group input[type="text"] {
+.form-group input[type="text"],
+.search-input-wrapper input {
   padding: 12px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid var(--color-border);
   font-family: var(--font-main);
-  font-size: 0.95rem;
+  font-size: 16px; /* 16px prevents iOS auto-zoom on input focus */
   outline: none;
   background: var(--bg-app);
   color: var(--color-text-main);
 }
 
-.form-group input[type="text"]:focus {
+.form-group input[type="text"]:focus,
+.search-input-wrapper input:focus {
   border-color: var(--color-primary);
 }
 
@@ -756,24 +789,27 @@ body {
   display: flex;
   gap: 6px;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   padding: 4px 0;
 }
 
 .suggestion-tag {
   flex-shrink: 0;
-  padding: 6px 12px;
+  padding: 8px 14px;
   border-radius: 20px;
   background: var(--color-primary-light);
   color: var(--color-primary);
-  font-size: 0.8rem;
-  font-weight: 500;
+  font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  touch-action: manipulation;
+  transition: background 0.2s, transform 0.1s;
 }
 
 .suggestion-tag:active {
   background: var(--color-primary);
   color: var(--bg-card);
+  transform: scale(0.95);
 }
 
 .form-row {
@@ -789,20 +825,22 @@ body {
   display: flex;
   align-items: center;
   border: 1px solid var(--color-border);
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
   background: var(--bg-app);
+  height: 48px;
 }
 
 .stepper-btn {
-  width: 40px;
-  height: 42px;
+  width: 48px;
+  height: 48px;
   border: none;
   background: var(--color-primary-light);
   color: var(--color-primary);
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
+  touch-action: manipulation;
 }
 
 .qty-stepper input {
@@ -813,17 +851,18 @@ body {
   background: transparent;
   color: var(--color-text-main);
   font-family: var(--font-main);
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 700;
   outline: none;
 }
 
-.form-group select {
+.form-group select,
+.search-sort-bar select {
   padding: 12px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid var(--color-border);
   font-family: var(--font-main);
-  font-size: 0.95rem;
+  font-size: 16px; /* 16px prevents iOS auto-zoom on input focus */
   outline: none;
   background: var(--bg-app);
   color: var(--color-text-main);
@@ -1205,3 +1244,792 @@ body {
 .backup-btn svg {
   stroke: currentColor;
 }
+
+/* ==========================================================================
+   Header Actions & Shared Badges
+   ========================================================================== */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.header-action-btn {
+  background: var(--color-primary-light);
+  border: none;
+  color: var(--color-primary);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: var(--transition-fast);
+  touch-action: manipulation;
+}
+
+.header-action-btn:active {
+  transform: scale(0.9);
+}
+
+.header-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  background: var(--color-primary);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+  border: 2px solid var(--bg-card);
+}
+
+.archive-badge {
+  background: #d35400;
+}
+
+/* ==========================================================================
+   Dual Swipe Mechanics (Left: Archive | Right: Restock)
+   ========================================================================== */
+.food-item-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  user-select: none;
+  touch-action: pan-y;
+  transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1), margin 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
+  display: flex;
+  align-items: center;
+}
+
+.swipe-action-bg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  opacity: 0.85;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+  z-index: 1;
+}
+
+.swipe-action-archive {
+  left: 0;
+  right: 0;
+  background: #d35400;
+  justify-content: flex-end;
+  padding-right: 22px;
+}
+
+.swipe-action-archive.threshold-reached {
+  background: #c0392b;
+  opacity: 1;
+}
+
+.swipe-action-restock {
+  left: 0;
+  right: 0;
+  background: #27ae60;
+  justify-content: flex-start;
+  padding-left: 22px;
+}
+
+.swipe-action-restock.threshold-reached {
+  background: #16a085;
+  opacity: 1;
+}
+
+.swipe-action-bg .swipe-icon {
+  font-size: 1.3rem;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.swipe-action-bg.threshold-reached .swipe-icon {
+  transform: scale(1.3) rotate(-10deg);
+}
+
+.food-item-wrapper .food-item {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  width: 100%;
+  cursor: grab;
+  will-change: transform;
+}
+
+.food-item-wrapper.is-dragging .food-item {
+  cursor: grabbing;
+  transition: none !important;
+}
+
+.food-item-wrapper.animating .food-item {
+  transition: transform 0.25s cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+.food-item-wrapper.item-archived-collapse {
+  height: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  opacity: 0 !important;
+  transform: scale(0.95);
+  pointer-events: none;
+}
+
+/* Batch Select Checkbox on Card */
+.food-card-select-check {
+  display: none;
+  margin-right: 10px;
+  width: 20px;
+  height: 20px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+.batch-mode-active .food-card-select-check {
+  display: block;
+}
+
+/* ==========================================================================
+   Batch Actions Toolbar
+   ========================================================================== */
+.batch-toggle-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-family: var(--font-main);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--color-primary);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: all 0.2s ease;
+}
+
+.batch-toggle-btn.active {
+  background: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+}
+
+.batch-toolbar {
+  background: var(--bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+  animation: slideDown 0.25s ease-out;
+  box-shadow: var(--shadow-sm);
+}
+
+.batch-toolbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.batch-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.batch-checkbox-label input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary);
+}
+
+.batch-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.batch-action-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-family: var(--font-main);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 0.15s ease;
+}
+
+.batch-action-btn:active {
+  transform: scale(0.92);
+}
+
+.cook-batch {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.freeze-batch {
+  background: var(--color-ice-light);
+  color: var(--color-ice);
+}
+
+.archive-batch {
+  background: var(--color-warning-light);
+  color: var(--color-warning);
+}
+
+.cancel-batch {
+  background: var(--bg-app);
+  color: var(--color-text-muted);
+}
+
+/* ==========================================================================
+   Smart Auto-Preset Pill & Freeze Button in Form
+   ========================================================================== */
+.auto-preset-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  background: linear-gradient(135deg, #e8f8f5, #e8efe7);
+  border: 1px solid rgba(39, 174, 96, 0.3);
+  color: #1e824c;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  animation: fadeIn 0.25s ease;
+}
+
+.preset-sparkle {
+  font-size: 0.9rem;
+}
+
+.form-actions-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.freeze-action-btn {
+  background: var(--color-ice-light);
+  color: var(--color-ice);
+  border: 1px solid var(--color-ice);
+  border-radius: 12px;
+  padding: 12px;
+  font-family: var(--font-main);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.freeze-action-btn:hover {
+  background: var(--color-ice);
+  color: #ffffff;
+}
+
+.item-btn.freeze-item-btn {
+  background: var(--color-ice-light);
+  color: var(--color-ice);
+}
+
+/* ==========================================================================
+   Shopping / Restock List Modal
+   ========================================================================== */
+.shopping-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 60vh;
+  max-height: 60dvh;
+  overflow-y: auto;
+}
+
+.quick-add-shopping {
+  display: flex;
+  gap: 8px;
+}
+
+.quick-add-shopping input {
+  flex: 1;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  background: var(--bg-app);
+  color: var(--color-text-main);
+  font-size: 16px;
+  outline: none;
+}
+
+.shopping-add-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  border: none;
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.shopping-header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.shopping-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.shopping-item-card {
+  background: var(--bg-app);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  transition: all 0.2s ease;
+}
+
+.shopping-item-card.is-bought {
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+.shopping-item-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.shopping-checkbox {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--color-success);
+  cursor: pointer;
+}
+
+.shopping-item-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* ==========================================================================
+   Recipe Rescue Modal
+   ========================================================================== */
+.recipe-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 60vh;
+  max-height: 60dvh;
+  overflow-y: auto;
+}
+
+.recipe-card {
+  background: var(--bg-app);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease;
+}
+
+.recipe-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.recipe-title {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.recipe-match-badge {
+  background: var(--color-success-light);
+  color: var(--color-success);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+.recipe-meta-row {
+  display: flex;
+  gap: 12px;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.recipe-ingredients-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.recipe-tag {
+  background: var(--bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.recipe-tag.matched {
+  background: var(--color-warning-light);
+  border-color: var(--color-warning);
+  color: var(--color-warning);
+}
+
+.recipe-instructions {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--color-text-muted);
+}
+
+.recipe-cook-btn {
+  background: var(--color-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px;
+  font-family: var(--font-main);
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+/* ==========================================================================
+   Notification Settings in Stats
+   ========================================================================== */
+.notification-setting-section {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.notification-setting-section h3 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  color: var(--color-primary);
+}
+
+.notification-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.notification-text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.notif-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.notif-sub {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.custom-toggle {
+  width: 44px;
+  height: 24px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   Undo Toast Notification
+   ========================================================================== */
+.undo-toast {
+  position: absolute;
+  bottom: calc(20px + env(safe-area-inset-bottom));
+  left: 16px;
+  right: 16px;
+  background: rgba(30, 30, 30, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #ffffff;
+  padding: 12px 18px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  z-index: 100;
+  animation: slideUpToast 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes slideUpToast {
+  from {
+    opacity: 0;
+    transform: translateY(35px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.undo-toast.toast-fadeout {
+  animation: fadeOutToast 0.3s ease forwards;
+}
+
+@keyframes fadeOutToast {
+  to {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+}
+
+.undo-toast-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.undo-toast-btn {
+  background: var(--color-warning);
+  color: #ffffff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 10px;
+  font-family: var(--font-main);
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.undo-toast-btn:active {
+  transform: scale(0.92);
+}
+
+/* ==========================================================================
+   Archive Modal & Recovery View
+   ========================================================================== */
+.archive-modal-card {
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.modal-subtitle {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.archive-modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding-top: 10px;
+  max-height: 55vh;
+}
+
+.archive-header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.archive-total-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.clear-archive-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-danger);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background-color 0.15s ease;
+}
+
+.clear-archive-btn:hover {
+  background: var(--color-danger-light);
+}
+
+.archive-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.archived-item-card {
+  background: var(--bg-app);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  animation: fadeIn 0.25s ease;
+}
+
+.archived-item-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.archived-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.archived-item-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.archived-item-meta {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.archived-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recover-btn {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.recover-btn:hover {
+  background: var(--color-primary);
+  color: white;
+}
+
+.delete-archived-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-archived-btn:hover {
+  color: var(--color-danger);
+  background: var(--color-danger-light);
+}
+
+.archive-empty-state {
+  text-align: center;
+  padding: 36px 16px;
+  color: var(--color-text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.archive-empty-icon {
+  font-size: 2.2rem;
+  opacity: 0.8;
+}
+

@@ -2,17 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline';">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>KitchenKeeper — Prevent Food Waste</title>
+  <meta name="apple-mobile-web-app-title" content="Shallot">
+  <meta name="theme-color" content="#180d21" id="themeColorMeta">
+  <title>Shallot: Kitchen Keeper</title>
+  <!-- Web App Manifest (PWA) -->
+  <link rel="manifest" href="manifest.json">
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
   <!-- App Icons -->
-  <link rel="icon" type="image/png" href="nuka_kitchen_icon.png">
-  <link rel="apple-touch-icon" href="nuka_kitchen_icon.png">
+  <link rel="icon" type="image/x-icon" href="icon.ico">
+  <link rel="apple-touch-icon" href="icon.png">
   <!-- Stylesheet -->
   <link rel="stylesheet" href="style.css">
 </head>
@@ -21,18 +26,47 @@
     <!-- Header -->
     <header class="app-header">
       <div class="logo-container">
-        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2C8.13 2 5 5.13 5 9C5 13.8 12 22 12 22C12 22 19 13.8 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9C9.5 7.62 10.62 6.5 12 6.5C13.38 6.5 14.5 7.62 14.5 9C14.5 10.38 13.38 11.5 12 11.5Z" fill="currentColor"/>
-        </svg>
-        <h1>KitchenKeeper</h1>
+        <img src="icon.png" alt="Shallot Logo" class="logo-img" style="width: 28px; height: 28px; border-radius: 7px; object-fit: cover;">
+        <h1>Shallot <span class="logo-subtitle">Kitchen Keeper</span></h1>
       </div>
-      <button class="stats-btn" id="statsBtn" aria-label="View Stats">
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="18" y1="20" x2="18" y2="10"></line>
-          <line x1="12" y1="20" x2="12" y2="4"></line>
-          <line x1="6" y1="20" x2="6" y2="14"></line>
-        </svg>
-      </button>
+      <div class="header-actions">
+        <!-- Recipe Rescue Generator -->
+        <button class="header-action-btn" id="recipeRescueBtn" aria-label="Recipe Rescue" title="What can I cook tonight?">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+            <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+            <line x1="6" y1="1" x2="6" y2="4"></line>
+            <line x1="10" y1="1" x2="10" y2="4"></line>
+            <line x1="14" y1="1" x2="14" y2="4"></line>
+          </svg>
+        </button>
+        <!-- Shopping / Restock List -->
+        <button class="header-action-btn" id="shoppingListBtn" aria-label="Shopping List" title="Shopping / Restock List">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+          <span class="header-badge hidden" id="shoppingBadge">0</span>
+        </button>
+        <!-- Archive Modal -->
+        <button class="header-action-btn" id="archiveBtn" aria-label="View Archive" title="Archived Items">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="21 8 21 21 3 21 3 8"></polyline>
+            <rect x="1" y="3" width="22" height="5"></rect>
+            <line x1="10" y1="12" x2="14" y2="12"></line>
+          </svg>
+          <span class="header-badge archive-badge hidden" id="archiveBadge">0</span>
+        </button>
+        <!-- Stats & Settings -->
+        <button class="stats-btn" id="statsBtn" aria-label="View Stats" title="Kitchen Dashboard & Settings">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+        </button>
+      </div>
     </header>
 
     <!-- Storage Zones Tabs -->
@@ -56,25 +90,42 @@
 
     <!-- Main Content Area -->
     <main class="inventory-section">
-      <!-- Search & Sort Bar -->
+      <!-- Search, Sort & Batch Toggle Bar -->
       <div class="search-sort-bar">
         <div class="search-input-wrapper">
-          <input type="text" id="searchInput" placeholder="Search food items...">
+          <input type="text" id="searchInput" placeholder="Search groceries...">
           <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
         </div>
         <select id="sortBySelect">
-          <option value="expiry">Sort: Expiry (Soonest)</option>
-          <option value="added">Sort: Date Added</option>
-          <option value="name">Sort: Name A-Z</option>
+          <option value="expiry">Sort: Expiry</option>
+          <option value="added">Sort: Added</option>
+          <option value="name">Sort: Name</option>
         </select>
+        <button class="batch-toggle-btn" id="toggleSelectBtn" title="Select Multiple Items">Select</button>
+      </div>
+
+      <!-- Batch Actions Toolbar (Hidden by default) -->
+      <div class="batch-toolbar hidden" id="batchToolbar">
+        <div class="batch-toolbar-left">
+          <label class="batch-checkbox-label">
+            <input type="checkbox" id="selectAllBatch">
+            <span id="batchCountLabel">0 selected</span>
+          </label>
+        </div>
+        <div class="batch-toolbar-actions">
+          <button class="batch-action-btn cook-batch" id="batchCookBtn" title="Cook selected">🍳 Cook</button>
+          <button class="batch-action-btn freeze-batch" id="batchFreezeBtn" title="Freeze (+30d)">🧊 Freeze</button>
+          <button class="batch-action-btn archive-batch" id="batchArchiveBtn" title="Archive selected">📦 Archive</button>
+          <button class="batch-action-btn cancel-batch" id="cancelBatchBtn" title="Exit select mode">✕</button>
+        </div>
       </div>
 
       <!-- Food Items List -->
       <div class="food-list" id="foodList">
-        <!-- Dynamic food item elements will be injected here -->
+        <!-- Dynamic food item elements injected here -->
       </div>
 
       <!-- Empty State -->
@@ -93,7 +144,7 @@
       </svg>
     </button>
 
-    <!-- Add/Edit Modal (Clipboard style overlay) -->
+    <!-- Add/Edit Modal -->
     <div class="modal-backdrop hidden" id="itemModal">
       <div class="modal-card">
         <div class="modal-header">
@@ -106,6 +157,13 @@
           <div class="form-group">
             <label for="itemName">Food Name</label>
             <input type="text" id="itemName" placeholder="e.g. Tomato, Milk, Chicken" required>
+            
+            <!-- Live Smart Auto-Preset Pill -->
+            <div class="auto-preset-pill hidden" id="autoPresetPill">
+              <span class="preset-sparkle">✨</span>
+              <span id="autoPresetText">Auto-preset</span>
+            </div>
+
             <div class="veggie-suggestions" id="veggieSuggestions">
               <span class="suggestion-tag" data-val="Tomato">🍅 Tomato</span>
               <span class="suggestion-tag" data-val="Carrot">🥕 Carrot</span>
@@ -121,7 +179,7 @@
               <label for="itemQuantity">Quantity</label>
               <div class="qty-stepper">
                 <button type="button" class="stepper-btn" id="qtyMinus">-</button>
-                <input type="number" id="itemQuantity" min="1" value="1" required>
+                <input type="number" id="itemQuantity" min="1" value="1" inputmode="numeric" pattern="[0-9]*" required>
                 <button type="button" class="stepper-btn" id="qtyPlus">+</button>
               </div>
             </div>
@@ -169,18 +227,65 @@
           <div class="form-group">
             <label for="itemShelfLife">Shelf Life (Days)</label>
             <div class="range-slider-container">
-              <input type="range" id="itemShelfLife" min="1" max="30" value="7">
+              <input type="range" id="itemShelfLife" min="1" max="90" value="7">
               <span class="range-val" id="shelfLifeVal">7 days</span>
             </div>
             <p class="form-help">Time left before it goes bad and should be cooked.</p>
           </div>
 
-          <button type="submit" class="submit-btn" id="saveItemBtn">Stock Item</button>
+          <div class="form-actions-stack">
+            <button type="submit" class="submit-btn" id="saveItemBtn">Stock Item</button>
+            <button type="button" class="freeze-action-btn hidden" id="quickFreezeEditBtn">
+              <span>🧊</span> Move to Freezer (+30 Days)
+            </button>
+          </div>
         </form>
       </div>
     </div>
 
-    <!-- Statistics & Cooked Log Modal -->
+    <!-- Shopping / Restock List Modal -->
+    <div class="modal-backdrop hidden" id="shoppingModal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <h2>Shopping & Restock List</h2>
+            <p class="modal-subtitle">Items you swiped right to restock. Check off to restore into kitchen!</p>
+          </div>
+          <button class="close-btn" id="closeShoppingBtn">&times;</button>
+        </div>
+        <div class="shopping-modal-body">
+          <form id="quickAddShoppingForm" class="quick-add-shopping">
+            <input type="text" id="newShoppingItemName" placeholder="Add grocery to buy..." required>
+            <button type="submit" class="shopping-add-btn">+</button>
+          </form>
+          <div class="shopping-header-actions">
+            <span id="shoppingTotalLabel">0 items on list</span>
+            <button class="clear-archive-btn" id="clearShoppingBtn">Clear List</button>
+          </div>
+          <div class="shopping-list" id="shoppingListContainer">
+            <!-- Injected shopping list items -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recipe Rescue Modal -->
+    <div class="modal-backdrop hidden" id="recipeModal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <h2>Recipe Rescue 🍳</h2>
+            <p class="modal-subtitle">Smart culinary ideas to use up your expiring ingredients!</p>
+          </div>
+          <button class="close-btn" id="closeRecipeBtn">&times;</button>
+        </div>
+        <div class="recipe-modal-body" id="recipeSuggestionsContainer">
+          <!-- Dynamic recipe cards injected here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistics & Settings Modal -->
     <div class="modal-backdrop hidden" id="statsModal">
       <div class="modal-card">
         <div class="modal-header">
@@ -203,30 +308,45 @@
             </div>
           </div>
 
+          <!-- Notification Settings -->
+          <div class="notification-setting-section">
+            <h3>Freshness Notifications</h3>
+            <label class="notification-toggle-row">
+              <div class="notification-text-group">
+                <span class="notif-title">Daily Expiry Alerts</span>
+                <span class="notif-sub">Get notified when food needs to be cooked soon</span>
+              </div>
+              <input type="checkbox" id="notifToggle" class="custom-toggle">
+            </label>
+          </div>
+
           <div class="theme-selector-section">
             <h3>App Theme</h3>
             <div class="theme-options">
-              <button type="button" class="theme-opt-btn" data-theme="forest" title="Forest Garden">
-                <span class="theme-color-dot" style="background: #2d5a27;"></span>
-                <span class="theme-opt-label">Forest</span>
+              <button type="button" class="theme-opt-btn" data-theme="shallot" title="Shallot Plum Dark (Icon Match)">
+                <span class="theme-color-dot" style="background: linear-gradient(135deg, #261533, #d48244);"></span>
+                <span class="theme-opt-label">Shallot Plum</span>
               </button>
-              <button type="button" class="theme-opt-btn" data-theme="cabin" title="Cozy Cabin">
-                <span class="theme-color-dot" style="background: #d37d32;"></span>
-                <span class="theme-opt-label">Cozy Cabin</span>
+              <button type="button" class="theme-opt-btn" data-theme="shallot-light" title="Shallot Linen Light">
+                <span class="theme-color-dot" style="background: linear-gradient(135deg, #4a1d6a, #ffffff);"></span>
+                <span class="theme-opt-label">Shallot Linen</span>
               </button>
-              <button type="button" class="theme-opt-btn" data-theme="midnight" title="Midnight Dark">
-                <span class="theme-color-dot" style="background: #52a447;"></span>
+              <button type="button" class="theme-opt-btn" data-theme="midnight" title="Midnight OLED Stealth">
+                <span class="theme-color-dot" style="background: #121212; border: 1px solid #52a447;"></span>
                 <span class="theme-opt-label">Midnight</span>
               </button>
-              <button type="button" class="theme-opt-btn" data-theme="sunshine" title="Sunshine Meadow">
-                <span class="theme-color-dot" style="background: #d48c00;"></span>
-                <span class="theme-opt-label">Sunshine</span>
-              </button>
+            </div>
           </div>
           
           <div class="backup-section">
-            <h3>Backup Data</h3>
+            <h3>Data Management & Dev</h3>
             <div class="backup-actions">
+              <button type="button" class="backup-btn" id="seedDemoBtn">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                </svg>
+                Load 10 Samples
+              </button>
               <button type="button" class="backup-btn" id="importBtn">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -255,6 +375,37 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Archive Modal -->
+    <div class="modal-backdrop hidden" id="archiveModal">
+      <div class="modal-card archive-modal-card">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <h2 id="archiveModalTitle">Archived Items</h2>
+            <p class="modal-subtitle">Items swiped away. Restore anytime to your active inventory.</p>
+          </div>
+          <button class="close-btn" id="closeArchiveBtn">&times;</button>
+        </div>
+        <div class="archive-modal-body">
+          <div class="archive-header-actions">
+            <span class="archive-total-label" id="archiveTotalLabel">0 archived items</span>
+            <button class="clear-archive-btn" id="clearArchiveBtn">Clear All</button>
+          </div>
+          <div class="archive-list" id="archiveList">
+            <!-- Injected archived items -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Undo Toast Notification -->
+    <div class="undo-toast hidden" id="undoToast">
+      <div class="undo-toast-content">
+        <span class="undo-toast-icon" id="undoToastIcon">📦</span>
+        <span class="undo-toast-text" id="undoToastText">Action completed</span>
+      </div>
+      <button class="undo-toast-btn" id="undoToastBtn">Undo</button>
     </div>
   </div>
 
