@@ -1377,63 +1377,84 @@ function importBackupData(file) {
     try {
       const data = JSON.parse(e.target.result);
 
-      if (!data || typeof data !== 'object') {
-        alert("Invalid backup file structure.");
+      if (!data || (typeof data !== 'object' && !Array.isArray(data))) {
+        alert("Invalid backup file format. Please select a valid JSON backup file.");
         return;
       }
 
-      // Schema Sanitization
-      const cleanFood = Array.isArray(data.foodItems) ? data.foodItems.map(item => ({
-        id: String(item.id || 'food_' + Math.random()),
-        name: String(item.name || 'Unnamed').slice(0, 100),
-        quantity: parseInt(item.quantity, 10) || 1,
-        unit: String(item.unit || 'pcs').slice(0, 20),
+      // Universal Field Resolution (Supports v1.0, v1.1, v1.2, v1.3, v1.4 and raw arrays)
+      const rawFood = Array.isArray(data) 
+        ? data 
+        : (data.foodItems || data.items || data.foodList || data.groceries || []);
+
+      const rawCooked = data.cookedItems || data.cookedLog || data.cookedHistory || [];
+      const rawArchived = data.archivedItems || data.archive || data.archived || [];
+      const rawShopping = data.shoppingList || data.restockList || data.shopping || [];
+
+      // 1. Sanitize & Normalize Active Items
+      const cleanFood = Array.isArray(rawFood) ? rawFood.map(item => ({
+        id: String(item.id || 'food_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4)),
+        name: String(item.name || 'Unnamed Grocery').trim().slice(0, 100),
+        quantity: parseFloat(item.quantity) || 1,
+        unit: String(item.unit || 'pcs').trim().slice(0, 20),
         shelfLife: parseInt(item.shelfLife, 10) || 7,
-        zone: ['fridge', 'pantry', 'freezer'].includes(item.zone) ? item.zone : 'fridge',
+        zone: ['fridge', 'pantry', 'freezer'].includes(String(item.zone).toLowerCase()) ? String(item.zone).toLowerCase() : 'fridge',
         addedDate: item.addedDate ? new Date(item.addedDate).toISOString() : new Date().toISOString()
       })) : [];
 
-      const cleanCooked = Array.isArray(data.cookedItems) ? data.cookedItems.map(item => ({
-        id: String(item.id || 'cooked_' + Math.random()),
-        name: String(item.name || 'Unnamed').slice(0, 100),
-        quantity: parseInt(item.quantity, 10) || 1,
-        unit: String(item.unit || 'pcs').slice(0, 20),
-        cookedDate: String(item.cookedDate || 'Recently').slice(0, 50)
+      // 2. Sanitize & Normalize Cooked Items
+      const cleanCooked = Array.isArray(rawCooked) ? rawCooked.map(item => ({
+        id: String(item.id || 'cooked_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4)),
+        name: String(item.name || 'Unnamed Grocery').trim().slice(0, 100),
+        quantity: parseFloat(item.quantity) || 1,
+        unit: String(item.unit || 'pcs').trim().slice(0, 20),
+        cookedDate: String(item.cookedDate || new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })).slice(0, 50)
       })) : [];
 
-      const cleanArchived = Array.isArray(data.archivedItems) ? data.archivedItems.map(item => ({
-        id: String(item.id || 'archived_' + Math.random()),
-        name: String(item.name || 'Unnamed').slice(0, 100),
-        quantity: parseInt(item.quantity, 10) || 1,
-        unit: String(item.unit || 'pcs').slice(0, 20),
+      // 3. Sanitize & Normalize Archived Items
+      const cleanArchived = Array.isArray(rawArchived) ? rawArchived.map(item => ({
+        id: String(item.id || 'archived_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4)),
+        name: String(item.name || 'Unnamed Grocery').trim().slice(0, 100),
+        quantity: parseFloat(item.quantity) || 1,
+        unit: String(item.unit || 'pcs').trim().slice(0, 20),
         shelfLife: parseInt(item.shelfLife, 10) || 7,
-        zone: ['fridge', 'pantry', 'freezer'].includes(item.zone) ? item.zone : 'fridge',
+        zone: ['fridge', 'pantry', 'freezer'].includes(String(item.zone).toLowerCase()) ? String(item.zone).toLowerCase() : 'fridge',
         archivedDate: item.archivedDate || new Date().toISOString(),
         archivedDisplayDate: item.archivedDisplayDate || 'Archived'
       })) : [];
 
-      const cleanShopping = Array.isArray(data.shoppingList) ? data.shoppingList.map(item => ({
-        id: String(item.id || 'shop_' + Math.random()),
-        name: String(item.name || 'Unnamed').slice(0, 100),
-        quantity: parseInt(item.quantity, 10) || 1,
-        unit: String(item.unit || 'pcs').slice(0, 20),
+      // 4. Sanitize & Normalize Shopping List
+      const cleanShopping = Array.isArray(rawShopping) ? rawShopping.map(item => ({
+        id: String(item.id || 'shop_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4)),
+        name: String(item.name || 'Unnamed Grocery').trim().slice(0, 100),
+        quantity: parseFloat(item.quantity) || 1,
+        unit: String(item.unit || 'pcs').trim().slice(0, 20),
         bought: Boolean(item.bought),
         addedDate: item.addedDate || new Date().toISOString()
       })) : [];
 
-      if (confirm(`Import ${cleanFood.length} active items, ${cleanArchived.length} archived items, and ${cleanShopping.length} shopping items?`)) {
+      // 5. Theme Migration
+      let targetTheme = 'shallot';
+      if (data.theme) {
+        if (data.theme === 'cabin' || data.theme === 'forest' || data.theme === 'shallot') targetTheme = 'shallot';
+        else if (data.theme === 'sunshine' || data.theme === 'shallot-light') targetTheme = 'shallot-light';
+        else if (data.theme === 'midnight') targetTheme = 'midnight';
+      }
+
+      if (confirm(`Restore ${cleanFood.length} active groceries, ${cleanArchived.length} archived items, and ${cleanShopping.length} shopping items?`)) {
         foodItems = cleanFood;
         cookedItems = cleanCooked;
         archivedItems = cleanArchived;
         shoppingList = cleanShopping;
-        if (data.theme) applyTheme(data.theme);
+        applyTheme(targetTheme);
 
         saveData();
         render();
         renderCookedLog();
         renderArchiveModal();
         renderShoppingModal();
-        alert("Backup safely restored!");
+        updateStatsCounters();
+        showToast('✨', 'Backup data successfully restored and upgraded!');
       }
     } catch (err) {
       alert("Error parsing backup file. Please ensure it is valid JSON.");
