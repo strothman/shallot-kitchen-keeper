@@ -856,7 +856,7 @@ let firestoreInstance = null;
 let firestoreUnsubscribe = null;
 
 // Application Version
-const APP_VERSION = '1.8.1';
+const APP_VERSION = '1.8.2';
 
 // Initialize Application
 function init() {
@@ -1011,7 +1011,7 @@ function updateHouseholdUIState() {
     if (householdUnpairedState) householdUnpairedState.classList.remove('hidden');
     if (householdPairedState) householdPairedState.classList.add('hidden');
     if (dashboardSyncStatusTitle) dashboardSyncStatusTitle.textContent = "Pair Shared Kitchen";
-    if (dashboardSyncStatusSub) dashboardSyncStatusSub.textContent = "Live sync pantry & fridge with your wife";
+    if (dashboardSyncStatusSub) dashboardSyncStatusSub.textContent = "Live sync pantry & fridge with your house";
     setSyncIndicatorStatus('inactive');
   }
 }
