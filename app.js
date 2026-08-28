@@ -779,13 +779,6 @@ function renderEmojiPicker(filterQuery = '') {
   });
 }
 
-// Quick Stock Modal DOM
-const quickStockModal = document.getElementById('quickStockModal');
-const closeQuickStockBtn = document.getElementById('closeQuickStockBtn');
-const quickStockInput = document.getElementById('quickStockInput');
-const quickStockPreview = document.getElementById('quickStockPreview');
-const submitQuickStockBtn = document.getElementById('submitQuickStockBtn');
-
 // Partial Cook Modal DOM
 const partialCookModal = document.getElementById('partialCookModal');
 const closePartialCookBtn = document.getElementById('closePartialCookBtn');
@@ -856,7 +849,7 @@ let firestoreInstance = null;
 let firestoreUnsubscribe = null;
 
 // Application Version
-const APP_VERSION = '1.8.4';
+const APP_VERSION = '1.8.5';
 
 // Initialize Application
 function init() {
@@ -3030,9 +3023,6 @@ function setupEventListeners() {
     } else if (e.key === 'n' || e.key === 'N' || e.key === '+') {
       e.preventDefault();
       addFabBtn.click();
-    } else if (e.key === 'q' || e.key === 'Q') {
-      e.preventDefault();
-      quickStockFabBtn.click();
     } else if (e.key === 'r' || e.key === 'R') {
       e.preventDefault();
       recipeRescueBtn.click();
