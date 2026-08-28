@@ -7,6 +7,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [1.4.0] - 2026-08-28
+
+### Added
+- **Multi-Item "Quick Stock" NLP Parser (⚡)**:
+  - Added floating Quick-Stock button and modal accepting comma/newline separated grocery receipts or lists (e.g. *"2 milk, 6 eggs, 500g chicken, spinach, sourdough bread, pasta"*).
+  - Automatically parses item quantities, units, assigns storage zones, and calculates shelf life.
+  - Live preview tags with one-click bulk stocking.
+- **Partial Quantity Cooking**:
+  - When cooking an item with quantity $> 1$ (e.g. 6 eggs or 500g chicken), opens a portion selection stepper to cook a fraction while keeping the remainder in stock.
+- **Native PWA App Icon Badging (`navigator.setAppBadge`)**:
+  - Automatically updates the mobile home screen app icon with a red badge indicating items requiring urgent cooking ($\le 2$ days).
+- **Gamified Freshness & ROI Scorecard**:
+  - Real-time **Kitchen Freshness Rating (%)**, estimated **Dollar Value Rescued ($)**, and **Food Waste Prevented (lbs)** tracked in the Dashboard.
+- **One-Tap Shopping List Native Sharing**:
+  - Added "📤 Share" button in the Shopping List utilizing the Web Share API (`navigator.share`) to AirDrop, SMS, or copy grocery lists.
+- **Desktop Power-User Keyboard Shortcuts**:
+  - Added instant hotkeys: `N`/`+` (Stock Item), `Q` (Quick Stock), `/` (Search), `R` (Recipe Rescue), `K` (Shopping List), `A` (Archive), `D` (Dashboard), `Esc` (Close Modals).
+
+---
+
 ## [1.3.0] - 2026-08-28
 
 ### Added

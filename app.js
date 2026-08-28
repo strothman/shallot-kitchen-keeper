@@ -1,5 +1,5 @@
-// KitchenKeeper Comprehensive Application Logic
-// Security Hardening, Smart Auto-Presets, Dual Gestures, Quick Freeze, Shopping List & Recipe Rescue
+// Shallot: Kitchen Keeper — Comprehensive Application Engine
+// Security Hardening, Smart Auto-Presets, Dual Gestures, Quick-Stock Parser, Partial Cooking & PWA Badges
 
 // --- Comprehensive Grocery Knowledge Base with Smart Presets ---
 const GROCERY_DATABASE = {
@@ -9,6 +9,7 @@ const GROCERY_DATABASE = {
   'broccoli': { emoji: '🥦', bg: 'linear-gradient(135deg, #55efc4, #00b894)', zone: 'fridge', days: 6, unit: 'pcs' },
   'potato': { emoji: '🥔', bg: 'linear-gradient(135deg, #ffeaa7, #fdcb6e)', zone: 'pantry', days: 21, unit: 'pcs' },
   'onion': { emoji: '🧅', bg: 'linear-gradient(135deg, #ffffff, #dfe6e9)', zone: 'pantry', days: 30, unit: 'pcs' },
+  'shallot': { emoji: '🧅', bg: 'linear-gradient(135deg, #d48244, #4a1d6a)', zone: 'pantry', days: 30, unit: 'pcs' },
   'garlic': { emoji: '🧄', bg: 'linear-gradient(135deg, #f5f6fa, #dcdde1)', zone: 'pantry', days: 45, unit: 'pcs' },
   'spinach': { emoji: '🥬', bg: 'linear-gradient(135deg, #78e08f, #38ae53)', zone: 'fridge', days: 5, unit: 'packs' },
   'lettuce': { emoji: '🥬', bg: 'linear-gradient(135deg, #a8e6cf, #10ac84)', zone: 'fridge', days: 6, unit: 'pcs' },
@@ -95,9 +96,15 @@ let notificationsEnabled = localStorage.getItem('kk_notifs_enabled') === 'true';
 let isBatchModeActive = false;
 let selectedItemIds = new Set();
 
+// Active Partial Cooking Item
+let activeCookingItem = null;
+
 // Undo Toast State
 let undoToastTimer = null;
 let lastUndoCallback = null;
+
+// Parsed Quick Stock Items
+let parsedQuickStockItems = [];
 
 // --- Security Helper: HTML Sanitization ---
 function escapeHTML(str) {
@@ -130,7 +137,10 @@ const emptyState = document.getElementById('emptyState');
 const searchInput = document.getElementById('searchInput');
 const sortBySelect = document.getElementById('sortBySelect');
 const zoneTabs = document.querySelectorAll('.zone-tab');
+
+// Floating Buttons
 const addFabBtn = document.getElementById('addFabBtn');
+const quickStockFabBtn = document.getElementById('quickStockFabBtn');
 
 // Batch Mode DOM
 const toggleSelectBtn = document.getElementById('toggleSelectBtn');
@@ -150,7 +160,7 @@ const archiveBtn = document.getElementById('archiveBtn');
 const archiveBadge = document.getElementById('archiveBadge');
 const statsBtn = document.getElementById('statsBtn');
 
-// Modals
+// Add/Edit Item Modal
 const itemModal = document.getElementById('itemModal');
 const itemForm = document.getElementById('itemForm');
 const modalTitle = document.getElementById('modalTitle');
@@ -168,6 +178,25 @@ const qtyPlusBtn = document.getElementById('qtyPlus');
 const closeModalBtn = document.getElementById('closeModalBtn');
 const veggieSuggestions = document.getElementById('veggieSuggestions');
 
+// Quick Stock Modal DOM
+const quickStockModal = document.getElementById('quickStockModal');
+const closeQuickStockBtn = document.getElementById('closeQuickStockBtn');
+const quickStockInput = document.getElementById('quickStockInput');
+const quickStockPreview = document.getElementById('quickStockPreview');
+const submitQuickStockBtn = document.getElementById('submitQuickStockBtn');
+
+// Partial Cook Modal DOM
+const partialCookModal = document.getElementById('partialCookModal');
+const closePartialCookBtn = document.getElementById('closePartialCookBtn');
+const partialCookTitle = document.getElementById('partialCookTitle');
+const partialCookSubtitle = document.getElementById('partialCookSubtitle');
+const partialQuantityInput = document.getElementById('partialQuantityInput');
+const partialUnitLabel = document.getElementById('partialUnitLabel');
+const partialMinusBtn = document.getElementById('partialMinusBtn');
+const partialPlusBtn = document.getElementById('partialPlusBtn');
+const confirmPartialCookBtn = document.getElementById('confirmPartialCookBtn');
+const cookAllBtn = document.getElementById('cookAllBtn');
+
 // Shopping Modal DOM
 const shoppingModal = document.getElementById('shoppingModal');
 const closeShoppingBtn = document.getElementById('closeShoppingBtn');
@@ -175,6 +204,7 @@ const quickAddShoppingForm = document.getElementById('quickAddShoppingForm');
 const newShoppingItemName = document.getElementById('newShoppingItemName');
 const shoppingTotalLabel = document.getElementById('shoppingTotalLabel');
 const clearShoppingBtn = document.getElementById('clearShoppingBtn');
+const shareShoppingBtn = document.getElementById('shareShoppingBtn');
 const shoppingListContainer = document.getElementById('shoppingListContainer');
 
 // Recipe Rescue Modal DOM
@@ -194,6 +224,12 @@ const importBtn = document.getElementById('importBtn');
 const importFile = document.getElementById('importFile');
 const seedDemoBtn = document.getElementById('seedDemoBtn');
 const notifToggle = document.getElementById('notifToggle');
+
+// Freshness Score Card DOM
+const freshnessScoreBadge = document.getElementById('freshnessScoreBadge');
+const freshnessProgressFill = document.getElementById('freshnessProgressFill');
+const roiMoneySaved = document.getElementById('roiMoneySaved');
+const roiLbsSaved = document.getElementById('roiLbsSaved');
 
 // Archive Modal DOM
 const archiveModal = document.getElementById('archiveModal');
@@ -302,7 +338,7 @@ function getInitialDummyCooked() {
   ];
 }
 
-// Load data (Defaults to clean empty state on fresh install/device)
+// Load data (Clean empty inventory for real users)
 function loadData() {
   try {
     const sItems = localStorage.getItem('kk_food_items');
@@ -449,12 +485,10 @@ function render() {
         });
       }
 
-      // Cook button handler
+      // Cook button handler (with partial quantity support!)
       wrapperEl.querySelector('.cook-item-btn').addEventListener('click', (e) => {
         e.stopPropagation();
-        if (confirm(`Mark "${item.name}" as cooked?`)) {
-          cookItemDirectly(item);
-        }
+        handleCookPrompt(item);
       });
 
       // Edit button handler
@@ -478,6 +512,26 @@ function render() {
 
   updateStatsCounters();
   updateBatchToolbar();
+}
+
+// --- Partial & Full Cook Action Handling ---
+function handleCookPrompt(item) {
+  if (item.quantity > 1) {
+    // Open partial cook modal
+    activeCookingItem = item;
+    partialCookTitle.textContent = `Cook ${item.name}`;
+    partialCookSubtitle.textContent = `How much would you like to cook? (Stock: ${item.quantity} ${item.unit})`;
+    partialQuantityInput.max = item.quantity;
+    partialQuantityInput.value = 1;
+    partialUnitLabel.textContent = item.unit;
+    confirmPartialCookBtn.textContent = `Cook 1 ${item.unit}`;
+    cookAllBtn.textContent = `Cook All (${item.quantity})`;
+    partialCookModal.classList.remove('hidden');
+  } else {
+    if (confirm(`Mark "${item.name}" as cooked?`)) {
+      cookItemDirectly(item);
+    }
+  }
 }
 
 // --- Dual-Direction Swipe Gestures (Left = Archive, Right = Restock) ---
@@ -627,7 +681,98 @@ function freezeItem(item) {
   showToast('🧊', `"${item.name}" moved to Freezer (+30 days)`);
 }
 
-// --- Shopping / Restock List Manager ---
+// --- Multi-Item Quick Stock Natural Language Parser ---
+function parseQuickStockInput(rawText) {
+  if (!rawText || !rawText.trim()) return [];
+
+  // Split by comma, newline, or semicolon
+  const chunks = rawText.split(/[\n,;]+/).map(s => s.trim()).filter(Boolean);
+  const parsed = [];
+
+  chunks.forEach(chunk => {
+    // Regex for: optional number, optional unit, item name
+    const match = chunk.match(/^(\d+(?:\.\d+)?)\s*(pcs|pieces|g|grams|kg|ml|l|liters|oz|packs|lbs|lb)?\s*(.+)$/i);
+    let qty = 1;
+    let unit = 'pcs';
+    let name = chunk;
+
+    if (match) {
+      qty = parseFloat(match[1]) || 1;
+      if (match[2]) {
+        const u = match[2].toLowerCase();
+        if (u === 'pieces') unit = 'pcs';
+        else if (u === 'grams') unit = 'g';
+        else if (u === 'liters') unit = 'l';
+        else if (u === 'lb' || u === 'lbs') unit = 'oz';
+        else unit = u;
+      }
+      name = match[3].trim();
+    }
+
+    if (name) {
+      const knowledge = findGroceryKnowledge(name);
+      const zone = knowledge ? knowledge.zone : 'fridge';
+      const shelfLife = knowledge ? knowledge.days : 7;
+      if (knowledge && knowledge.unit && (!match || !match[2])) {
+        unit = knowledge.unit;
+      }
+
+      parsed.push({
+        id: 'food_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+        name: name.charAt(0).toUpperCase() + name.slice(1),
+        quantity: qty,
+        unit,
+        shelfLife,
+        zone,
+        addedDate: new Date().toISOString()
+      });
+    }
+  });
+
+  return parsed;
+}
+
+function updateQuickStockPreview() {
+  const parsed = parseQuickStockInput(quickStockInput.value);
+  parsedQuickStockItems = parsed;
+  quickStockPreview.innerHTML = '';
+
+  if (parsed.length === 0) {
+    submitQuickStockBtn.disabled = true;
+    submitQuickStockBtn.textContent = 'Stock Items (0)';
+    return;
+  }
+
+  submitQuickStockBtn.disabled = false;
+  submitQuickStockBtn.textContent = `Stock All (${parsed.length} Items)`;
+
+  parsed.forEach(item => {
+    const tag = document.createElement('div');
+    tag.className = 'quick-parsed-tag';
+    tag.innerHTML = `
+      <span>${item.name}</span>
+      <span style="color: var(--color-text-muted);">(${item.quantity} ${item.unit})</span>
+      <span class="zone-badge">${item.zone}</span>
+    `;
+    quickStockPreview.appendChild(tag);
+  });
+}
+
+function handleQuickStockSubmit() {
+  if (parsedQuickStockItems.length === 0) return;
+  triggerHaptic('success');
+
+  foodItems.unshift(...parsedQuickStockItems);
+  saveData();
+  render();
+
+  quickStockInput.value = '';
+  parsedQuickStockItems = [];
+  quickStockModal.classList.add('hidden');
+  showToast('⚡', `Successfully stocked ${parsedQuickStockItems.length || 'all'} items!`);
+}
+
+// --- Shopping / Restock List Manager & Native Share ---
 function addToShoppingList(name, qty = 1, unit = 'pcs') {
   const existing = shoppingList.find(s => s.name.toLowerCase() === name.toLowerCase() && !s.bought);
   if (existing) {
@@ -656,7 +801,6 @@ function addToShoppingList(name, qty = 1, unit = 'pcs') {
 
 function restockFromShoppingItem(item) {
   triggerHaptic('success');
-  // Match knowledge base for default zone and shelf-life
   const match = findGroceryKnowledge(item.name);
   const defaultZone = match ? match.zone : 'fridge';
   const defaultShelfLife = match ? match.days : 7;
@@ -720,35 +864,55 @@ function renderShoppingModal() {
   });
 }
 
+function shareShoppingList() {
+  if (shoppingList.length === 0) {
+    alert('Your shopping list is empty!');
+    return;
+  }
+
+  const listText = `🧅 Shallot Shopping List:\n` + shoppingList.map(s => `• [ ] ${s.name} (${s.quantity} ${s.unit})`).join('\n');
+
+  if (navigator.share) {
+    navigator.share({
+      title: 'Shallot Shopping List',
+      text: listText
+    }).catch(() => {});
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(listText).then(() => {
+      showToast('📋', 'Shopping list copied to clipboard!');
+    });
+  }
+}
+
 // --- Recipe Rescue Generator ---
 const CULINARY_RECIPES = [
   {
     title: 'Farmhouse Skillet Frittata',
     time: '15 min',
     difficulty: 'Easy',
-    keywords: ['egg', 'spinach', 'cheese', 'tomato', 'mushroom', 'onion', 'pepper', 'bacon', 'milk'],
+    keywords: ['egg', 'spinach', 'cheese', 'tomato', 'mushroom', 'onion', 'pepper', 'bacon', 'milk', 'shallot'],
     desc: 'Whisk eggs with a splash of milk. Sauté your chopped veggies until tender, pour over eggs, top with cheese, and cook on low heat until golden.'
   },
   {
     title: 'Sizzling Kitchen Stir-Fry',
     time: '20 min',
     difficulty: 'Easy',
-    keywords: ['chicken', 'beef', 'pork', 'broccoli', 'carrot', 'pepper', 'onion', 'garlic', 'rice', 'zucchini'],
-    desc: 'High heat sear your protein with garlic, toss in crisp veggies, and finish with soy sauce or pantry spices over hot steamed rice.'
+    keywords: ['chicken', 'beef', 'pork', 'broccoli', 'carrot', 'pepper', 'onion', 'garlic', 'rice', 'zucchini', 'shallot'],
+    desc: 'High heat sear your protein with aromatics, toss in crisp veggies, and finish with soy sauce or pantry spices over hot steamed rice.'
   },
   {
     title: 'Rustic Clean-the-Pantry Soup',
     time: '30 min',
     difficulty: 'Easy',
-    keywords: ['potato', 'carrot', 'celery', 'onion', 'garlic', 'bean', 'chicken', 'tomato'],
+    keywords: ['potato', 'carrot', 'celery', 'onion', 'garlic', 'bean', 'chicken', 'tomato', 'shallot'],
     desc: 'Simmer aromatics and hearty root veggies in rich broth. Season with salt and pepper for a comforting zero-waste meal.'
   },
   {
     title: 'Golden Garlic Herb Pasta',
     time: '15 min',
     difficulty: 'Quick',
-    keywords: ['pasta', 'garlic', 'tomato', 'cheese', 'spinach', 'butter', 'oil'],
-    desc: 'Boil pasta al dente. In a pan, gently warm olive oil and sliced garlic, fold in fresh tomatoes or greens, and toss with cheese.'
+    keywords: ['pasta', 'garlic', 'tomato', 'cheese', 'spinach', 'butter', 'oil', 'shallot'],
+    desc: 'Boil pasta al dente. In a pan, gently warm olive oil and sliced aromatics, fold in fresh tomatoes or greens, and toss with cheese.'
   },
   {
     title: 'Vibrant Sunshine Smoothie',
@@ -762,7 +926,6 @@ const CULINARY_RECIPES = [
 function generateRecipeRescue() {
   recipeSuggestionsContainer.innerHTML = '';
   const urgentItems = foodItems.filter(item => calculateDaysRemaining(item) <= 4);
-  const activeNames = foodItems.map(i => i.name.toLowerCase());
 
   // Rank recipes by matched ingredients
   const scoredRecipes = CULINARY_RECIPES.map(recipe => {
@@ -1050,7 +1213,7 @@ function hideToast() {
   }, 300);
 }
 
-// --- Update Counters & Header Badges ---
+// --- Update Counters, Badges & Freshness ROI Tracker ---
 function updateStatsCounters() {
   totalActiveCount.textContent = foodItems.length;
 
@@ -1058,6 +1221,16 @@ function updateStatsCounters() {
   expiringSoonCount.textContent = urgentCount;
   cookedTotalCount.textContent = cookedItems.length;
 
+  // PWA App Icon Badging API
+  if ('setAppBadge' in navigator) {
+    if (urgentCount > 0) {
+      navigator.setAppBadge(urgentCount).catch(() => {});
+    } else if ('clearAppBadge' in navigator) {
+      navigator.clearAppBadge().catch(() => {});
+    }
+  }
+
+  // Header Badges
   if (archiveBadge) {
     if (archivedItems.length > 0) {
       archiveBadge.textContent = archivedItems.length;
@@ -1076,6 +1249,22 @@ function updateStatsCounters() {
       shoppingBadge.classList.add('hidden');
     }
   }
+
+  // Freshness & ROI Scorecard
+  if (freshnessScoreBadge && freshnessProgressFill && roiMoneySaved && roiLbsSaved) {
+    const total = foodItems.length;
+    const freshCount = foodItems.filter(item => calculateDaysRemaining(item) > 0).length;
+    const scorePct = total > 0 ? Math.round((freshCount / total) * 100) : 100;
+
+    freshnessScoreBadge.textContent = `${scorePct}% Fresh`;
+    freshnessProgressFill.style.width = `${scorePct}%`;
+
+    const dollars = (cookedItems.length * 3.75).toFixed(2);
+    const weight = (cookedItems.length * 0.6).toFixed(1);
+
+    roiMoneySaved.textContent = `$${dollars}`;
+    roiLbsSaved.textContent = `${weight} lbs`;
+  }
 }
 
 // Delete Active Item
@@ -1086,22 +1275,29 @@ function deleteItem(id) {
   render();
 }
 
-// Direct Cook Action
-function cookItemDirectly(item, reRender = true) {
+// Direct Cook Action (Supports Partial Decrement)
+function cookItemDirectly(item, reRender = true, quantityToCook = null) {
+  const cookedQty = quantityToCook !== null ? quantityToCook : item.quantity;
+
   cookedItems.unshift({
     id: 'cooked_' + Date.now(),
     name: item.name,
-    quantity: item.quantity,
+    quantity: cookedQty,
     unit: item.unit,
     cookedDate: new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
   });
 
-  foodItems = foodItems.filter(activeItem => activeItem.id !== item.id);
-  selectedItemIds.delete(item.id);
+  if (quantityToCook !== null && quantityToCook < item.quantity) {
+    item.quantity -= quantityToCook;
+  } else {
+    foodItems = foodItems.filter(activeItem => activeItem.id !== item.id);
+    selectedItemIds.delete(item.id);
+  }
 
   if (reRender) {
     saveData();
     render();
+    renderCookedLog();
   }
 }
 
@@ -1267,7 +1463,7 @@ function checkDailyNotifications() {
   }
 }
 
-// --- Event Listeners Setup ---
+// --- Event Listeners & Power-User Desktop Shortcuts ---
 function setupEventListeners() {
   // Search & Sort
   searchInput.addEventListener('input', (e) => {
@@ -1315,6 +1511,74 @@ function setupEventListeners() {
   batchCookBtn.addEventListener('click', handleBatchCook);
   batchFreezeBtn.addEventListener('click', handleBatchFreeze);
   batchArchiveBtn.addEventListener('click', handleBatchArchive);
+
+  // Quick Stock Multi-Item FAB & Modal
+  quickStockFabBtn.addEventListener('click', () => {
+    quickStockInput.value = '';
+    updateQuickStockPreview();
+    quickStockModal.classList.remove('hidden');
+    quickStockInput.focus();
+  });
+
+  closeQuickStockBtn.addEventListener('click', () => {
+    quickStockModal.classList.add('hidden');
+  });
+
+  quickStockInput.addEventListener('input', updateQuickStockPreview);
+  submitQuickStockBtn.addEventListener('click', handleQuickStockSubmit);
+
+  // Partial Cook Modal Steppers & Actions
+  partialMinusBtn.addEventListener('click', () => {
+    let val = parseInt(partialQuantityInput.value, 10) || 1;
+    if (val > 1) {
+      val -= 1;
+      partialQuantityInput.value = val;
+      confirmPartialCookBtn.textContent = `Cook ${val} ${activeCookingItem.unit}`;
+    }
+  });
+
+  partialPlusBtn.addEventListener('click', () => {
+    let val = parseInt(partialQuantityInput.value, 10) || 1;
+    if (activeCookingItem && val < activeCookingItem.quantity) {
+      val += 1;
+      partialQuantityInput.value = val;
+      confirmPartialCookBtn.textContent = `Cook ${val} ${activeCookingItem.unit}`;
+    }
+  });
+
+  partialQuantityInput.addEventListener('input', () => {
+    let val = parseInt(partialQuantityInput.value, 10) || 1;
+    if (activeCookingItem) {
+      if (val > activeCookingItem.quantity) val = activeCookingItem.quantity;
+      if (val < 1) val = 1;
+      partialQuantityInput.value = val;
+      confirmPartialCookBtn.textContent = `Cook ${val} ${activeCookingItem.unit}`;
+    }
+  });
+
+  confirmPartialCookBtn.addEventListener('click', () => {
+    if (activeCookingItem) {
+      const qty = parseInt(partialQuantityInput.value, 10) || 1;
+      cookItemDirectly(activeCookingItem, true, qty);
+      partialCookModal.classList.add('hidden');
+      showToast('🍳', `Cooked ${qty} ${activeCookingItem.unit} of ${activeCookingItem.name}!`);
+      activeCookingItem = null;
+    }
+  });
+
+  cookAllBtn.addEventListener('click', () => {
+    if (activeCookingItem) {
+      cookItemDirectly(activeCookingItem, true);
+      partialCookModal.classList.add('hidden');
+      showToast('🍳', `Cooked all ${activeCookingItem.name}!`);
+      activeCookingItem = null;
+    }
+  });
+
+  closePartialCookBtn.addEventListener('click', () => {
+    partialCookModal.classList.add('hidden');
+    activeCookingItem = null;
+  });
 
   // FAB button -> Open stock form
   addFabBtn.addEventListener('click', () => {
@@ -1450,6 +1714,8 @@ function setupEventListeners() {
     shoppingModal.classList.add('hidden');
   });
 
+  shareShoppingBtn.addEventListener('click', shareShoppingList);
+
   quickAddShoppingForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const name = newShoppingItemName.value.trim();
@@ -1494,6 +1760,7 @@ function setupEventListeners() {
   // Stats Modal
   statsBtn.addEventListener('click', () => {
     renderCookedLog();
+    updateStatsCounters();
     statsModal.classList.remove('hidden');
   });
 
@@ -1561,6 +1828,41 @@ function setupEventListeners() {
     importBackupData(e.target.files[0]);
     importFile.value = '';
   });
+
+  // Desktop Power-User Keyboard Shortcuts
+  window.addEventListener('keydown', (e) => {
+    const isInputActive = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
+
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-backdrop').forEach(modal => modal.classList.add('hidden'));
+      return;
+    }
+
+    if (isInputActive) return;
+
+    if (e.key === '/' || e.key === 's' || e.key === 'S') {
+      e.preventDefault();
+      searchInput.focus();
+    } else if (e.key === 'n' || e.key === 'N' || e.key === '+') {
+      e.preventDefault();
+      addFabBtn.click();
+    } else if (e.key === 'q' || e.key === 'Q') {
+      e.preventDefault();
+      quickStockFabBtn.click();
+    } else if (e.key === 'r' || e.key === 'R') {
+      e.preventDefault();
+      recipeRescueBtn.click();
+    } else if (e.key === 'k' || e.key === 'K') {
+      e.preventDefault();
+      shoppingListBtn.click();
+    } else if (e.key === 'a' || e.key === 'A') {
+      e.preventDefault();
+      archiveBtn.click();
+    } else if (e.key === 'd' || e.key === 'D') {
+      e.preventDefault();
+      statsBtn.click();
+    }
+  });
 }
 
 // Service Worker for Offline PWA
@@ -1574,5 +1876,5 @@ function registerServiceWorker() {
   }
 }
 
-// Launch
+// Launch Application
 init();

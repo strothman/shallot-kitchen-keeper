@@ -31,7 +31,7 @@
       </div>
       <div class="header-actions">
         <!-- Recipe Rescue Generator -->
-        <button class="header-action-btn" id="recipeRescueBtn" aria-label="Recipe Rescue" title="What can I cook tonight?">
+        <button class="header-action-btn" id="recipeRescueBtn" aria-label="Recipe Rescue" title="What can I cook tonight? (R)">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
             <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
@@ -41,7 +41,7 @@
           </svg>
         </button>
         <!-- Shopping / Restock List -->
-        <button class="header-action-btn" id="shoppingListBtn" aria-label="Shopping List" title="Shopping / Restock List">
+        <button class="header-action-btn" id="shoppingListBtn" aria-label="Shopping List" title="Shopping / Restock List (K)">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="9" cy="21" r="1"></circle>
             <circle cx="20" cy="21" r="1"></circle>
@@ -50,7 +50,7 @@
           <span class="header-badge hidden" id="shoppingBadge">0</span>
         </button>
         <!-- Archive Modal -->
-        <button class="header-action-btn" id="archiveBtn" aria-label="View Archive" title="Archived Items">
+        <button class="header-action-btn" id="archiveBtn" aria-label="View Archive" title="Archived Items (A)">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="21 8 21 21 3 21 3 8"></polyline>
             <rect x="1" y="3" width="22" height="5"></rect>
@@ -59,7 +59,7 @@
           <span class="header-badge archive-badge hidden" id="archiveBadge">0</span>
         </button>
         <!-- Stats & Settings -->
-        <button class="stats-btn" id="statsBtn" aria-label="View Stats" title="Kitchen Dashboard & Settings">
+        <button class="stats-btn" id="statsBtn" aria-label="View Stats" title="Kitchen Dashboard & Settings (D)">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="18" y1="20" x2="18" y2="10"></line>
             <line x1="12" y1="20" x2="12" y2="4"></line>
@@ -93,7 +93,7 @@
       <!-- Search, Sort & Batch Toggle Bar -->
       <div class="search-sort-bar">
         <div class="search-input-wrapper">
-          <input type="text" id="searchInput" placeholder="Search groceries...">
+          <input type="text" id="searchInput" placeholder="Search groceries... (Press /)">
           <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -136,15 +136,69 @@
       </div>
     </main>
 
-    <!-- Float Add Button -->
-    <button class="add-fab" id="addFabBtn" aria-label="Add Item">
-      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="3">
-        <line x1="12" y1="5" x2="12" y2="19"></line>
-        <line x1="5" y1="12" x2="19" y2="12"></line>
-      </svg>
-    </button>
+    <!-- Floating Action Buttons (FABs) -->
+    <div class="fab-cluster">
+      <button class="fab-btn quick-stock-fab" id="quickStockFabBtn" aria-label="Quick Stock List" title="Quick Stock Multi-Item Receipt (Q)">
+        <span>⚡</span>
+      </button>
+      <button class="fab-btn add-fab" id="addFabBtn" aria-label="Add Item" title="Stock New Item (N)">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="3">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      </button>
+    </div>
 
-    <!-- Add/Edit Modal -->
+    <!-- Quick-Stock Multi-Item Modal -->
+    <div class="modal-backdrop hidden" id="quickStockModal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <h2>⚡ Multi-Item Quick Stock</h2>
+            <p class="modal-subtitle">Paste your grocery receipt or grocery list to stock everything at once!</p>
+          </div>
+          <button class="close-btn" id="closeQuickStockBtn">&times;</button>
+        </div>
+        <div class="quick-stock-body">
+          <textarea id="quickStockInput" rows="4" placeholder="e.g. 2 milk, 6 eggs, 500g chicken, spinach, sourdough bread, pasta, 3 apples"></textarea>
+          <div class="quick-stock-preview" id="quickStockPreview">
+            <!-- Live parsed item pills rendered here -->
+          </div>
+          <button type="button" class="submit-btn" id="submitQuickStockBtn" disabled>
+            Stock Items (0)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Partial Cooking Modal -->
+    <div class="modal-backdrop hidden" id="partialCookModal">
+      <div class="modal-card partial-cook-card">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <h2 id="partialCookTitle">Cook Item</h2>
+            <p class="modal-subtitle" id="partialCookSubtitle">How much would you like to cook?</p>
+          </div>
+          <button class="close-btn" id="closePartialCookBtn">&times;</button>
+        </div>
+        <div class="partial-cook-body">
+          <div class="partial-cook-stepper-wrap">
+            <div class="qty-stepper">
+              <button type="button" class="stepper-btn" id="partialMinusBtn">-</button>
+              <input type="number" id="partialQuantityInput" min="1" value="1">
+              <button type="button" class="stepper-btn" id="partialPlusBtn">+</button>
+            </div>
+            <span class="partial-unit-label" id="partialUnitLabel">pcs</span>
+          </div>
+          <div class="partial-actions-grid">
+            <button type="button" class="submit-btn" id="confirmPartialCookBtn">Cook Selected</button>
+            <button type="button" class="cook-all-btn" id="cookAllBtn">Cook All</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add/Edit Item Modal -->
     <div class="modal-backdrop hidden" id="itemModal">
       <div class="modal-card">
         <div class="modal-header">
@@ -260,7 +314,10 @@
           </form>
           <div class="shopping-header-actions">
             <span id="shoppingTotalLabel">0 items on list</span>
-            <button class="clear-archive-btn" id="clearShoppingBtn">Clear List</button>
+            <div class="shopping-actions-group">
+              <button type="button" class="share-shopping-btn" id="shareShoppingBtn" title="Share via SMS, WhatsApp, Notes">📤 Share</button>
+              <button type="button" class="clear-archive-btn" id="clearShoppingBtn">Clear</button>
+            </div>
           </div>
           <div class="shopping-list" id="shoppingListContainer">
             <!-- Injected shopping list items -->
@@ -285,7 +342,7 @@
       </div>
     </div>
 
-    <!-- Statistics & Settings Modal -->
+    <!-- Statistics, ROI & Settings Modal -->
     <div class="modal-backdrop hidden" id="statsModal">
       <div class="modal-card">
         <div class="modal-header">
@@ -293,6 +350,27 @@
           <button class="close-btn" id="closeStatsBtn">&times;</button>
         </div>
         <div class="stats-content">
+          <!-- Gamified Freshness & ROI Score Card -->
+          <div class="freshness-score-card">
+            <div class="freshness-score-header">
+              <span class="freshness-score-title">Kitchen Freshness Rating</span>
+              <span class="freshness-score-badge" id="freshnessScoreBadge">100% Fresh</span>
+            </div>
+            <div class="freshness-progress-bar-bg">
+              <div class="freshness-progress-bar-fill" id="freshnessProgressFill" style="width: 100%;"></div>
+            </div>
+            <div class="roi-stats-row">
+              <div class="roi-stat-item">
+                <span class="roi-val" id="roiMoneySaved">$0.00</span>
+                <span class="roi-lbl">Food Rescued</span>
+              </div>
+              <div class="roi-stat-item">
+                <span class="roi-val" id="roiLbsSaved">0.0 lbs</span>
+                <span class="roi-lbl">Waste Prevented</span>
+              </div>
+            </div>
+          </div>
+
           <div class="stats-summary-grid">
             <div class="stat-box">
               <span class="stat-num" id="totalActiveCount">0</span>

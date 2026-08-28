@@ -5,7 +5,7 @@
 # Shallot: Kitchen Keeper 🧅🔪
 **A zero-dependency, mobile-first culinary inventory tracker and food-waste prevention PWA.**
 
-[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.4.0-blue.svg?style=flat-square)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg?style=flat-square)](LICENSE)
 [![PWA Ready](https://img.shields.io/badge/PWA-Installable-success.svg?style=flat-square)](manifest.json)
 [![Security: CSP Hardened](https://img.shields.io/badge/Security-CSP%20Hardened-green.svg?style=flat-square)](index.html)
@@ -26,7 +26,7 @@
 
 ## 📖 Overview
 
-**Shallot: Kitchen Keeper** is a high-performance, mobile-first Progressive Web Application (PWA) designed to eliminate household food waste. It organizes your kitchen into distinct storage zones (**Fridge**, **Pantry**, **Freezer**), tracks real-time expiration timelines with dynamic urgency alerts, powers dual-direction touch gestures, and dynamically suggests zero-waste recipes using expiring ingredients.
+**Shallot: Kitchen Keeper** is a high-performance, mobile-first Progressive Web Application (PWA) designed to eliminate household food waste. It organizes your kitchen into distinct storage zones (**Fridge**, **Pantry**, **Freezer**), tracks real-time expiration timelines with dynamic urgency alerts, powers dual-direction touch gestures, parses bulk grocery receipts, and dynamically suggests zero-waste recipes using expiring ingredients.
 
 Built with a **zero-dependency vanilla architecture**, the app delivers sub-50ms cold-start times, silky 60fps gesture animations, offline-first reliability, and strict enterprise security hardening.
 
@@ -34,20 +34,39 @@ Built with a **zero-dependency vanilla architecture**, the app delivers sub-50ms
 
 ## ✨ Key Features
 
-### 1. 🧠 Smart Grocery Auto-Presets
+### 1. ⚡ "Multi-Item Quick Stock" NLP Parser
+- Paste an entire grocery receipt or shopping list (e.g. `"2 milk, 6 eggs, 500g chicken, spinach, sourdough bread, pasta"`).
+- Automatically parses quantities and units, looks up shelf-lives and storage zones, and stocks everything in **one tap**.
+
+### 2. 🍳 Partial Quantity Cooking
+- When cooking an item with quantity $> 1$ (e.g. `6 eggs` or `500g chicken`), a smart dialog lets you cook a portion (e.g. `2`), automatically keeping the remainder (`4`) in your inventory.
+
+### 3. 🔴 App Icon Badge Counter (`navigator.setAppBadge`)
+- Native PWA badging updates your phone's home screen icon with the exact number of groceries needing urgent cooking.
+
+### 4. 💵 Freshness Rating & Rescued Value Tracker
+- Real-time **Kitchen Freshness Rating (%)**, estimated **Dollar Value Rescued ($)**, and **Food Waste Prevented (lbs)** gamified in the Dashboard.
+
+### 5. 📤 One-Tap Shopping List Share
+- Native Web Share integration (`navigator.share`) allowing one-tap AirDrop, SMS, or WhatsApp sharing of your restock list.
+
+### 6. 🧠 Smart Grocery Auto-Presets
 - Live semantic matching engine detects foods as you type (*e.g., typing `"Milk"` sets **Fridge • 5 Days • Liters**; `"Bread"` sets **Pantry • 5 Days**; `"Pasta"` sets **Pantry • 180 Days***).
 - Visual `✨ Auto-preset` indicator synchronizes storage zones and shelf-life sliders automatically.
 
-### 2. 👈👉 Dual-Direction Swipe Gestures
+### 7. 👈👉 Dual-Direction Swipe Gestures
 - **Swipe Left (📦 Archive)**: Fluid touch and pointer drag gesture with threshold resistance, haptic vibration feedback, exit collapse animation, and a 5-second **Undo** toast.
 - **Swipe Right (🛒 Restock)**: Instantly routes items into the integrated **Shopping & Restock List**.
 
-### 3. 🧊 "Freeze It" Quick Shelf-Life Extender (+30 Days)
+### 8. 🧊 "Freeze It" Quick Shelf-Life Extender (+30 Days)
 - One-tap action to transfer perishable items from the Fridge or Pantry into the Freezer, automatically recalculating freshness deadlines with a **+30 day** extension.
 
-### 4. 🍳 "Recipe Rescue" Generator
+### 9. 🍳 "Recipe Rescue" Generator
 - Client-side heuristic matching algorithm evaluates active kitchen inventory with $\le 4$ days remaining.
 - Suggests categorized meals (*Farmhouse Frittatas, Stir-Fries, Soups, Pastas, Smoothies*) with a **"Cook & Save"** button that logs ingredients directly to your culinary history.
+
+### 10. ⌨️ Desktop Power-User Keyboard Shortcuts
+- Press **`N`** (New Item), **`Q`** (Quick Stock), **`/`** (Search), **`R`** (Recipe Rescue), **`K`** (Shopping List), **`A`** (Archive), **`D`** (Dashboard), **`Esc`** (Close Modals).
 
 ### 5. 📦 Batch Multi-Select Mode
 - Dedicated selection toolbar enabling bulk **Batch Cook**, **Batch Freeze (+30d)**, and **Batch Archive** operations across multiple grocery items simultaneously.
