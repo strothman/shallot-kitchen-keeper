@@ -5,6 +5,16 @@ This changelog is updated at least once per development day.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.5] - 2026-08-28
+
+### Fixed & Enhanced
+- **Touch Gesture Prioritization**:
+  - Vertical swipe up/down now has 100% native scrolling priority (`touch-action: pan-y`).
+  - Scrolling through your inventory will no longer accidentally trigger or open the Edit modal.
+  - Tapping a food item is now filtered with a strict tolerance check (<8px movement, <350ms duration) so taps and scrolls are completely distinct.
+
+---
+
 ## [1.7.0] - 2026-08-28
 
 ### Added

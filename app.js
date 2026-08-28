@@ -840,7 +840,7 @@ let firestoreInstance = null;
 let firestoreUnsubscribe = null;
 
 // Application Version
-const APP_VERSION = '1.7.2';
+const APP_VERSION = '1.7.5';
 
 // Initialize Application
 function init() {
@@ -1266,6 +1266,9 @@ function initDualSwipeGestures(wrapper, card, item) {
   let isDragging = false;
   let isHorizontal = false;
   let directionDecided = false;
+  let hasMovedVertically = false;
+  let maxMovement = 0;
+  let touchStartTime = 0;
   let isCompleted = false;
 
   const onPointerDown = (e) => {
@@ -1279,8 +1282,11 @@ function initDualSwipeGestures(wrapper, card, item) {
     isDragging = false;
     isHorizontal = false;
     directionDecided = false;
+    hasMovedVertically = false;
+    maxMovement = 0;
+    touchStartTime = Date.now();
 
-    window.addEventListener('pointermove', onPointerMove, { passive: false });
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
     window.addEventListener('pointerup', onPointerUp);
     window.addEventListener('pointercancel', onPointerUp);
   };
@@ -1292,16 +1298,24 @@ function initDualSwipeGestures(wrapper, card, item) {
 
     const dx = clientX - startX;
     const dy = clientY - startY;
+    const dist = Math.hypot(dx, dy);
+
+    if (dist > maxMovement) maxMovement = dist;
 
     if (!directionDecided) {
-      if (Math.hypot(dx, dy) > 8) {
+      if (dist > 8) {
         directionDecided = true;
         isHorizontal = Math.abs(dx) > Math.abs(dy);
+        if (!isHorizontal) {
+          hasMovedVertically = true;
+          // Unhook pointermove so the mobile browser has 100% native 60fps vertical scroll control
+          window.removeEventListener('pointermove', onPointerMove);
+          return;
+        }
       }
     }
 
     if (isHorizontal) {
-      if (e.cancelable) e.preventDefault();
       isDragging = true;
       wrapper.classList.add('is-dragging');
       currentDx = dx;
@@ -1334,7 +1348,26 @@ function initDualSwipeGestures(wrapper, card, item) {
     window.removeEventListener('pointerup', onPointerUp);
     window.removeEventListener('pointercancel', onPointerUp);
 
+    const elapsed = Date.now() - touchStartTime;
+
+    // If user was scrolling vertically or moved more than 10px, do NOT open modal!
+    if (hasMovedVertically || maxMovement > 10 || elapsed > 450) {
+      if (isDragging) {
+        wrapper.classList.remove('is-dragging');
+        wrapper.classList.add('animating');
+        card.style.transform = 'translateX(0px)';
+        archiveBg.classList.remove('threshold-reached');
+        restockBg.classList.remove('threshold-reached');
+        setTimeout(() => {
+          wrapper.classList.remove('animating');
+          card.style.transform = '';
+        }, 250);
+      }
+      return;
+    }
+
     if (!isDragging) {
+      // Clean Stationary Tap (<10px movement, <450ms)
       if (!e.target.closest('.item-btn') && !e.target.closest('.food-card-select-check') && !isCompleted) {
         triggerHaptic('light');
         if (isBatchModeActive) {

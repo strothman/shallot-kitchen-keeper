@@ -494,6 +494,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  touch-action: pan-y;
 }
 
 .food-item {
@@ -506,6 +507,9 @@ body {
   box-shadow: var(--shadow-sm);
   border-left: 6px solid var(--color-primary);
   color: var(--color-text-main);
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
   transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.2), box-shadow 0.2s ease;
   animation: fadeIn 0.3s ease;
 }
