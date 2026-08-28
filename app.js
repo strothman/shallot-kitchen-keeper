@@ -687,9 +687,8 @@ const searchInput = document.getElementById('searchInput');
 const sortBySelect = document.getElementById('sortBySelect');
 const zoneTabs = document.querySelectorAll('.zone-tab');
 
-// Floating Buttons
+// Add Food Button
 const addFabBtn = document.getElementById('addFabBtn');
-const quickStockFabBtn = document.getElementById('quickStockFabBtn');
 
 // Batch Mode DOM
 const toggleSelectBtn = document.getElementById('toggleSelectBtn');
@@ -849,7 +848,7 @@ let firestoreInstance = null;
 let firestoreUnsubscribe = null;
 
 // Application Version
-const APP_VERSION = '1.8.5';
+const APP_VERSION = '1.8.6';
 
 // Initialize Application
 function init() {
@@ -1431,102 +1430,6 @@ function freezeItem(item) {
   saveData();
   render();
   showToast('🧊', `"${item.name}" moved to Freezer (+30 days)`);
-}
-
-// --- Multi-Item Quick Stock Natural Language Parser ---
-function parseQuickStockInput(rawText) {
-  if (!rawText || !rawText.trim()) return [];
-
-  // Split by comma, newline, or semicolon
-  const chunks = rawText.split(/[\n,;]+/).map(s => s.trim()).filter(Boolean);
-  const parsed = [];
-
-  chunks.forEach(chunk => {
-    // Regex for: optional number, optional unit, item name
-    const match = chunk.match(/^(\d+(?:\.\d+)?)\s*(pcs|pieces|g|grams|kg|ml|l|liters|oz|packs|lbs|lb)?\s*(.+)$/i);
-    let qty = 1;
-    let unit = 'pcs';
-    let name = chunk;
-
-    if (match) {
-      qty = parseFloat(match[1]) || 1;
-      if (match[2]) {
-        const u = match[2].toLowerCase();
-        if (u === 'pieces') unit = 'pcs';
-        else if (u === 'grams') unit = 'g';
-        else if (u === 'liters') unit = 'l';
-        else if (u === 'lb' || u === 'lbs') unit = 'oz';
-        else unit = u;
-      }
-      name = match[3].trim();
-    }
-
-    if (name) {
-      const knowledge = findGroceryKnowledge(name);
-      const zone = knowledge ? knowledge.zone : 'fridge';
-      const shelfLife = knowledge ? knowledge.days : 7;
-      if (knowledge && knowledge.unit && (!match || !match[2])) {
-        unit = knowledge.unit;
-      }
-
-      parsed.push({
-        id: 'food_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
-        name: name.charAt(0).toUpperCase() + name.slice(1),
-        quantity: qty,
-        unit,
-        shelfLife,
-        zone,
-        addedDate: new Date().toISOString()
-      });
-    }
-  });
-
-  return parsed;
-}
-
-function updateQuickStockPreview() {
-  const parsed = parseQuickStockInput(quickStockInput.value);
-  parsedQuickStockItems = parsed;
-  quickStockPreview.innerHTML = '';
-
-  if (parsed.length === 0) {
-    submitQuickStockBtn.disabled = true;
-    submitQuickStockBtn.textContent = 'Stock Items (0)';
-    return;
-  }
-
-  submitQuickStockBtn.disabled = false;
-  submitQuickStockBtn.textContent = `Stock All (${parsed.length} Items)`;
-
-  parsed.forEach(item => {
-    const tag = document.createElement('div');
-    tag.className = 'quick-parsed-tag';
-    tag.innerHTML = `
-      <span>${item.name}</span>
-      <span style="color: var(--color-text-muted);">(${item.quantity} ${item.unit})</span>
-      <span class="zone-badge">${item.zone}</span>
-    `;
-    quickStockPreview.appendChild(tag);
-  });
-}
-
-function handleQuickStockSubmit() {
-  if (parsedQuickStockItems.length === 0) return;
-  triggerHaptic('success');
-
-  const count = parsedQuickStockItems.length;
-  parsedQuickStockItems.forEach(item => {
-    learnGroceryItem(item.name, item.zone, item.shelfLife, item.unit);
-  });
-
-  foodItems.unshift(...parsedQuickStockItems);
-  saveData();
-  render();
-
-  quickStockInput.value = '';
-  parsedQuickStockItems = [];
-  quickStockModal.classList.add('hidden');
-  showToast('⚡', `Successfully stocked ${count} items!`);
 }
 
 // --- Shopping / Restock List Manager & Native Share ---
@@ -2429,21 +2332,6 @@ function setupEventListeners() {
   batchCookBtn.addEventListener('click', handleBatchCook);
   batchFreezeBtn.addEventListener('click', handleBatchFreeze);
   batchArchiveBtn.addEventListener('click', handleBatchArchive);
-
-  // Quick Stock Multi-Item FAB & Modal
-  quickStockFabBtn.addEventListener('click', () => {
-    quickStockInput.value = '';
-    updateQuickStockPreview();
-    quickStockModal.classList.remove('hidden');
-    quickStockInput.focus();
-  });
-
-  closeQuickStockBtn.addEventListener('click', () => {
-    quickStockModal.classList.add('hidden');
-  });
-
-  quickStockInput.addEventListener('input', updateQuickStockPreview);
-  submitQuickStockBtn.addEventListener('click', handleQuickStockSubmit);
 
   // Partial Cook Modal Steppers & Actions
   partialMinusBtn.addEventListener('click', () => {
