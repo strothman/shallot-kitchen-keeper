@@ -2941,6 +2941,33 @@ function setupEventListeners() {
     });
   }
 
+  // Manual Update & Cache Refresh Button
+  const checkForUpdatesBtn = document.getElementById('checkForUpdatesBtn');
+  if (checkForUpdatesBtn) {
+    checkForUpdatesBtn.addEventListener('click', async () => {
+      triggerHaptic('medium');
+      checkForUpdatesBtn.textContent = '⏳ Updating & Refreshing...';
+      try {
+        if ('caches' in window) {
+          const keys = await caches.keys();
+          await Promise.all(keys.map(k => caches.delete(k)));
+        }
+        if ('serviceWorker' in navigator) {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          for (let reg of registrations) {
+            await reg.update();
+            await reg.unregister();
+          }
+        }
+      } catch (e) {
+        console.log('Cache clear warning:', e);
+      }
+      setTimeout(() => {
+        window.location.href = window.location.origin + window.location.pathname + '?v=' + Date.now();
+      }, 300);
+    });
+  }
+
   // Desktop Power-User Keyboard Shortcuts
   window.addEventListener('keydown', (e) => {
     const isInputActive = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
@@ -2977,12 +3004,36 @@ function setupEventListeners() {
   });
 }
 
-// Service Worker for Offline PWA
+// Service Worker for Offline PWA with Proactive Auto-Update
 function registerServiceWorker() {
   if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js').catch(err => {
+      navigator.serviceWorker.register('./sw.js').then((registration) => {
+        // Proactively check for updates from server
+        registration.update();
+
+        // Listen for new worker installed
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          if (newWorker) {
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                showToast('✨', 'New update installed! Reloading...');
+                setTimeout(() => window.location.reload(), 800);
+              }
+            });
+          }
+        });
+      }).catch(err => {
         console.log('Service Worker registration skipped:', err);
+      });
+
+      // Auto-reload when new controller takes over
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!window.__hasReloadedForUpdate) {
+          window.__hasReloadedForUpdate = true;
+          window.location.reload();
+        }
       });
     });
   }
