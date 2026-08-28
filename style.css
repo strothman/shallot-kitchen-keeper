@@ -2352,6 +2352,86 @@ body {
 }
 
 /* ==========================================================================
+   Shelf Life Hybrid Precision Stepper & Quick Preset Chips
+   ========================================================================== */
+.shelf-life-hybrid-control {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.shelf-stepper-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.shelf-input-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-app);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 4px 12px;
+  gap: 6px;
+}
+
+.shelf-input-wrapper input[type="number"] {
+  width: 55px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 4px 0;
+}
+
+.shelf-unit-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.shelf-preset-chips {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.shelf-chip {
+  background: var(--bg-app);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 8px 4px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.15s ease;
+}
+
+.shelf-chip:active {
+  transform: scale(0.94);
+}
+
+.shelf-chip.active {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+/* ==========================================================================
    Import Choice Modal (Merge vs. Replace)
    ========================================================================== */
 .import-choice-card {

@@ -1,5 +1,5 @@
-// KitchenKeeper Service Worker for Offline PWA Support
-const CACHE_NAME = 'kitchenkeeper-v1.3.0';
+// Shallot: Kitchen Keeper Service Worker — Offline PWA & Auto-Update Engine
+const CACHE_NAME = 'shallot-v1.5.0';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -35,12 +35,25 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  // Network-first with offline Cache fallback ensures changes appear immediately on refresh
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request).catch(() => caches.match('./index.html'));
-    })
+    fetch(event.request)
+      .then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200 && event.request.method === 'GET') {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+        }
+        return networkResponse;
+      })
+      .catch(() => {
+        return caches.match(event.request).then((cachedResponse) => {
+          if (cachedResponse) return cachedResponse;
+          if (event.request.headers && event.request.headers.get('accept')?.includes('text/html')) {
+            return caches.match('./index.html');
+          }
+        });
+      })
   );
 });

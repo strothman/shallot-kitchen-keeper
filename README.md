@@ -5,7 +5,7 @@
 # Shallot: Kitchen Keeper 🧅🔪
 **A zero-dependency, mobile-first culinary inventory tracker and food-waste prevention PWA.**
 
-[![Version](https://img.shields.io/badge/version-1.4.0-blue.svg?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.5.0-blue.svg?style=flat-square)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg?style=flat-square)](LICENSE)
 [![PWA Ready](https://img.shields.io/badge/PWA-Installable-success.svg?style=flat-square)](manifest.json)
 [![Security: CSP Hardened](https://img.shields.io/badge/Security-CSP%20Hardened-green.svg?style=flat-square)](index.html)
@@ -26,7 +26,7 @@
 
 ## 📖 Overview
 
-**Shallot: Kitchen Keeper** is a high-performance, mobile-first Progressive Web Application (PWA) designed to eliminate household food waste. It organizes your kitchen into distinct storage zones (**Fridge**, **Pantry**, **Freezer**), tracks real-time expiration timelines with dynamic urgency alerts, powers dual-direction touch gestures, parses bulk grocery receipts, and dynamically suggests zero-waste recipes using expiring ingredients.
+**Shallot: Kitchen Keeper** is a high-performance, mobile-first Progressive Web Application (PWA) designed to eliminate household food waste. It organizes your kitchen into distinct storage zones (**Fridge**, **Pantry**, **Freezer**), tracks real-time expiration timelines with dynamic urgency alerts, powers dual-direction touch gestures, parses bulk grocery receipts, automatically learns your custom foods, and dynamically suggests zero-waste recipes using expiring ingredients.
 
 Built with a **zero-dependency vanilla architecture**, the app delivers sub-50ms cold-start times, silky 60fps gesture animations, offline-first reliability, and strict enterprise security hardening.
 
@@ -34,7 +34,14 @@ Built with a **zero-dependency vanilla architecture**, the app delivers sub-50ms
 
 ## ✨ Key Features
 
-### 1. ⚡ "Multi-Item Quick Stock" NLP Parser
+### 1. 🧠 Self-Learning Food Knowledge Base & Dynamic Icons
+- **Personal Learned Database**: Whenever you stock or edit groceries, Shallot learns and remembers their storage zones, shelf lives, and units for future one-tap stocking.
+- **Smart Category Icons & Deterministic Color Engine**: Dedicated recognition for noodles, gnocchi, spam, dumplings, snacks, and bakery items. Unknown items automatically generate unique, distinct vibrant gradient colors so no two foods look the same.
+
+### 2. 🎛️ Hybrid Precision Shelf-Life Stepper & Preset Chips
+- Effortlessly adjust freshness timelines using **`[-]` / `[+]` precision steppers**, **direct tap-to-type input**, or **one-tap preset chips** (*3d, 5d, 7d, 14d, 30d, 90d*).
+
+### 3. ⚡ "Multi-Item Quick Stock" NLP Parser
 - Paste an entire grocery receipt or shopping list (e.g. `"2 milk, 6 eggs, 500g chicken, spinach, sourdough bread, pasta"`).
 - Automatically parses quantities and units, looks up shelf-lives and storage zones, and stocks everything in **one tap**.
 

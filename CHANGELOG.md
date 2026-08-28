@@ -7,6 +7,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [1.5.0] - 2026-08-28
+
+### Added
+- **Self-Learning Grocery Knowledge Base**:
+  - Shallot now automatically learns from every food stocked or edited in your kitchen, remembering customized storage zones, shelf lives, units, and icons.
+- **Dynamic Food Icon & Deterministic Gradient Engine**:
+  - Expanded food recognition with dedicated icons for **SPAM (🥫)**, **Gnocchi (🥟)**, **Noodles & Ramen (🍜)**, **Dumplings & Ravioli (🥟)**, **Bakery (🥐)**, **Snacks (🥨)**, and 100+ foods.
+  - Automatically generates unique, vibrant gradient backgrounds derived from the name's hash so unknown foods never look generic or identical.
+- **Hybrid Precision Shelf Life Controls**:
+  - Replaced the narrow slider bar with **`[-]` and `[+]` precision steppers**, **direct tap-to-type number input**, and **One-Tap Quick Preset Chips (`3d`, `5d`, `7d`, `14d`, `30d`, `90d`)**.
+- **Service Worker v1.5.0 Auto-Update Engine**:
+  - Implemented network-first caching so app updates deploy to mobile devices immediately upon refresh.
+
+---
+
 ## [1.4.0] - 2026-08-28
 
 ### Added

@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline';">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline';">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Shallot">
@@ -14,25 +17,31 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap"
+    rel="stylesheet">
   <!-- App Icons -->
   <link rel="icon" type="image/x-icon" href="icon.ico">
   <link rel="apple-touch-icon" href="icon.png">
   <!-- Stylesheet -->
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <div class="app-container">
     <!-- Header -->
     <header class="app-header">
       <div class="logo-container">
-        <img src="icon.png" alt="Shallot Logo" class="logo-img" style="width: 28px; height: 28px; border-radius: 7px; object-fit: cover;">
+        <img src="icon.png" alt="Shallot Logo" class="logo-img"
+          style="width: 28px; height: 28px; border-radius: 7px; object-fit: cover;">
         <h1>Shallot <span class="logo-subtitle">Kitchen Keeper</span></h1>
       </div>
       <div class="header-actions">
         <!-- Recipe Rescue Generator -->
-        <button class="header-action-btn" id="recipeRescueBtn" aria-label="Recipe Rescue" title="What can I cook tonight? (R)">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button class="header-action-btn" id="recipeRescueBtn" aria-label="Recipe Rescue"
+          title="What can I cook tonight? (R)">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
             <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
             <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
             <line x1="6" y1="1" x2="6" y2="4"></line>
@@ -41,8 +50,10 @@
           </svg>
         </button>
         <!-- Shopping / Restock List -->
-        <button class="header-action-btn" id="shoppingListBtn" aria-label="Shopping List" title="Shopping / Restock List (K)">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button class="header-action-btn" id="shoppingListBtn" aria-label="Shopping List"
+          title="Shopping / Restock List (K)">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
             <circle cx="9" cy="21" r="1"></circle>
             <circle cx="20" cy="21" r="1"></circle>
             <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
@@ -51,7 +62,8 @@
         </button>
         <!-- Archive Modal -->
         <button class="header-action-btn" id="archiveBtn" aria-label="View Archive" title="Archived Items (A)">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
             <polyline points="21 8 21 21 3 21 3 8"></polyline>
             <rect x="1" y="3" width="22" height="5"></rect>
             <line x1="10" y1="12" x2="14" y2="12"></line>
@@ -94,7 +106,8 @@
       <div class="search-sort-bar">
         <div class="search-input-wrapper">
           <input type="text" id="searchInput" placeholder="Search groceries... (Press /)">
-          <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+            stroke-width="2">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
@@ -118,7 +131,8 @@
         <div class="batch-toolbar-actions">
           <button class="batch-action-btn cook-batch" id="batchCookBtn" title="Cook selected">🍳 Cook</button>
           <button class="batch-action-btn freeze-batch" id="batchFreezeBtn" title="Freeze (+30d)">🧊 Freeze</button>
-          <button class="batch-action-btn archive-batch" id="batchArchiveBtn" title="Archive selected">📦 Archive</button>
+          <button class="batch-action-btn archive-batch" id="batchArchiveBtn" title="Archive selected">📦
+            Archive</button>
           <button class="batch-action-btn cancel-batch" id="cancelBatchBtn" title="Exit select mode">✕</button>
         </div>
       </div>
@@ -138,7 +152,8 @@
 
     <!-- Floating Action Buttons (FABs) -->
     <div class="fab-cluster">
-      <button class="fab-btn quick-stock-fab" id="quickStockFabBtn" aria-label="Quick Stock List" title="Quick Stock Multi-Item Receipt (Q)">
+      <button class="fab-btn quick-stock-fab" id="quickStockFabBtn" aria-label="Quick Stock List"
+        title="Quick Stock Multi-Item Receipt (Q)">
         <span>⚡</span>
       </button>
       <button class="fab-btn add-fab" id="addFabBtn" aria-label="Add Item" title="Stock New Item (N)">
@@ -160,7 +175,8 @@
           <button class="close-btn" id="closeQuickStockBtn">&times;</button>
         </div>
         <div class="quick-stock-body">
-          <textarea id="quickStockInput" rows="4" placeholder="e.g. 2 milk, 6 eggs, 500g chicken, spinach, sourdough bread, pasta, 3 apples"></textarea>
+          <textarea id="quickStockInput" rows="4"
+            placeholder="e.g. 2 milk, 6 eggs, 500g chicken, spinach, sourdough bread, pasta, 3 apples"></textarea>
           <div class="quick-stock-preview" id="quickStockPreview">
             <!-- Live parsed item pills rendered here -->
           </div>
@@ -207,11 +223,11 @@
         </div>
         <form id="itemForm" autocomplete="off">
           <input type="hidden" id="editItemId">
-          
+
           <div class="form-group">
             <label for="itemName">Food Name</label>
             <input type="text" id="itemName" placeholder="e.g. Tomato, Milk, Chicken" required>
-            
+
             <!-- Live Smart Auto-Preset Pill -->
             <div class="auto-preset-pill hidden" id="autoPresetPill">
               <span class="preset-sparkle">✨</span>
@@ -280,9 +296,23 @@
 
           <div class="form-group">
             <label for="itemShelfLife">Shelf Life (Days)</label>
-            <div class="range-slider-container">
-              <input type="range" id="itemShelfLife" min="1" max="90" value="7">
-              <span class="range-val" id="shelfLifeVal">7 days</span>
+            <div class="shelf-life-hybrid-control">
+              <div class="shelf-stepper-row">
+                <button type="button" class="stepper-btn" id="shelfMinusBtn" aria-label="Decrease days">-</button>
+                <div class="shelf-input-wrapper">
+                  <input type="number" id="itemShelfLife" min="1" max="365" value="7" inputmode="numeric" pattern="[0-9]*" required>
+                  <span class="shelf-unit-label">days</span>
+                </div>
+                <button type="button" class="stepper-btn" id="shelfPlusBtn" aria-label="Increase days">+</button>
+              </div>
+              <div class="shelf-preset-chips" id="shelfPresetChips">
+                <button type="button" class="shelf-chip" data-days="3">3d (Meat/Fish)</button>
+                <button type="button" class="shelf-chip" data-days="5">5d (Milk/Bread)</button>
+                <button type="button" class="shelf-chip active" data-days="7">7d (1 Wk)</button>
+                <button type="button" class="shelf-chip" data-days="14">14d (2 Wks)</button>
+                <button type="button" class="shelf-chip" data-days="30">30d (1 Mo)</button>
+                <button type="button" class="shelf-chip" data-days="90">90d (Pantry)</button>
+              </div>
             </div>
             <p class="form-help">Time left before it goes bad and should be cooked.</p>
           </div>
@@ -315,7 +345,8 @@
           <div class="shopping-header-actions">
             <span id="shoppingTotalLabel">0 items on list</span>
             <div class="shopping-actions-group">
-              <button type="button" class="share-shopping-btn" id="shareShoppingBtn" title="Share via SMS, WhatsApp, Notes">📤 Share</button>
+              <button type="button" class="share-shopping-btn" id="shareShoppingBtn"
+                title="Share via SMS, WhatsApp, Notes">📤 Share</button>
               <button type="button" class="clear-archive-btn" id="clearShoppingBtn">Clear</button>
             </div>
           </div>
@@ -415,7 +446,7 @@
               </button>
             </div>
           </div>
-          
+
           <div class="backup-section">
             <div class="backup-section-header">
               <h3>Data Management</h3>
@@ -463,14 +494,15 @@
               </button>
               <button type="button" class="backup-btn" id="seedDemoBtn" title="Load sample development items">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                  <path
+                    d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
                 </svg>
                 Load Samples
               </button>
               <input type="file" id="importFile" accept=".json" style="display: none;">
             </div>
           </div>
-          
+
           <div class="cooked-log-section">
             <h3>Recent Culinary Saves (Cooked Log)</h3>
             <div class="cooked-list" id="cookedLogList">
@@ -564,4 +596,5 @@
 
   <script src="app.js"></script>
 </body>
+
 </html>

@@ -1,9 +1,47 @@
 // Shallot: Kitchen Keeper — Comprehensive Application Engine
-// Security Hardening, Smart Auto-Presets, Dual Gestures, Quick-Stock Parser, Partial Cooking & PWA Badges
+// Security Hardening, Smart Auto-Presets, Dual Gestures, Quick-Stock Parser, Partial Cooking, PWA Badges & Self-Learning Database
 
-// --- Comprehensive Grocery Knowledge Base with Smart Presets ---
+// --- Comprehensive Pre-Built Grocery Knowledge Base with Smart Presets ---
 const GROCERY_DATABASE = {
-  // --- Vegetables ---
+  // --- Asian Staples, Pastas, Noodles & Dumplings ---
+  'noodle': { emoji: '🍜', bg: 'linear-gradient(135deg, #ffeaa7, #e67e22)', zone: 'pantry', days: 90, unit: 'packs' },
+  'ramen': { emoji: '🍜', bg: 'linear-gradient(135deg, #ffeaa7, #d35400)', zone: 'pantry', days: 90, unit: 'packs' },
+  'udon': { emoji: '🍜', bg: 'linear-gradient(135deg, #fffbeb, #e67e22)', zone: 'fridge', days: 14, unit: 'packs' },
+  'soba': { emoji: '🍜', bg: 'linear-gradient(135deg, #ffeaa7, #bd843c)', zone: 'pantry', days: 90, unit: 'packs' },
+  'pho': { emoji: '🍜', bg: 'linear-gradient(135deg, #ffeaa7, #e67e22)', zone: 'pantry', days: 90, unit: 'packs' },
+  'vermicelli': { emoji: '🍜', bg: 'linear-gradient(135deg, #ffffff, #dfe6e9)', zone: 'pantry', days: 180, unit: 'packs' },
+  'gnocchi': { emoji: '🥟', bg: 'linear-gradient(135deg, #fffbeb, #e17055)', zone: 'fridge', days: 7, unit: 'packs' },
+  'dumpling': { emoji: '🥟', bg: 'linear-gradient(135deg, #fffbeb, #e17055)', zone: 'freezer', days: 60, unit: 'packs' },
+  'potsticker': { emoji: '🥟', bg: 'linear-gradient(135deg, #ffeaa7, #e67e22)', zone: 'freezer', days: 60, unit: 'packs' },
+  'wonton': { emoji: '🥟', bg: 'linear-gradient(135deg, #fffbeb, #e17055)', zone: 'freezer', days: 60, unit: 'packs' },
+  'ravioli': { emoji: '🥟', bg: 'linear-gradient(135deg, #ffeaa7, #fab1a0)', zone: 'fridge', days: 5, unit: 'packs' },
+  'pierogi': { emoji: '🥟', bg: 'linear-gradient(135deg, #fffbeb, #fdcb6e)', zone: 'freezer', days: 60, unit: 'packs' },
+
+  // --- Canned Goods & Processed Proteins ---
+  'spam': { emoji: '🥫', bg: 'linear-gradient(135deg, #ffb8b8, #e17055)', zone: 'pantry', days: 365, unit: 'pcs' },
+  'luncheon': { emoji: '🥫', bg: 'linear-gradient(135deg, #ffb8b8, #e17055)', zone: 'pantry', days: 365, unit: 'pcs' },
+  'corned beef': { emoji: '🥫', bg: 'linear-gradient(135deg, #ff7675, #c0392b)', zone: 'pantry', days: 365, unit: 'pcs' },
+  'canned': { emoji: '🥫', bg: 'linear-gradient(135deg, #dfe6e9, #636e72)', zone: 'pantry', days: 365, unit: 'pcs' },
+  'can': { emoji: '🥫', bg: 'linear-gradient(135deg, #dfe6e9, #636e72)', zone: 'pantry', days: 365, unit: 'pcs' },
+  'tuna': { emoji: '🐟', bg: 'linear-gradient(135deg, #81ecec, #0984e3)', zone: 'pantry', days: 365, unit: 'pcs' },
+  'sardine': { emoji: '🐟', bg: 'linear-gradient(135deg, #81ecec, #2d3436)', zone: 'pantry', days: 365, unit: 'pcs' },
+
+  // --- Bakery, Breads & Grains ---
+  'bread': { emoji: '🍞', bg: 'linear-gradient(135deg, #ffeaa7, #d7a15c)', zone: 'pantry', days: 5, unit: 'pcs' },
+  'bagel': { emoji: '🥯', bg: 'linear-gradient(135deg, #ffeaa7, #bd843c)', zone: 'pantry', days: 5, unit: 'pcs' },
+  'croissant': { emoji: '🥐', bg: 'linear-gradient(135deg, #ffeaa7, #f39c12)', zone: 'pantry', days: 3, unit: 'pcs' },
+  'tortilla': { emoji: '🫓', bg: 'linear-gradient(135deg, #fffbeb, #fdcb6e)', zone: 'pantry', days: 14, unit: 'packs' },
+  'pita': { emoji: '🫓', bg: 'linear-gradient(135deg, #fffbeb, #d7a15c)', zone: 'pantry', days: 7, unit: 'packs' },
+  'muffin': { emoji: '🧁', bg: 'linear-gradient(135deg, #ffb8b8, #e17055)', zone: 'pantry', days: 4, unit: 'pcs' },
+  'bun': { emoji: '🍔', bg: 'linear-gradient(135deg, #ffeaa7, #d7a15c)', zone: 'pantry', days: 5, unit: 'packs' },
+  'pasta': { emoji: '🍝', bg: 'linear-gradient(135deg, #ffeaa7, #f1c40f)', zone: 'pantry', days: 180, unit: 'g' },
+  'spaghetti': { emoji: '🍝', bg: 'linear-gradient(135deg, #ffeaa7, #f1c40f)', zone: 'pantry', days: 180, unit: 'g' },
+  'macaroni': { emoji: '🍝', bg: 'linear-gradient(135deg, #ffeaa7, #f39c12)', zone: 'pantry', days: 180, unit: 'g' },
+  'rice': { emoji: '🍚', bg: 'linear-gradient(135deg, #ffffff, #dfe6e9)', zone: 'pantry', days: 180, unit: 'kg' },
+  'oat': { emoji: '🥣', bg: 'linear-gradient(135deg, #ffeaa7, #bd843c)', zone: 'pantry', days: 90, unit: 'g' },
+  'cereal': { emoji: '🥣', bg: 'linear-gradient(135deg, #ffeaa7, #f39c12)', zone: 'pantry', days: 90, unit: 'packs' },
+
+  // --- Vegetables & Fresh Produce ---
   'tomato': { emoji: '🍅', bg: 'linear-gradient(135deg, #ff7675, #d63031)', zone: 'pantry', days: 7, unit: 'pcs' },
   'carrot': { emoji: '🥕', bg: 'linear-gradient(135deg, #fab1a0, #e17055)', zone: 'fridge', days: 14, unit: 'pcs' },
   'broccoli': { emoji: '🥦', bg: 'linear-gradient(135deg, #55efc4, #00b894)', zone: 'fridge', days: 6, unit: 'pcs' },
@@ -13,6 +51,7 @@ const GROCERY_DATABASE = {
   'garlic': { emoji: '🧄', bg: 'linear-gradient(135deg, #f5f6fa, #dcdde1)', zone: 'pantry', days: 45, unit: 'pcs' },
   'spinach': { emoji: '🥬', bg: 'linear-gradient(135deg, #78e08f, #38ae53)', zone: 'fridge', days: 5, unit: 'packs' },
   'lettuce': { emoji: '🥬', bg: 'linear-gradient(135deg, #a8e6cf, #10ac84)', zone: 'fridge', days: 6, unit: 'pcs' },
+  'salad': { emoji: '🥗', bg: 'linear-gradient(135deg, #78e08f, #10ac84)', zone: 'fridge', days: 5, unit: 'packs' },
   'bell pepper': { emoji: '🫑', bg: 'linear-gradient(135deg, #fffa65, #ffb8b8)', zone: 'fridge', days: 8, unit: 'pcs' },
   'pepper': { emoji: '🌶️', bg: 'linear-gradient(135deg, #ff7675, #ff2e2e)', zone: 'fridge', days: 10, unit: 'pcs' },
   'cucumber': { emoji: '🥒', bg: 'linear-gradient(135deg, #a8e6cf, #3b7a57)', zone: 'fridge', days: 7, unit: 'pcs' },
@@ -27,14 +66,8 @@ const GROCERY_DATABASE = {
   'asparagus': { emoji: '🥬', bg: 'linear-gradient(135deg, #78e08f, #2ecc71)', zone: 'fridge', days: 4, unit: 'packs' },
   'pea': { emoji: '🫛', bg: 'linear-gradient(135deg, #55efc4, #2ecc71)', zone: 'fridge', days: 6, unit: 'g' },
   'eggplant': { emoji: '🍆', bg: 'linear-gradient(135deg, #d6a2e8, #9b59b6)', zone: 'fridge', days: 6, unit: 'pcs' },
-  'radish': { emoji: '🍠', bg: 'linear-gradient(135deg, #ff7675, #fd79a8)', zone: 'fridge', days: 10, unit: 'pcs' },
-  'pumpkin': { emoji: '🎃', bg: 'linear-gradient(135deg, #ffb8b8, #e67e22)', zone: 'pantry', days: 30, unit: 'pcs' },
-  'squash': { emoji: '🎃', bg: 'linear-gradient(135deg, #ffeaa7, #f39c12)', zone: 'pantry', days: 20, unit: 'pcs' },
-  'beet': { emoji: '🍠', bg: 'linear-gradient(135deg, #fd79a8, #e84393)', zone: 'fridge', days: 14, unit: 'pcs' },
-  'ginger': { emoji: '🫚', bg: 'linear-gradient(135deg, #ffeaa7, #d7a15c)', zone: 'fridge', days: 21, unit: 'g' },
-  'kale': { emoji: '🥬', bg: 'linear-gradient(135deg, #78e08f, #1e824c)', zone: 'fridge', days: 6, unit: 'packs' },
   'avocado': { emoji: '🥑', bg: 'linear-gradient(135deg, #ffeaa7, #2ecc71)', zone: 'pantry', days: 4, unit: 'pcs' },
-  'chili': { emoji: '🌶️', bg: 'linear-gradient(135deg, #ff7675, #c0392b)', zone: 'fridge', days: 14, unit: 'pcs' },
+  'tofu': { emoji: '🧊', bg: 'linear-gradient(135deg, #ffffff, #2ecc71)', zone: 'fridge', days: 10, unit: 'packs' },
 
   // --- Fruits ---
   'apple': { emoji: '🍎', bg: 'linear-gradient(135deg, #ff7675, #c0392b)', zone: 'pantry', days: 14, unit: 'pcs' },
@@ -44,24 +77,17 @@ const GROCERY_DATABASE = {
   'grape': { emoji: '🍇', bg: 'linear-gradient(135deg, #c56cf0, #8c7ae6)', zone: 'fridge', days: 7, unit: 'packs' },
   'watermelon': { emoji: '🍉', bg: 'linear-gradient(135deg, #ff7675, #2ecc71)', zone: 'fridge', days: 7, unit: 'pcs' },
   'peach': { emoji: '🍑', bg: 'linear-gradient(135deg, #ffb8b8, #e67e22)', zone: 'pantry', days: 5, unit: 'pcs' },
-  'pear': { emoji: '🍐', bg: 'linear-gradient(135deg, #ffeaa7, #2ecc71)', zone: 'pantry', days: 7, unit: 'pcs' },
-  'cherry': { emoji: '🍒', bg: 'linear-gradient(135deg, #ff7675, #c0392b)', zone: 'fridge', days: 5, unit: 'packs' },
-  'blueberry': { emoji: '🫐', bg: 'linear-gradient(135deg, #74b9ff, #0984e3)', zone: 'fridge', days: 6, unit: 'packs' },
-  'raspberry': { emoji: '🍓', bg: 'linear-gradient(135deg, #ffb8b8, #e84393)', zone: 'fridge', days: 3, unit: 'packs' },
-  'blackberry': { emoji: '🫐', bg: 'linear-gradient(135deg, #a29bfe, #6c5ce7)', zone: 'fridge', days: 4, unit: 'packs' },
   'lemon': { emoji: '🍋', bg: 'linear-gradient(135deg, #fffbeb, #f1c40f)', zone: 'fridge', days: 21, unit: 'pcs' },
   'lime': { emoji: '🍋', bg: 'linear-gradient(135deg, #a8e6cf, #2ecc71)', zone: 'fridge', days: 21, unit: 'pcs' },
-  'pineapple': { emoji: '🍍', bg: 'linear-gradient(135deg, #ffeaa7, #e67e22)', zone: 'pantry', days: 6, unit: 'pcs' },
+  'blueberry': { emoji: '🫐', bg: 'linear-gradient(135deg, #74b9ff, #0984e3)', zone: 'fridge', days: 6, unit: 'packs' },
   'mango': { emoji: '🥭', bg: 'linear-gradient(135deg, #ffbe76, #f39c12)', zone: 'pantry', days: 5, unit: 'pcs' },
-  'kiwi': { emoji: '🥝', bg: 'linear-gradient(135deg, #ffeaa7, #2ecc71)', zone: 'pantry', days: 7, unit: 'pcs' },
 
-  // --- Dairy, Meats, Pantry & Staples ---
+  // --- Dairy, Meats & Fresh Staples ---
   'milk': { emoji: '🥛', bg: 'linear-gradient(135deg, #ffffff, #74b9ff)', zone: 'fridge', days: 5, unit: 'l' },
   'cheese': { emoji: '🧀', bg: 'linear-gradient(135deg, #ffeaa7, #f1c40f)', zone: 'fridge', days: 14, unit: 'g' },
   'egg': { emoji: '🥚', bg: 'linear-gradient(135deg, #ffffff, #ffeaa7)', zone: 'fridge', days: 21, unit: 'pcs' },
   'butter': { emoji: '🧈', bg: 'linear-gradient(135deg, #fffbeb, #f1c40f)', zone: 'fridge', days: 30, unit: 'g' },
   'yogurt': { emoji: '🥣', bg: 'linear-gradient(135deg, #ffffff, #ffb8b8)', zone: 'fridge', days: 10, unit: 'pcs' },
-  'cream': { emoji: '🥛', bg: 'linear-gradient(135deg, #ffffff, #dfe6e9)', zone: 'fridge', days: 7, unit: 'ml' },
   'chicken': { emoji: '🍗', bg: 'linear-gradient(135deg, #ffeaa7, #d35400)', zone: 'fridge', days: 3, unit: 'g' },
   'beef': { emoji: '🥩', bg: 'linear-gradient(135deg, #ff7675, #c0392b)', zone: 'fridge', days: 3, unit: 'g' },
   'steak': { emoji: '🥩', bg: 'linear-gradient(135deg, #ff7675, #c0392b)', zone: 'fridge', days: 4, unit: 'pcs' },
@@ -71,14 +97,152 @@ const GROCERY_DATABASE = {
   'fish': { emoji: '🐟', bg: 'linear-gradient(135deg, #81ecec, #0984e3)', zone: 'fridge', days: 2, unit: 'packs' },
   'salmon': { emoji: '🐟', bg: 'linear-gradient(135deg, #fab1a0, #e17055)', zone: 'fridge', days: 3, unit: 'packs' },
   'shrimp': { emoji: '🍤', bg: 'linear-gradient(135deg, #ffb8b8, #e17055)', zone: 'freezer', days: 30, unit: 'g' },
-  'bread': { emoji: '🍞', bg: 'linear-gradient(135deg, #ffeaa7, #d7a15c)', zone: 'pantry', days: 5, unit: 'pcs' },
-  'pasta': { emoji: '🍝', bg: 'linear-gradient(135deg, #ffeaa7, #f1c40f)', zone: 'pantry', days: 180, unit: 'g' },
-  'rice': { emoji: '🍚', bg: 'linear-gradient(135deg, #ffffff, #dfe6e9)', zone: 'pantry', days: 180, unit: 'kg' },
-  'oat': { emoji: '🥣', bg: 'linear-gradient(135deg, #ffeaa7, #bd843c)', zone: 'pantry', days: 90, unit: 'g' },
+
+  // --- Prepared Meals, Snacks & Drinks ---
+  'pizza': { emoji: '🍕', bg: 'linear-gradient(135deg, #ff7675, #d35400)', zone: 'fridge', days: 4, unit: 'pcs' },
+  'burger': { emoji: '🍔', bg: 'linear-gradient(135deg, #ffeaa7, #c0392b)', zone: 'fridge', days: 3, unit: 'pcs' },
+  'sandwich': { emoji: '🥪', bg: 'linear-gradient(135deg, #ffeaa7, #2ecc71)', zone: 'fridge', days: 3, unit: 'pcs' },
+  'taco': { emoji: '🌮', bg: 'linear-gradient(135deg, #ffeaa7, #e17055)', zone: 'fridge', days: 3, unit: 'pcs' },
+  'sushi': { emoji: '🍣', bg: 'linear-gradient(135deg, #ffb8b8, #e74c3c)', zone: 'fridge', days: 2, unit: 'packs' },
   'soup': { emoji: '🥣', bg: 'linear-gradient(135deg, #ffbe76, #e74c3c)', zone: 'pantry', days: 120, unit: 'pcs' },
+  'curry': { emoji: '🍛', bg: 'linear-gradient(135deg, #ffbe76, #d35400)', zone: 'fridge', days: 4, unit: 'packs' },
+  'snack': { emoji: '🥨', bg: 'linear-gradient(135deg, #ffeaa7, #e67e22)', zone: 'pantry', days: 30, unit: 'packs' },
+  'chip': { emoji: '🥨', bg: 'linear-gradient(135deg, #ffeaa7, #e67e22)', zone: 'pantry', days: 30, unit: 'packs' },
+  'cookie': { emoji: '🍪', bg: 'linear-gradient(135deg, #ffeaa7, #bd843c)', zone: 'pantry', days: 14, unit: 'pcs' },
+  'chocolate': { emoji: '🍫', bg: 'linear-gradient(135deg, #8e623f, #5c3a21)', zone: 'pantry', days: 60, unit: 'pcs' },
   'coffee': { emoji: '☕', bg: 'linear-gradient(135deg, #ffeaa7, #5c3a21)', zone: 'pantry', days: 60, unit: 'g' },
-  'chocolate': { emoji: '🍫', bg: 'linear-gradient(135deg, #8e623f, #5c3a21)', zone: 'pantry', days: 60, unit: 'pcs' }
+  'tea': { emoji: '🍵', bg: 'linear-gradient(135deg, #d4fc79, #1e824c)', zone: 'pantry', days: 180, unit: 'g' },
+  'juice': { emoji: '🧃', bg: 'linear-gradient(135deg, #ffbe76, #e17055)', zone: 'fridge', days: 7, unit: 'l' },
+  'sauce': { emoji: '🧂', bg: 'linear-gradient(135deg, #ffbe76, #d63031)', zone: 'fridge', days: 90, unit: 'ml' }
 };
+
+// --- Self-Learning Dynamic Grocery Database (Learns from user stocks) ---
+let customGroceryDB = {};
+try {
+  const sCustom = localStorage.getItem('kk_custom_grocery_db');
+  customGroceryDB = sCustom ? JSON.parse(sCustom) : {};
+  if (!customGroceryDB || typeof customGroceryDB !== 'object') customGroceryDB = {};
+} catch {
+  customGroceryDB = {};
+}
+
+// Deterministic Dynamic Color Generator (Gives each unique item its own vibrant color!)
+function getDeterministicGradient(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const hue1 = Math.abs(hash % 360);
+  const hue2 = (hue1 + 40) % 360;
+  return `linear-gradient(135deg, hsl(${hue1}, 75%, 60%), hsl(${hue2}, 80%, 45%))`;
+}
+
+// Clean string by removing packaging noise like "bag", "pack", "fresh", etc.
+function cleanFoodKey(raw) {
+  return raw.toLowerCase()
+    .replace(/\b(bag|pack|packet|box|can|tin|slice|sliced|bottle|jar|fresh|organic|raw)\b/gi, '')
+    .trim();
+}
+
+// Dynamic Smart Icon Generator
+function getGroceryIconHTML(name, zone = 'fridge') {
+  const norm = name.toLowerCase().trim();
+  const cleaned = cleanFoodKey(name);
+
+  // 1. Check User-Learned Custom Database
+  if (customGroceryDB[norm]) {
+    return `
+      <div class="grocery-icon-inner" style="background: ${customGroceryDB[norm].bg}">
+        <span class="grocery-icon-emoji">${customGroceryDB[norm].emoji}</span>
+      </div>
+    `;
+  }
+  if (customGroceryDB[cleaned]) {
+    return `
+      <div class="grocery-icon-inner" style="background: ${customGroceryDB[cleaned].bg}">
+        <span class="grocery-icon-emoji">${customGroceryDB[cleaned].emoji}</span>
+      </div>
+    `;
+  }
+
+  // 2. Check Static Knowledge Base
+  for (const [key, iconData] of Object.entries(GROCERY_DATABASE)) {
+    if (norm.includes(key) || cleaned.includes(key)) {
+      return `
+        <div class="grocery-icon-inner" style="background: ${iconData.bg}">
+          <span class="grocery-icon-emoji">${iconData.emoji}</span>
+        </div>
+      `;
+    }
+  }
+
+  // 3. Fallback: Dynamic Smart Icon with Deterministic Unique Gradient & Contextual Emoji
+  let fallbackEmoji = '🥗';
+  if (zone === 'freezer' || norm.includes('ice') || norm.includes('frozen')) fallbackEmoji = '🧊';
+  else if (zone === 'pantry' || norm.includes('can') || norm.includes('box') || norm.includes('bag')) fallbackEmoji = '🥫';
+  else if (norm.includes('drink') || norm.includes('water')) fallbackEmoji = '🧃';
+  else if (norm.includes('meat') || norm.includes('protein')) fallbackEmoji = '🥩';
+  else if (norm.includes('sweet') || norm.includes('dessert')) fallbackEmoji = '🍰';
+
+  const dynamicBg = getDeterministicGradient(norm);
+  return `
+    <div class="grocery-icon-inner" style="background: ${dynamicBg}">
+      <span class="grocery-icon-emoji">${fallbackEmoji}</span>
+    </div>
+  `;
+}
+
+// Find Knowledge Match (User DB first, then Static DB)
+function findGroceryKnowledge(name) {
+  const norm = name.toLowerCase().trim();
+  const cleaned = cleanFoodKey(name);
+
+  if (customGroceryDB[norm]) return { key: norm, ...customGroceryDB[norm] };
+  if (customGroceryDB[cleaned]) return { key: cleaned, ...customGroceryDB[cleaned] };
+
+  for (const [key, data] of Object.entries(GROCERY_DATABASE)) {
+    if (norm.includes(key) || cleaned.includes(key)) {
+      return { key, ...data };
+    }
+  }
+  return null;
+}
+
+// Self-Learning Committer: Learns and updates custom grocery definitions
+function learnGroceryItem(name, zone, days, unit) {
+  const norm = name.toLowerCase().trim();
+  const cleaned = cleanFoodKey(name);
+  const targetKey = cleaned.length >= 3 ? cleaned : norm;
+
+  if (!customGroceryDB[targetKey]) {
+    // Determine smart emoji
+    let emoji = '🥗';
+    for (const [key, data] of Object.entries(GROCERY_DATABASE)) {
+      if (norm.includes(key) || cleaned.includes(key)) {
+        emoji = data.emoji;
+        break;
+      }
+    }
+    if (emoji === '🥗') {
+      if (zone === 'freezer') emoji = '🧊';
+      else if (zone === 'pantry') emoji = '🥫';
+    }
+
+    customGroceryDB[targetKey] = {
+      emoji,
+      bg: getDeterministicGradient(targetKey),
+      zone: zone || 'fridge',
+      days: parseInt(days, 10) || 7,
+      unit: unit || 'pcs'
+    };
+
+    try {
+      localStorage.setItem('kk_custom_grocery_db', JSON.stringify(customGroceryDB));
+    } catch {
+      // Ignored
+    }
+  }
+}
 
 // --- App State ---
 let foodItems = [];
@@ -169,7 +333,9 @@ const itemNameInput = document.getElementById('itemName');
 const itemQuantityInput = document.getElementById('itemQuantity');
 const itemUnitSelect = document.getElementById('itemUnit');
 const itemShelfLifeInput = document.getElementById('itemShelfLife');
-const shelfLifeVal = document.getElementById('shelfLifeVal');
+const shelfMinusBtn = document.getElementById('shelfMinusBtn');
+const shelfPlusBtn = document.getElementById('shelfPlusBtn');
+const shelfPresetChips = document.querySelectorAll('.shelf-chip');
 const autoPresetPill = document.getElementById('autoPresetPill');
 const autoPresetText = document.getElementById('autoPresetText');
 const quickFreezeEditBtn = document.getElementById('quickFreezeEditBtn');
@@ -211,85 +377,6 @@ const shoppingListContainer = document.getElementById('shoppingListContainer');
 const recipeModal = document.getElementById('recipeModal');
 const closeRecipeBtn = document.getElementById('closeRecipeBtn');
 const recipeSuggestionsContainer = document.getElementById('recipeSuggestionsContainer');
-
-// Stats Modal DOM
-const statsModal = document.getElementById('statsModal');
-const closeStatsBtn = document.getElementById('closeStatsBtn');
-const totalActiveCount = document.getElementById('totalActiveCount');
-const expiringSoonCount = document.getElementById('expiringSoonCount');
-const cookedTotalCount = document.getElementById('cookedTotalCount');
-const cookedLogList = document.getElementById('cookedLogList');
-const exportBtn = document.getElementById('exportBtn');
-const exportCsvBtn = document.getElementById('exportCsvBtn');
-const copyBackupBtn = document.getElementById('copyBackupBtn');
-const importBtn = document.getElementById('importBtn');
-const pasteBackupBtn = document.getElementById('pasteBackupBtn');
-const importFile = document.getElementById('importFile');
-const seedDemoBtn = document.getElementById('seedDemoBtn');
-const notifToggle = document.getElementById('notifToggle');
-const storageHealthPill = document.getElementById('storageHealthPill');
-
-// Import Choice Modal DOM
-const importChoiceModal = document.getElementById('importChoiceModal');
-const closeImportChoiceBtn = document.getElementById('closeImportChoiceBtn');
-const importSummarySubtitle = document.getElementById('importSummarySubtitle');
-const confirmMergeBtn = document.getElementById('confirmMergeBtn');
-const confirmReplaceBtn = document.getElementById('confirmReplaceBtn');
-
-// Paste Backup Modal DOM
-const pasteBackupModal = document.getElementById('pasteBackupModal');
-const closePasteBackupBtn = document.getElementById('closePasteBackupBtn');
-const pasteBackupInput = document.getElementById('pasteBackupInput');
-const submitPasteBackupBtn = document.getElementById('submitPasteBackupBtn');
-
-// Freshness Score Card DOM
-const freshnessScoreBadge = document.getElementById('freshnessScoreBadge');
-const freshnessProgressFill = document.getElementById('freshnessProgressFill');
-const roiMoneySaved = document.getElementById('roiMoneySaved');
-const roiLbsSaved = document.getElementById('roiLbsSaved');
-
-// Archive Modal DOM
-const archiveModal = document.getElementById('archiveModal');
-const closeArchiveBtn = document.getElementById('closeArchiveBtn');
-const archiveTotalLabel = document.getElementById('archiveTotalLabel');
-const clearArchiveBtn = document.getElementById('clearArchiveBtn');
-const archiveList = document.getElementById('archiveList');
-
-// Toast DOM
-const undoToast = document.getElementById('undoToast');
-const undoToastIcon = document.getElementById('undoToastIcon');
-const undoToastText = document.getElementById('undoToastText');
-const undoToastBtn = document.getElementById('undoToastBtn');
-
-// Helper: Grocery Icon
-function getGroceryIconHTML(name) {
-  const norm = name.toLowerCase().trim();
-  let match = { emoji: '🍲', bg: 'linear-gradient(135deg, #f1c40f, #f39c12)' };
-
-  for (const [key, iconData] of Object.entries(GROCERY_DATABASE)) {
-    if (norm.includes(key)) {
-      match = iconData;
-      break;
-    }
-  }
-
-  return `
-    <div class="grocery-icon-inner" style="background: ${match.bg}">
-      <span class="grocery-icon-emoji">${match.emoji}</span>
-    </div>
-  `;
-}
-
-// Helper: Find Knowledge Match
-function findGroceryKnowledge(name) {
-  const norm = name.toLowerCase().trim();
-  for (const [key, data] of Object.entries(GROCERY_DATABASE)) {
-    if (norm.includes(key)) {
-      return { key, ...data };
-    }
-  }
-  return null;
-}
 
 // Initialize Application
 function init() {
@@ -779,6 +866,11 @@ function handleQuickStockSubmit() {
   if (parsedQuickStockItems.length === 0) return;
   triggerHaptic('success');
 
+  const count = parsedQuickStockItems.length;
+  parsedQuickStockItems.forEach(item => {
+    learnGroceryItem(item.name, item.zone, item.shelfLife, item.unit);
+  });
+
   foodItems.unshift(...parsedQuickStockItems);
   saveData();
   render();
@@ -786,7 +878,7 @@ function handleQuickStockSubmit() {
   quickStockInput.value = '';
   parsedQuickStockItems = [];
   quickStockModal.classList.add('hidden');
-  showToast('⚡', `Successfully stocked ${parsedQuickStockItems.length || 'all'} items!`);
+  showToast('⚡', `Successfully stocked ${count} items!`);
 }
 
 // --- Shopping / Restock List Manager & Native Share ---
@@ -1342,6 +1434,19 @@ function renderCookedLog() {
   });
 }
 
+// Helper to sync Shelf Life Stepper & Preset Chips
+function setShelfLifeValue(days) {
+  const num = Math.min(365, Math.max(1, parseInt(days, 10) || 7));
+  if (itemShelfLifeInput) itemShelfLifeInput.value = num;
+  shelfPresetChips.forEach(chip => {
+    if (parseInt(chip.getAttribute('data-days'), 10) === num) {
+      chip.classList.add('active');
+    } else {
+      chip.classList.remove('active');
+    }
+  });
+}
+
 // Open Edit Modal
 function openEditModal(item) {
   modalTitle.textContent = "Edit Food Item";
@@ -1349,8 +1454,7 @@ function openEditModal(item) {
   itemNameInput.value = item.name;
   itemQuantityInput.value = item.quantity;
   itemUnitSelect.value = item.unit;
-  itemShelfLifeInput.value = item.shelfLife;
-  shelfLifeVal.textContent = `${item.shelfLife} days`;
+  setShelfLifeValue(item.shelfLife);
 
   const radios = document.getElementsByName('itemZone');
   radios.forEach(radio => {
@@ -1386,12 +1490,13 @@ function updateStorageHealth() {
 // --- Backup & Restore Suite ---
 function exportBackupData() {
   const backup = {
-    version: '1.4.0',
+    version: '1.5.0',
     app: 'Shallot: Kitchen Keeper',
     foodItems,
     cookedItems,
     archivedItems,
     shoppingList,
+    customGroceryDB,
     theme: currentTheme,
     exportedAt: new Date().toISOString()
   };
@@ -1432,12 +1537,13 @@ function exportCsvData() {
 
 function copyBackupCode() {
   const backup = {
-    version: '1.4.0',
+    version: '1.5.0',
     app: 'Shallot: Kitchen Keeper',
     foodItems,
     cookedItems,
     archivedItems,
     shoppingList,
+    customGroceryDB,
     theme: currentTheme,
     exportedAt: new Date().toISOString()
   };
@@ -1465,6 +1571,7 @@ function prepareImportData(data) {
   const rawCooked = data.cookedItems || data.cookedLog || data.cookedHistory || [];
   const rawArchived = data.archivedItems || data.archive || data.archived || [];
   const rawShopping = data.shoppingList || data.restockList || data.shopping || [];
+  const cleanCustomDB = (data.customGroceryDB && typeof data.customGroceryDB === 'object') ? data.customGroceryDB : {};
 
   const cleanFood = Array.isArray(rawFood) ? rawFood.map(item => ({
     id: String(item.id || 'food_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4)),
@@ -1511,7 +1618,7 @@ function prepareImportData(data) {
     else if (data.theme === 'midnight') targetTheme = 'midnight';
   }
 
-  pendingImportData = { cleanFood, cleanCooked, cleanArchived, cleanShopping, targetTheme };
+  pendingImportData = { cleanFood, cleanCooked, cleanArchived, cleanShopping, cleanCustomDB, targetTheme };
   importSummarySubtitle.textContent = `Found ${cleanFood.length} groceries, ${cleanArchived.length} archived, ${cleanShopping.length} shopping`;
   importChoiceModal.classList.remove('hidden');
 }
@@ -1538,6 +1645,14 @@ function executeMergeImport() {
     else shoppingList.unshift(newItem);
   });
 
+  // Merge learned custom database
+  if (pendingImportData.cleanCustomDB) {
+    customGroceryDB = { ...customGroceryDB, ...pendingImportData.cleanCustomDB };
+    try {
+      localStorage.setItem('kk_custom_grocery_db', JSON.stringify(customGroceryDB));
+    } catch {}
+  }
+
   saveData();
   render();
   renderCookedLog();
@@ -1559,6 +1674,10 @@ function executeReplaceImport() {
   cookedItems = pendingImportData.cleanCooked;
   archivedItems = pendingImportData.cleanArchived;
   shoppingList = pendingImportData.cleanShopping;
+  customGroceryDB = pendingImportData.cleanCustomDB || {};
+  try {
+    localStorage.setItem('kk_custom_grocery_db', JSON.stringify(customGroceryDB));
+  } catch {}
   applyTheme(pendingImportData.targetTheme);
 
   saveData();
@@ -1731,8 +1850,7 @@ function setupEventListeners() {
     modalTitle.textContent = "Stock Kitchen";
     editItemId.value = "";
     itemForm.reset();
-    itemShelfLifeInput.value = 7;
-    shelfLifeVal.textContent = "7 days";
+    setShelfLifeValue(7);
     itemQuantityInput.value = 1;
     autoPresetPill.classList.add('hidden');
     quickFreezeEditBtn.classList.add('hidden');
@@ -1760,8 +1878,7 @@ function setupEventListeners() {
       });
 
       // Auto-set shelf life & unit
-      itemShelfLifeInput.value = match.days;
-      shelfLifeVal.textContent = `${match.days} days`;
+      setShelfLifeValue(match.days);
       if (match.unit && itemUnitSelect.querySelector(`option[value="${match.unit}"]`)) {
         itemUnitSelect.value = match.unit;
       }
@@ -1783,7 +1900,7 @@ function setupEventListeners() {
     }
   });
 
-  // Stepper buttons
+  // Quantity Stepper buttons
   qtyMinusBtn.addEventListener('click', () => {
     const val = parseInt(itemQuantityInput.value, 10);
     if (val > 1) itemQuantityInput.value = val - 1;
@@ -1793,8 +1910,30 @@ function setupEventListeners() {
     itemQuantityInput.value = val + 1;
   });
 
+  // Shelf Life Precision Stepper & Direct Input
+  if (shelfMinusBtn) {
+    shelfMinusBtn.addEventListener('click', () => {
+      const val = parseInt(itemShelfLifeInput.value, 10) || 7;
+      setShelfLifeValue(val - 1);
+    });
+  }
+  if (shelfPlusBtn) {
+    shelfPlusBtn.addEventListener('click', () => {
+      const val = parseInt(itemShelfLifeInput.value, 10) || 7;
+      setShelfLifeValue(val + 1);
+    });
+  }
   itemShelfLifeInput.addEventListener('input', (e) => {
-    shelfLifeVal.textContent = `${e.target.value} days`;
+    setShelfLifeValue(e.target.value);
+  });
+
+  // Shelf Life Preset Chips
+  shelfPresetChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      triggerHaptic('light');
+      const days = parseInt(chip.getAttribute('data-days'), 10);
+      setShelfLifeValue(days);
+    });
   });
 
   // Suggestion tags
@@ -1806,16 +1945,19 @@ function setupEventListeners() {
     }
   });
 
-  // Submit Stock Item
+  // Submit Stock Item (Auto-learns new food profiles!)
   itemForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
     const name = itemNameInput.value.trim();
     const quantity = parseInt(itemQuantityInput.value, 10);
     const unit = itemUnitSelect.value;
-    const shelfLife = parseInt(itemShelfLifeInput.value, 10);
+    const shelfLife = parseInt(itemShelfLifeInput.value, 10) || 7;
     const zone = document.querySelector('input[name="itemZone"]:checked').value;
     const editId = editItemId.value;
+
+    // Self-Learning: Automatically commit grocery profile to memory
+    learnGroceryItem(name, zone, shelfLife, unit);
 
     if (editId) {
       const idx = foodItems.findIndex(item => item.id === editId);
