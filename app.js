@@ -952,6 +952,152 @@ function saveData(syncToCloud = true) {
   localStorage.setItem('kk_archived_items', JSON.stringify(archivedItems));
   localStorage.setItem('kk_shopping_list', JSON.stringify(shoppingList));
   localStorage.setItem('kk_notifs_enabled', notificationsEnabled ? 'true' : 'false');
+
+  if (syncToCloud && activeHouseholdId && !isRemoteCloudUpdate) {
+    pushStateToCloud();
+  }
+}
+
+// --- Firebase Live Household Sync Engine ---
+function getActiveFirebaseConfig() {
+  const custom = localStorage.getItem('kk_custom_firebase_config');
+  if (custom) {
+    try {
+      const parsed = JSON.parse(custom);
+      if (parsed && (parsed.apiKey || parsed.projectId)) return parsed;
+    } catch {}
+  }
+  if (window.SHALLOT_FIREBASE_CONFIG && window.SHALLOT_FIREBASE_CONFIG.apiKey) {
+    return window.SHALLOT_FIREBASE_CONFIG;
+  }
+  return null;
+}
+
+function setSyncIndicatorStatus(status) {
+  if (!syncIndicatorDot) return;
+  syncIndicatorDot.classList.remove('active', 'syncing');
+  if (status === 'active') syncIndicatorDot.classList.add('active');
+  else if (status === 'syncing') syncIndicatorDot.classList.add('syncing');
+}
+
+function updateHouseholdUIState() {
+  if (activeHouseholdId) {
+    if (householdUnpairedState) householdUnpairedState.classList.add('hidden');
+    if (householdPairedState) householdPairedState.classList.remove('hidden');
+    if (activeHouseholdCodeDisplay) activeHouseholdCodeDisplay.textContent = activeHouseholdId;
+    setSyncIndicatorStatus('active');
+  } else {
+    if (householdUnpairedState) householdUnpairedState.classList.remove('hidden');
+    if (householdPairedState) householdPairedState.classList.add('hidden');
+    setSyncIndicatorStatus('inactive');
+  }
+}
+
+async function initFirebaseSync() {
+  updateHouseholdUIState();
+  const config = getActiveFirebaseConfig();
+  if (!config) {
+    if (activeHouseholdId) {
+      if (householdLiveStatusText) householdLiveStatusText.textContent = "Paired (Cloud config needed)";
+    }
+    return;
+  }
+
+  try {
+    const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js");
+    const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+
+    const app = getApps().length > 0 ? getApps()[0] : initializeApp(config);
+    firestoreInstance = getFirestore(app);
+
+    if (activeHouseholdId) {
+      listenToHousehold(activeHouseholdId);
+    }
+  } catch (err) {
+    console.warn("Firebase Live Sync initialization failed:", err);
+    setSyncIndicatorStatus('inactive');
+  }
+}
+
+async function listenToHousehold(householdId) {
+  if (!firestoreInstance || !householdId) return;
+  if (firestoreUnsubscribe) {
+    firestoreUnsubscribe();
+    firestoreUnsubscribe = null;
+  }
+
+  setSyncIndicatorStatus('syncing');
+  try {
+    const { doc, onSnapshot } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+    const docRef = doc(firestoreInstance, "households", householdId);
+
+    firestoreUnsubscribe = onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (data && data.updatedAt) {
+          applyRemoteCloudData(data);
+        }
+      }
+      setSyncIndicatorStatus('active');
+      if (householdLiveStatusText) householdLiveStatusText.textContent = "Live Connected to Cloud";
+    }, (err) => {
+      console.warn("Snapshot listener notice:", err);
+      setSyncIndicatorStatus('inactive');
+      if (householdLiveStatusText) householdLiveStatusText.textContent = "Sync Standby (Offline/Reconnecting)";
+    });
+  } catch (err) {
+    console.warn("Failed to listen to household:", err);
+  }
+}
+
+function applyRemoteCloudData(data) {
+  isRemoteCloudUpdate = true;
+  if (Array.isArray(data.foodItems)) foodItems = data.foodItems;
+  if (Array.isArray(data.cookedItems)) cookedItems = data.cookedItems;
+  if (Array.isArray(data.archivedItems)) archivedItems = data.archivedItems;
+  if (Array.isArray(data.shoppingList)) shoppingList = data.shoppingList;
+  if (data.customGroceryDB && typeof data.customGroceryDB === 'object') {
+    customGroceryDB = { ...customGroceryDB, ...data.customGroceryDB };
+    try { localStorage.setItem('kk_custom_grocery_db', JSON.stringify(customGroceryDB)); } catch {}
+  }
+  saveData(false);
+  render();
+  isRemoteCloudUpdate = false;
+}
+
+let pushDebounceTimer = null;
+async function pushStateToCloud() {
+  if (!firestoreInstance || !activeHouseholdId || isRemoteCloudUpdate) return;
+  setSyncIndicatorStatus('syncing');
+
+  clearTimeout(pushDebounceTimer);
+  pushDebounceTimer = setTimeout(async () => {
+    try {
+      const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+      const docRef = doc(firestoreInstance, "households", activeHouseholdId);
+      await setDoc(docRef, {
+        foodItems,
+        cookedItems,
+        archivedItems,
+        shoppingList,
+        customGroceryDB,
+        updatedAt: Date.now()
+      }, { merge: true });
+      setSyncIndicatorStatus('active');
+    } catch (err) {
+      console.warn("Failed to push state:", err);
+      setSyncIndicatorStatus('active');
+    }
+  }, 350);
+}
+
+function generateHouseholdCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = 'SHALLOT-';
+  for (let i = 0; i < 4; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
 }
 
 // Calculate remaining days
