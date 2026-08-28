@@ -3,20 +3,20 @@
 <img src="icon.png" width="120" height="120" alt="Shallot: Kitchen Keeper Icon" style="border-radius: 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);" />
 
 # Shallot: Kitchen Keeper 🧅🔪
-**A zero-dependency, mobile-first culinary inventory tracker and food-waste prevention PWA.**
+**A zero-dependency, mobile-exclusive culinary inventory tracker and food-waste prevention PWA.**
 
-[![Version](https://img.shields.io/badge/version-1.6.0-blue.svg?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.6.1-blue.svg?style=flat-square)](CHANGELOG.md)
+[![Platform](https://img.shields.io/badge/Platform-Mobile%20Only%20(iOS%20%26%20Android)-orange.svg?style=flat-square)](#-mobile-exclusive-design)
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg?style=flat-square)](LICENSE)
 [![PWA Ready](https://img.shields.io/badge/PWA-Installable-success.svg?style=flat-square)](manifest.json)
 [![Security: CSP Hardened](https://img.shields.io/badge/Security-CSP%20Hardened-green.svg?style=flat-square)](index.html)
-[![Stack](https://img.shields.io/badge/Architecture-Vanilla%20ES6%2B%20%7C%20CSS3-orange.svg?style=flat-square)](#-architecture--engineering-highlights)
 [![Offline](https://img.shields.io/badge/Offline-Service%20Worker-teal.svg?style=flat-square)](sw.js)
 
 <p align="center">
-  <a href="https://strothman.github.io/shallot-kitchen-keeper/"><strong>🚀 Launch Live Web App</strong></a> •
+  <a href="https://strothman.github.io/shallot-kitchen-keeper/"><strong>📱 Open Mobile App</strong></a> •
+  <a href="#-mobile-exclusive-design">Mobile Design</a> •
   <a href="#-key-features">Key Features</a> •
-  <a href="#-architecture--engineering-highlights">Architecture</a> •
-  <a href="#-mobile-installation">Mobile Setup</a> •
+  <a href="#-mobile-installation">Phone Setup</a> •
   <a href="CHANGELOG.md">Changelog</a>
 </p>
 
@@ -24,11 +24,22 @@
 
 ---
 
+## 📱 Mobile-Exclusive Design
+
+> [!IMPORTANT]
+> **Shallot: Kitchen Keeper is designed exclusively for mobile devices.** It is built from the ground up as a lightweight, touch-native Progressive Web Application (PWA) tailored specifically for smartphones (iPhone & Android).
+
+### Why Mobile-Exclusive?
+- **Real-Time Kitchen Use**: Designed to be used right at your fridge, pantry shelf, or grocery store aisle with one hand.
+- **Touch-First Physics**: Silky 60fps dual-swipe card gestures (swipe left to archive, swipe right to restock) with native haptic vibration feedback.
+- **Offline Reliability**: Works 100% offline inside walk-in pantries or basements with no cell signal.
+- **Home Screen App**: Installs directly onto your iOS or Android home screen with app icon badging for expiring items.
+
+---
+
 ## 📖 Overview
 
-**Shallot: Kitchen Keeper** is a high-performance, mobile-first Progressive Web Application (PWA) designed to eliminate household food waste. It organizes your kitchen into distinct storage zones (**Fridge**, **Pantry**, **Freezer**), tracks real-time expiration timelines with dynamic urgency alerts, powers dual-direction touch gestures, parses bulk grocery receipts, automatically learns your custom foods, and dynamically suggests zero-waste recipes using expiring ingredients.
-
-Built with a **zero-dependency vanilla architecture**, the app delivers sub-50ms cold-start times, silky 60fps gesture animations, offline-first reliability, and strict enterprise security hardening.
+**Shallot** is a high-performance mobile kitchen tracker that organizes your household food into distinct zones (**Fridge**, **Pantry**, **Freezer**), tracks real-time expiration timelines, auto-learns your custom foods, parses pasted grocery receipts, and suggests zero-waste recipes using expiring ingredients.
 
 ---
 

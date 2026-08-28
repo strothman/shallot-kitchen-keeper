@@ -2432,8 +2432,121 @@ body {
 }
 
 /* ==========================================================================
-   Import Choice Modal (Merge vs. Replace)
+   Mobile Data Management & Transfer Hub
    ========================================================================== */
+.data-mgmt-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.data-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.data-card-btn {
+  background: var(--bg-app);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.data-card-btn:active {
+  transform: scale(0.96);
+  border-color: var(--color-primary);
+}
+
+.data-card-icon-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.data-card-icon-wrap.primary {
+  background: rgba(212, 130, 68, 0.15);
+  color: var(--color-primary);
+}
+
+.data-card-icon-wrap.amber {
+  background: rgba(243, 156, 18, 0.15);
+  color: #f39c12;
+}
+
+.data-card-icon-wrap.green {
+  background: rgba(39, 174, 96, 0.15);
+  color: #27ae60;
+}
+
+.data-card-icon-wrap.purple {
+  background: rgba(155, 89, 182, 0.15);
+  color: #9b59b6;
+}
+
+.data-card-icon-wrap.blue {
+  background: rgba(52, 152, 219, 0.15);
+  color: #3498db;
+}
+
+.data-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.data-card-info strong {
+  font-size: 0.85rem;
+  color: var(--color-text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.data-card-info small {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.data-single-action {
+  margin-top: 2px;
+}
+
+.data-csv-btn {
+  width: 100%;
+  background: var(--bg-app);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.data-csv-btn:active {
+  transform: scale(0.98);
+  border-color: #3498db;
+}
+
 .import-choice-card {
   max-width: 420px;
 }

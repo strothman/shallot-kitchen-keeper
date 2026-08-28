@@ -455,60 +455,89 @@
             </div>
           </div>
 
-          <div class="backup-section">
-            <div class="backup-section-header">
-              <h3>Data Management</h3>
-              <span class="storage-health-pill" id="storageHealthPill">💾 0 KB used</span>
+          <!-- Mobile Backup & Data Hub -->
+          <div class="stats-section data-mgmt-section">
+            <div class="stats-section-header">
+              <div>
+                <h3>Backup & Data Transfer</h3>
+                <p class="section-subtitle">Safeguard or transfer your kitchen inventory</p>
+              </div>
+              <span class="storage-health-pill" id="storageHealthPill">💾 0 KB used • Offline</span>
             </div>
-            <div class="backup-actions-grid">
-              <button type="button" class="backup-btn" id="exportBtn" title="Export complete JSON backup">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                  <polyline points="7 10 12 15 17 10"></polyline>
-                  <line x1="12" y1="15" x2="12" y2="3"></line>
-                </svg>
-                Export JSON
+
+            <div class="data-cards-grid">
+              <button type="button" class="data-card-btn" id="exportBtn" title="Export complete JSON backup file">
+                <div class="data-card-icon-wrap primary">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                </div>
+                <div class="data-card-info">
+                  <strong>Save Backup</strong>
+                  <small>Download .JSON</small>
+                </div>
               </button>
-              <button type="button" class="backup-btn" id="exportCsvBtn" title="Download inventory for Excel/Sheets">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="8" y1="13" x2="16" y2="13"></line>
-                  <line x1="8" y1="17" x2="16" y2="17"></line>
-                </svg>
-                Export CSV
+
+              <button type="button" class="data-card-btn" id="importBtn" title="Upload and restore JSON backup file">
+                <div class="data-card-icon-wrap amber">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                  </svg>
+                </div>
+                <div class="data-card-info">
+                  <strong>Restore Backup</strong>
+                  <small>Upload .JSON</small>
+                </div>
               </button>
-              <button type="button" class="backup-btn" id="copyBackupBtn" title="Copy backup code to clipboard">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-                Copy Code
+
+              <button type="button" class="data-card-btn" id="copyBackupBtn" title="Copy backup code to clipboard">
+                <div class="data-card-icon-wrap green">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                </div>
+                <div class="data-card-info">
+                  <strong>Copy Code</strong>
+                  <small>Clipboard text</small>
+                </div>
               </button>
-              <button type="button" class="backup-btn" id="importBtn" title="Upload JSON backup file">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                  <polyline points="17 8 12 3 7 8"></polyline>
-                  <line x1="12" y1="3" x2="12" y2="15"></line>
-                </svg>
-                Import File
+
+              <button type="button" class="data-card-btn" id="pasteBackupBtn" title="Paste backup code from clipboard">
+                <div class="data-card-icon-wrap purple">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                  </svg>
+                </div>
+                <div class="data-card-info">
+                  <strong>Paste Code</strong>
+                  <small>Restore text</small>
+                </div>
               </button>
-              <button type="button" class="backup-btn" id="pasteBackupBtn" title="Paste backup code from clipboard">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                </svg>
-                Paste Code
-              </button>
-              <button type="button" class="backup-btn" id="seedDemoBtn" title="Load sample development items">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                  <path
-                    d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-                </svg>
-                Load Samples
-              </button>
-              <input type="file" id="importFile" accept=".json" style="display: none;">
             </div>
+
+            <div class="data-single-action">
+              <button type="button" class="data-csv-btn" id="exportCsvBtn" title="Download inventory for Excel/Sheets">
+                <div class="data-card-icon-wrap blue">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="8" y1="13" x2="16" y2="13"></line>
+                    <line x1="8" y1="17" x2="16" y2="17"></line>
+                  </svg>
+                </div>
+                <div class="data-card-info">
+                  <strong>Export to Spreadsheet (CSV)</strong>
+                  <small>Open in Excel, Google Sheets, or Numbers</small>
+                </div>
+              </button>
+            </div>
+            <input type="file" id="importFile" accept=".json" style="display: none;">
           </div>
 
           <div class="cooked-log-section">
