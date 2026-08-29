@@ -448,14 +448,18 @@ try {
 }
 
 // Deterministic Dynamic Color Generator (Gives each unique item its own vibrant color!)
+const gradientCache = new Map();
 function getDeterministicGradient(str) {
+  if (gradientCache.has(str)) return gradientCache.get(str);
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash);
   }
   const hue1 = Math.abs(hash % 360);
   const hue2 = (hue1 + 40) % 360;
-  return `linear-gradient(135deg, hsl(${hue1}, 75%, 60%), hsl(${hue2}, 80%, 45%))`;
+  const gradient = `linear-gradient(135deg, hsl(${hue1}, 75%, 60%), hsl(${hue2}, 80%, 45%))`;
+  gradientCache.set(str, gradient);
+  return gradient;
 }
 
 // --- Advanced Fuzzy Root Stemmer & Token Extractor ---
@@ -514,66 +518,87 @@ function extractRootFoodTokens(rawName) {
   return Array.from(new Set(candidateKeys.filter(k => k.length >= 2)));
 }
 
-// Dynamic Smart Icon Generator
+// Dynamic Smart Icon Generator with High-Speed In-Memory Cache
+const iconHtmlCache = new Map();
 function getGroceryIconHTML(name, zone = 'fridge') {
   const norm = name.toLowerCase().trim();
+  const cacheKey = `${norm}__${zone}`;
+  if (iconHtmlCache.has(cacheKey)) {
+    return iconHtmlCache.get(cacheKey);
+  }
+
   const candidates = extractRootFoodTokens(name);
+  let html = null;
 
   // 1. Check User-Learned Custom Database
   if (customGroceryDB[norm]) {
-    return `
+    html = `
       <div class="grocery-icon-inner" style="background: ${customGroceryDB[norm].bg}">
         <span class="grocery-icon-emoji">${customGroceryDB[norm].emoji}</span>
       </div>
     `;
   }
-  for (const cand of candidates) {
-    if (customGroceryDB[cand]) {
-      return `
-        <div class="grocery-icon-inner" style="background: ${customGroceryDB[cand].bg}">
-          <span class="grocery-icon-emoji">${customGroceryDB[cand].emoji}</span>
-        </div>
-      `;
+  if (!html) {
+    for (const cand of candidates) {
+      if (customGroceryDB[cand]) {
+        html = `
+          <div class="grocery-icon-inner" style="background: ${customGroceryDB[cand].bg}">
+            <span class="grocery-icon-emoji">${customGroceryDB[cand].emoji}</span>
+          </div>
+        `;
+        break;
+      }
     }
   }
 
   // 2. Check 500+ Static Knowledge Base
-  for (const cand of candidates) {
-    if (GROCERY_DATABASE[cand]) {
-      const iconData = GROCERY_DATABASE[cand];
-      return `
-        <div class="grocery-icon-inner" style="background: ${iconData.bg}">
-          <span class="grocery-icon-emoji">${iconData.emoji}</span>
-        </div>
-      `;
+  if (!html) {
+    for (const cand of candidates) {
+      if (GROCERY_DATABASE[cand]) {
+        const iconData = GROCERY_DATABASE[cand];
+        html = `
+          <div class="grocery-icon-inner" style="background: ${iconData.bg}">
+            <span class="grocery-icon-emoji">${iconData.emoji}</span>
+          </div>
+        `;
+        break;
+      }
     }
   }
 
   // Substring fallback check
-  for (const [key, iconData] of Object.entries(GROCERY_DATABASE)) {
-    if (norm.includes(key)) {
-      return `
-        <div class="grocery-icon-inner" style="background: ${iconData.bg}">
-          <span class="grocery-icon-emoji">${iconData.emoji}</span>
-        </div>
-      `;
+  if (!html) {
+    for (const [key, iconData] of Object.entries(GROCERY_DATABASE)) {
+      if (norm.includes(key)) {
+        html = `
+          <div class="grocery-icon-inner" style="background: ${iconData.bg}">
+            <span class="grocery-icon-emoji">${iconData.emoji}</span>
+          </div>
+        `;
+        break;
+      }
     }
   }
 
   // 3. Fallback: Dynamic Smart Icon with Deterministic Unique Gradient & Contextual Emoji
-  let fallbackEmoji = '🥗';
-  if (zone === 'freezer' || norm.includes('ice') || norm.includes('frozen')) fallbackEmoji = '🧊';
-  else if (zone === 'pantry' || norm.includes('can') || norm.includes('box') || norm.includes('bag')) fallbackEmoji = '🥫';
-  else if (norm.includes('drink') || norm.includes('water') || norm.includes('juice')) fallbackEmoji = '🧃';
-  else if (norm.includes('meat') || norm.includes('protein') || norm.includes('beef')) fallbackEmoji = '🥩';
-  else if (norm.includes('sweet') || norm.includes('dessert') || norm.includes('cake')) fallbackEmoji = '🍰';
+  if (!html) {
+    let fallbackEmoji = '🥗';
+    if (zone === 'freezer' || norm.includes('ice') || norm.includes('frozen')) fallbackEmoji = '🧊';
+    else if (zone === 'pantry' || norm.includes('can') || norm.includes('box') || norm.includes('bag')) fallbackEmoji = '🥫';
+    else if (norm.includes('drink') || norm.includes('water') || norm.includes('juice')) fallbackEmoji = '🧃';
+    else if (norm.includes('meat') || norm.includes('protein') || norm.includes('beef')) fallbackEmoji = '🥩';
+    else if (norm.includes('sweet') || norm.includes('dessert') || norm.includes('cake')) fallbackEmoji = '🍰';
 
-  const dynamicBg = getDeterministicGradient(norm);
-  return `
-    <div class="grocery-icon-inner" style="background: ${dynamicBg}">
-      <span class="grocery-icon-emoji">${fallbackEmoji}</span>
-    </div>
-  `;
+    const dynamicBg = getDeterministicGradient(norm);
+    html = `
+      <div class="grocery-icon-inner" style="background: ${dynamicBg}">
+        <span class="grocery-icon-emoji">${fallbackEmoji}</span>
+      </div>
+    `;
+  }
+
+  iconHtmlCache.set(cacheKey, html);
+  return html;
 }
 
 // Find Knowledge Match (User DB first, then 500+ Static DB)
@@ -621,6 +646,9 @@ function learnGroceryItem(name, zone, days, unit, customEmoji = null) {
     days: parseInt(days, 10) || 7,
     unit: unit || 'pcs'
   };
+
+  // Invalidate icon cache so newly learned foods immediately update
+  iconHtmlCache.clear();
 
   try {
     localStorage.setItem('kk_custom_grocery_db', JSON.stringify(customGroceryDB));
@@ -854,7 +882,7 @@ let firestoreInstance = null;
 let firestoreUnsubscribe = null;
 
 // Application Version
-const APP_VERSION = '1.8.7';
+const APP_VERSION = '1.8.8';
 
 // Initialize Application
 function init() {
@@ -1220,12 +1248,13 @@ function getUrgency(daysRemaining) {
   return 'low';
 }
 
-// --- Main Inventory Render ---
+// --- Main Inventory Render (High-Performance Batched DOM Injection) ---
 function render() {
   foodList.innerHTML = '';
 
+  const searchNorm = currentSearch.toLowerCase().trim();
   let filtered = foodItems.filter(item => {
-    const matchesSearch = item.name.toLowerCase().includes(currentSearch.toLowerCase());
+    const matchesSearch = !searchNorm || item.name.toLowerCase().includes(searchNorm);
     const matchesZone = currentZoneFilter === 'all' || item.zone === currentZoneFilter;
     return matchesSearch && matchesZone;
   });
@@ -1245,6 +1274,8 @@ function render() {
   } else {
     emptyState.classList.add('hidden');
     foodList.classList.remove('hidden');
+
+    const fragment = document.createDocumentFragment();
 
     filtered.forEach(item => {
       const daysLeft = calculateDaysRemaining(item);
@@ -1269,7 +1300,7 @@ function render() {
           <input type="checkbox" class="food-card-select-check" data-id="${escapeHTML(item.id)}" ${isSelected ? 'checked' : ''}>
           <div class="food-item-left">
             <div class="food-item-icon">
-              ${getGroceryIconHTML(item.name)}
+              ${getGroceryIconHTML(item.name, item.zone)}
             </div>
             <div class="food-item-info">
               <span class="food-item-name">${escapeHTML(item.name)}</span>
@@ -1331,8 +1362,10 @@ function render() {
       });
 
       initDualSwipeGestures(wrapperEl, cardEl, item);
-      foodList.appendChild(wrapperEl);
+      fragment.appendChild(wrapperEl);
     });
+
+    foodList.appendChild(fragment);
   }
 
   updateStatsCounters();
@@ -2379,10 +2412,14 @@ function checkDailyNotifications() {
 
 // --- Event Listeners & Power-User Desktop Shortcuts ---
 function setupEventListeners() {
-  // Search & Sort
+  // Search & Sort (with lightweight debounce for rapid keystrokes)
+  let searchDebounceTimer = null;
   searchInput.addEventListener('input', (e) => {
     currentSearch = e.target.value;
-    render();
+    if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(() => {
+      render();
+    }, 120);
   });
 
   sortBySelect.addEventListener('change', (e) => {

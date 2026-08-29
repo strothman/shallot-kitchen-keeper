@@ -5,6 +5,17 @@ This changelog is updated at least once per development day.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.8] - 2026-08-28
+
+### Performance & Scalability Enhancements
+- **High-Performance Inventory Engine**:
+  - Implemented zero-overhead CSS virtualization (`content-visibility: auto; contain-intrinsic-size: auto 76px;`) to eliminate layout overhead for off-screen food cards.
+  - Batched DOM mutations in `render()` with in-memory `DocumentFragment` to prevent layout thrashing.
+  - Added in-memory memoization caches for deterministic gradient styling and icon template generation.
+  - Added search input debouncing (120ms) for lag-free keyboard typing with large lists (200–1,000+ items).
+
+---
+
 ## [1.8.7] - 2026-08-28
 
 ### Added & Enhanced

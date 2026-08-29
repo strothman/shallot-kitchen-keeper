@@ -1243,6 +1243,8 @@ body {
   border-radius: var(--radius-md);
   user-select: none;
   touch-action: pan-y;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 76px;
   transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1), margin 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
   display: flex;
   align-items: center;

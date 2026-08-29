@@ -2,172 +2,135 @@
 
 <img src="icon.png" width="120" height="120" alt="Shallot: Kitchen Keeper Icon" style="border-radius: 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);" />
 
-# Shallot: Kitchen Keeper 🧅🔪
-**A zero-dependency, mobile-exclusive culinary inventory tracker and food-waste prevention PWA.**
+# Shallot: Kitchen Keeper 🧅
+**Your smart, easy kitchen companion to track groceries, eliminate food waste, and save money.**
 
-[![Version](https://img.shields.io/badge/version-1.7.0-blue.svg?style=flat-square)](CHANGELOG.md)
-[![Platform](https://img.shields.io/badge/Platform-Mobile%20Only%20(iOS%20%26%20Android)-orange.svg?style=flat-square)](#-mobile-exclusive-design)
+[![Version](https://img.shields.io/badge/version-1.8.8-blue.svg?style=flat-square)](CHANGELOG.md)
+[![Platform](https://img.shields.io/badge/Platform-iPhone%20%7C%20Android%20%7C%20Web-orange.svg?style=flat-square)](#-what-platforms-does-it-work-on)
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg?style=flat-square)](LICENSE)
 [![PWA Ready](https://img.shields.io/badge/PWA-Installable-success.svg?style=flat-square)](manifest.json)
-[![Security: CSP Hardened](https://img.shields.io/badge/Security-CSP%20Hardened-green.svg?style=flat-square)](index.html)
-[![Offline](https://img.shields.io/badge/Offline-Service%20Worker-teal.svg?style=flat-square)](sw.js)
+[![Offline](https://img.shields.io/badge/Offline-100%25%20Ready-teal.svg?style=flat-square)](sw.js)
 
 <p align="center">
-  <a href="https://strothman.github.io/shallot-kitchen-keeper/"><strong>📱 Open Mobile App</strong></a> •
-  <a href="#-mobile-exclusive-design">Mobile Design</a> •
-  <a href="THEME.md">Shallot Plum Theme</a> •
-  <a href="#-household-live-sync">Household Sync</a> •
-  <a href="#-key-features">Key Features</a> •
-  <a href="#-mobile-installation">Phone Setup</a> •
-  <a href="CHANGELOG.md">Changelog</a>
+  <a href="https://strothman.github.io/shallot-kitchen-keeper/"><strong>📱 Open the App</strong></a> •
+  <a href="#-what-is-shallot">What is Shallot?</a> •
+  <a href="#-what-platforms-does-it-work-on">Supported Platforms</a> •
+  <a href="#-how-to-best-use-shallot-step-by-step-guide">How to Use</a> •
+  <a href="#-key-features-explained-simply">Features</a> •
+  <a href="#-installation-guide">Setup Guide</a>
 </p>
 
 </div>
 
 ---
 
-## 📱 Mobile-Exclusive Design
+## 📖 What is Shallot?
 
-> [!IMPORTANT]
-> **Shallot: Kitchen Keeper is designed exclusively for mobile devices.** It is built from the ground up as a lightweight, touch-native Progressive Web Application (PWA) tailored specifically for smartphones (iPhone & Android).
+Have you ever opened your fridge and found forgotten vegetables that went bad, or bought a bottle of sauce at the grocery store only to realize you already had one in the pantry? 
 
-### Why Mobile-Exclusive?
-- **Real-Time Kitchen Use**: Designed to be used right at your fridge, pantry shelf, or grocery store aisle with one hand.
-- **Touch-First Physics**: Silky 60fps dual-swipe card gestures (swipe left to archive, swipe right to restock) with native haptic vibration feedback.
-- **Offline Reliability**: Works 100% offline inside walk-in pantries or basements with no cell signal.
-- **Home Screen App**: Installs directly onto your iOS or Android home screen with app icon badging for expiring items.
+**Shallot** is a friendly, high-speed food tracker designed to solve that problem. It acts as a digital inventory of everything in your kitchen, automatically sorting your food into **Fridge**, **Pantry**, and **Freezer**, and tracking how fresh each item is with clear countdown timers.
 
----
-
-## 👫 Household Real-Time Live Sync
-
-Keep your pantry, fridge, and freezer synchronized across multiple phones in real-time:
-- **6-Digit Invite Code**: Tap the household icon (`👫`) in the header to generate a shareable code (e.g. `SHALLOT-8492`).
-- **Instant Sub-Second Sync**: Whenever either of you adds an item, cooks dinner, or edits a shelf-life, both devices update instantly (<200ms).
-- **Private Cloud Database**: Connects to your own free Firebase Firestore instance via [`firebase-config.js`](firebase-config.js) or the in-app cloud configuration dialog.
+### What Shallot Does For You:
+- 🕒 **Prevents Food Waste**: Color-coded cards show you what needs to be cooked soon so food never goes to waste.
+- ⚡ **Auto-Fills Storage & Shelf Life**: When you type a food name like *"Milk"* or *"Spinach"*, Shallot automatically knows where it belongs and how many days it stays fresh.
+- 🧊 **"Freeze It" Life Saver**: With one tap, move leftovers or fresh meats to the freezer and get an automatic +30 day extension.
+- 🍳 **Recipe Rescue Assistant**: Suggests easy meals (*stir-fries, frittatas, soups, pastas, smoothies*) made from ingredients in your kitchen that are expiring soon.
+- 👫 **Shared Household Sync**: Lets family members or roommates share the same real-time inventory on their phones with a simple 6-digit code.
+- 💰 **Tracks Your Savings**: Calculates estimated dollars saved and pounds of food rescued every time you cook an item instead of throwing it away.
 
 ---
 
-## 📖 Overview
+## 📱 What Platforms Does It Work On?
 
-**Shallot** is a high-performance mobile kitchen tracker that organizes your household food into distinct zones (**Fridge**, **Pantry**, **Freezer**), tracks real-time expiration timelines, auto-learns your custom foods, parses pasted grocery receipts, and suggests zero-waste recipes using expiring ingredients.
+Shallot is built as a modern **Progressive Web App (PWA)**, meaning you don't need to download anything from an app store. It runs straight from your browser and can be added directly to your home screen like a native mobile app.
 
----
+| Platform | Support | Experience |
+| :--- | :---: | :--- |
+| **iPhone & iPad (iOS)** | ✅ **Recommended** | Full-screen app experience via Safari ("Add to Home Screen"), smooth swipe gestures, offline storage. |
+| **Android Phones & Tablets** | ✅ **Recommended** | Full-screen install via Chrome ("Install App"), home screen badge counter for expiring foods, offline storage. |
+| **Desktop (Mac, Windows, Linux)** | ✅ **Supported** | Fast keyboard shortcuts (`/` to search, `N` for new food, `Esc` to close), responsive mobile-frame view. |
 
-## ✨ Key Features
-
-### 1. 🧠 500+ Global Culinary Database & Fuzzy Stemmer
-- **Massive Built-in Knowledge Base**: 500+ ingredients, international staples, meats, cheeses, and produce.
-- **Fuzzy Root Stemmer NLP**: Strips brand names (*"Trader Joe's"*), packaging (*"bag", "can", "carton"*), and plural forms (*"gnocchis" $\rightarrow$ "gnocchi"*, *"noodles" $\rightarrow$ "noodle"*) to match true food icons automatically.
-- **1-Tap Interactive Emoji Picker**: Tap any food icon to customize its emoji from an interactive tray with instant real-time search.
-
-### 2. 🎛️ Hybrid Precision Shelf-Life Stepper & Preset Chips
-- Effortlessly adjust freshness timelines using **`[-]` / `[+]` precision steppers**, **direct tap-to-type input**, or **one-tap preset chips** (*3d, 5d, 7d, 14d, 30d, 90d*).
-
-### 3. ⚡ "Multi-Item Quick Stock" NLP Parser
-- Paste an entire grocery receipt or shopping list (e.g. `"2 milk, 6 eggs, 500g chicken, spinach, sourdough bread, pasta"`).
-- Automatically parses quantities and units, looks up shelf-lives and storage zones, and stocks everything in **one tap**.
-
-### 2. 🍳 Partial Quantity Cooking
-- When cooking an item with quantity $> 1$ (e.g. `6 eggs` or `500g chicken`), a smart dialog lets you cook a portion (e.g. `2`), automatically keeping the remainder (`4`) in your inventory.
-
-### 3. 🔴 App Icon Badge Counter (`navigator.setAppBadge`)
-- Native PWA badging updates your phone's home screen icon with the exact number of groceries needing urgent cooking.
-
-### 4. 💵 Freshness Rating & Rescued Value Tracker
-- Real-time **Kitchen Freshness Rating (%)**, estimated **Dollar Value Rescued ($)**, and **Food Waste Prevented (lbs)** gamified in the Dashboard.
-
-### 5. 📤 One-Tap Shopping List Share
-- Native Web Share integration (`navigator.share`) allowing one-tap AirDrop, SMS, or WhatsApp sharing of your restock list.
-
-### 6. 🧠 Smart Grocery Auto-Presets
-- Live semantic matching engine detects foods as you type (*e.g., typing `"Milk"` sets **Fridge • 5 Days • Liters**; `"Bread"` sets **Pantry • 5 Days**; `"Pasta"` sets **Pantry • 180 Days***).
-- Visual `✨ Auto-preset` indicator synchronizes storage zones and shelf-life sliders automatically.
-
-### 7. 👈👉 Dual-Direction Swipe Gestures
-- **Swipe Left (📦 Archive)**: Fluid touch and pointer drag gesture with threshold resistance, haptic vibration feedback, exit collapse animation, and a 5-second **Undo** toast.
-- **Swipe Right (🛒 Restock)**: Instantly routes items into the integrated **Shopping & Restock List**.
-
-### 8. 🧊 "Freeze It" Quick Shelf-Life Extender (+30 Days)
-- One-tap action to transfer perishable items from the Fridge or Pantry into the Freezer, automatically recalculating freshness deadlines with a **+30 day** extension.
-
-### 9. 🍳 "Recipe Rescue" Generator
-- Client-side heuristic matching algorithm evaluates active kitchen inventory with $\le 4$ days remaining.
-- Suggests categorized meals (*Farmhouse Frittatas, Stir-Fries, Soups, Pastas, Smoothies*) with a **"Cook & Save"** button that logs ingredients directly to your culinary history.
-
-### 10. ⌨️ Desktop Power-User Keyboard Shortcuts
-- Press **`N`** (New Item), **`Q`** (Quick Stock), **`/`** (Search), **`R`** (Recipe Rescue), **`K`** (Shopping List), **`A`** (Archive), **`D`** (Dashboard), **`Esc`** (Close Modals).
-
-### 5. 📦 Batch Multi-Select Mode
-- Dedicated selection toolbar enabling bulk **Batch Cook**, **Batch Freeze (+30d)**, and **Batch Archive** operations across multiple grocery items simultaneously.
-
-### 6. 🎨 Shallot Signature Theme Suite
-- **Shallot Plum (Dark)**: Signature dark mode matching the app icon's rich velvet aubergine (`#180d21`), copper glow (`#d48244`), and sprout green accents.
-- **Shallot Linen (Light)**: Clean, high-contrast light mode with plum headers and warm copper accents.
-- **Midnight (OLED)**: Stealth, pure-black dark mode with emerald accents.
-
-### 7. 🔒 Enterprise Security & Data Integrity
-- **Strict Content Security Policy (CSP)**: Hardened headers prohibiting untrusted scripts or injection vectors.
-- **XSS Sanitization**: Dynamic entity escaping (`escapeHTML`) across all rendering channels.
-- **Schema-Validated Backups**: Deep type validation and boundary sanitization on imported JSON backups.
+> [!TIP]
+> **100% Offline Capable**: Shallot works completely offline once loaded. You can use it inside basements, grocery stores, or walk-in pantries even without cell signal or Wi-Fi.
 
 ---
 
-## 🏛️ Architecture & Engineering Highlights
+## 🚀 How to Best Use Shallot (Step-by-Step Guide)
+
+Here is the easiest way to make Shallot a seamless part of your daily routine:
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                      Client UI Layer                        │
-│   (index.html + style.css • 100dvh • Safe Area Insets)      │
-└──────────────┬───────────────────────────────┬──────────────┘
-               │                               │
-┌──────────────▼──────────────┐ ┌──────────────▼──────────────┐
-│  Dual Gesture Physics Engine│ │   Smart Auto-Preset Engine   │
-│  (PointerEvents + Haptics)  │ │   (Semantic Knowledge Base)  │
-└──────────────┬──────────────┘ └──────────────┬──────────────┘
-               │                               │
-┌──────────────▼───────────────────────────────▼──────────────┐
-│                 Application State Core                      │
-│      (foodItems • cookedLog • archive • shoppingList)       │
-└──────────────┬───────────────────────────────┬──────────────┘
-               │                               │
-┌──────────────▼──────────────┐ ┌──────────────▼──────────────┐
-│  LocalStorage Persistence   │ │   Offline Service Worker     │
-│  + JSON Schema Validator    │ │   (sw.js • Cache Storage)   │
-└─────────────────────────────┘ └─────────────────────────────┘
+  1. Stock In 🛒 ───► 2. Glance Daily 🕒 ───► 3. Cook or Freeze 🍳 ───► 4. Restock 📋
+  (Add items in sec)   (See what's expiring)     (Portion cook or freeze)   (1-swipe shopping list)
 ```
 
-- **Zero Third-Party Dependencies**: No framework overhead, no build-step required. Pure HTML5, Vanilla CSS, and modern ES6+.
-- **Touch-Optimized Physics**: Gesture handlers calculate directional vectors on a deadzone threshold to seamlessly distinguish between vertical page scrolling and horizontal card swiping.
-- **Progressive Web App (PWA)**: Full offline support via Service Worker caching (`CacheStorage`) and standalone fullscreen installation on iOS and Android.
+### Step 1: Stock Your Kitchen in Seconds
+- Tap the **`＋ Add Food`** button at the bottom of the screen.
+- Start typing the name of an item (*e.g., "Eggs", "Strawberries", "Canned Tomatoes"*).
+- Shallot will instantly select the correct zone (**Fridge**, **Pantry**, or **Freezer**) and set a recommended freshness timeline.
+- Tap **Save** — that's it!
+
+### Step 2: Glance at Your Inventory Daily
+- Open the app when planning what to eat.
+- Look at the color indicators:
+  - 🟢 **Green (Low Urgency)**: Fresh and ready.
+  - 🟡 **Orange (Medium Urgency)**: 3–4 days left.
+  - 🔴 **Red (High Urgency)**: 1–2 days left — cook this first!
+
+### Step 3: Cook or Freeze Before It Spoils
+- **Making a meal?** Tap **`🍳 Cook`** on any card. If you have multiple units (e.g., 6 eggs), you can cook just a few and keep the rest in your inventory.
+- **Can't cook it in time?** Tap the **`🧊` (Freeze)** button to move it to the Freezer, extending its shelf life by +30 days.
+
+### Step 4: Swipe to Build Your Shopping List
+- **Swipe Right** on any card you're running low on to instantly add it to your **Shopping List**.
+- **Swipe Left** on an item to archive it when finished.
+- Tap the shopping cart (`🛒`) in the top bar to view your list, check off items as you buy them, or share the list with someone via text or AirDrop.
+
+### Step 5: Sync with Roommates or Family
+- Tap the household icon (`👫`) in the top right.
+- Tap **Create Household Code** (or enter an existing code from your partner/roommate).
+- Now, whenever anyone buys groceries or cooks dinner, everyone's phone updates in real-time.
 
 ---
 
-## 📱 Mobile Installation
+## ✨ Key Features Explained Simply
 
-### iOS (Safari)
-1. Open the [live application](https://strothman.github.io/shallot-kitchen-keeper/) in Safari.
-2. Tap the **Share** button (box with upward arrow).
-3. Scroll down and select **"Add to Home Screen"**.
-4. Launch from your home screen for the full native app experience.
+### 🧠 Built-In Food Knowledge (500+ Items)
+Shallot comes pre-programmed with a database of over 500 grocery items, international staples, produce, and meats. It recognizes plurals and brand names automatically (*"Trader Joe's Sourdough Loaf" $\rightarrow$ Bread*).
 
-### Android (Chrome)
-1. Open the application in Chrome.
-2. Tap the three-dot menu and select **"Install App"** (or tap the installation banner).
+### 🎨 Customizable Food Icons & Themes
+- Tap any food preview icon to open the **1-Tap Emoji Picker Tray** and choose your favorite emoji.
+- Choose from 3 hand-crafted themes in the Dashboard:
+  - **Shallot Plum (Signature Dark)**: Deep velvet aubergine and warm copper accents.
+  - **Shallot Linen (Clean Light)**: Fresh, high-contrast light mode.
+  - **Midnight (OLED Dark)**: Pure black energy-saving dark mode.
+
+### 📦 Batch Multi-Select Mode
+Need to manage a lot of groceries at once? Tap **Select** in the top-left to check multiple items and **Batch Cook**, **Batch Freeze**, or **Batch Archive** them all in one click.
+
+### 💾 Private, Safe & Exportable Data
+- **Your Data Stays Yours**: Your inventory is stored directly on your phone.
+- **CSV & JSON Backups**: Export your entire kitchen to Excel/Google Sheets, or create one-click text backup codes anytime from the Kitchen Dashboard.
 
 ---
 
-## 💻 Local Development & Desktop Preview
+## 📲 Installation Guide
 
-Clone the repository:
-```bash
-git clone https://github.com/strothman/shallot-kitchen-keeper.git
-cd shallot-kitchen-keeper
-```
+### On iPhone & iPad (Safari)
+1. Open the [live app link](https://strothman.github.io/shallot-kitchen-keeper/) in **Safari**.
+2. Tap the **Share** icon (square with an arrow pointing up).
+3. Scroll down and tap **"Add to Home Screen"**.
+4. Tap **Add** in the top right. The Shallot app icon will now appear on your home screen!
 
-### Windows Desktop Launcher
-- Double-click **`launch_app.bat`** to preview Shallot in a clean standalone desktop app window (powered by Chrome/Edge application mode).
-- Double-click **`launch_silent.vbs`** for a silent launch without a terminal window flash.
+### On Android (Chrome)
+1. Open the [live app link](https://strothman.github.io/shallot-kitchen-keeper/) in **Chrome**.
+2. Tap the three-dot menu icon in the upper right.
+3. Tap **"Install App"** or **"Add to Home screen"**.
+
+### On Desktop (Windows / Mac)
+- Open in any modern web browser.
+- **Keyboard Shortcuts**: Press **`/`** to search, **`N`** for a new item, **`R`** for recipe rescue, **`K`** for shopping list, **`A`** for archive, and **`D`** for dashboard.
+- On Windows, double-click **`launch_app.bat`** in the project folder to open Shallot as a dedicated desktop window.
 
 ---
 
@@ -175,21 +138,21 @@ cd shallot-kitchen-keeper
 
 ```text
 shallot-kitchen-keeper/
-├── index.html          # Semantic HTML5 app markup, modals, badges & CSP
-├── style.css           # Design tokens, themes, animations & responsive layout
-├── app.js              # State engine, gesture physics, presets & recipe generator
-├── manifest.json       # PWA Manifest for mobile standalone installation
-├── sw.js               # Service Worker for offline asset caching
-├── icon.ico            # Windows multi-resolution application icon
-├── icon.png            # 512x512 Master PWA & Apple Touch asset
+├── index.html          # Clean semantic markup, modals, and layout
+├── style.css           # Design system, themes, and animations
+├── app.js              # Core logic, food database, and sync engine
+├── manifest.json       # Mobile PWA installation metadata
+├── sw.js               # Offline service worker cache
+├── icon.png            # High-resolution application icon
+├── icon.ico            # Windows desktop launcher icon
 ├── launch_app.bat      # Windows desktop preview batch launcher
-├── launch_silent.vbs   # Zero-flash VBScript launcher wrapper
+├── launch_silent.vbs   # Silent background launcher
 ├── LICENSE             # Open source MIT License
-├── README.md           # Technical documentation and showcase
-└── CHANGELOG.md        # Daily development activity log
+├── README.md           # Documentation and guide
+└── CHANGELOG.md        # Daily development history
 ```
 
 ---
 
 ## 📄 License
-This project is licensed under the [MIT License](LICENSE) — feel free to use, modify, and distribute.
+This project is open source and available under the [MIT License](LICENSE).
