@@ -5,7 +5,7 @@
 # Shallot: Kitchen Keeper 🧅
 **Your smart, easy kitchen companion to track groceries, eliminate food waste, and save money.**
 
-[![Version](https://img.shields.io/badge/version-1.8.8-blue.svg?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.9.0-blue.svg?style=flat-square)](CHANGELOG.md)
 [![Platform](https://img.shields.io/badge/Platform-iPhone%20%7C%20Android%20%7C%20Web-orange.svg?style=flat-square)](#-what-platforms-does-it-work-on)
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg?style=flat-square)](LICENSE)
 [![PWA Ready](https://img.shields.io/badge/PWA-Installable-success.svg?style=flat-square)](manifest.json)

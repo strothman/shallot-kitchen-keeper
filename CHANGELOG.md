@@ -5,6 +5,35 @@ This changelog is updated at least once per development day.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2026-08-29
+
+### Fixed & Enhanced
+- **Mobile Brand Header Lockup & Alignment**:
+  - Resolved disjointed and awkward line wrapping on iPhone / narrow mobile screens where "Kitchen Keeper" wrapped awkwardly beside "Shallot".
+  - Implemented a clean, vertically-centered stacked lockup with signature display typography and tracked small-caps sub-branding.
+  - Optimized header action button touch targets and spacing for mobile viewports.
+
+---
+
+## [1.8.9] - 2026-08-29
+
+### Added & Enhanced
+- **New Curated Food Presets & Icons**:
+  - Added official styled presets with tailored gradients and shelf-life metrics for:
+    - 🦀 **Crab Meat** (Fridge, 2d, pcs)
+    - 🍓 **Fresh Strawberries** / **Strawberries** (Fridge, 3d, packs)
+    - 🧆 **Hush Puppies** (Fridge, 4d, pcs)
+    - 🥬 **Iceberg Lettuce** (Fridge, 7d, pcs)
+    - 🥒 **Korean Cucumber** (Fridge, 7d, pcs)
+    - 🍋 **Limes** (Fridge, 21d, packs)
+    - 🥬 **Purple Cabbage** / **Red Cabbage** (Fridge, 14d, pcs)
+    - 🎃 **Spaghetti Squash** (Pantry, 25d, pcs)
+- **Developer Curator Controls**:
+  - Added **🧹 Clear Feed** to resolve and flush the entire uncataloged food cloud queue.
+  - Added individual **✓ Resolve** buttons on each feed card to easily dismiss processed requests directly from mobile or desktop.
+
+---
+
 ## [1.8.8] - 2026-08-28
 
 ### Performance & Scalability Enhancements

@@ -85,15 +85,21 @@ const GROCERY_DATABASE = {
   'kale': { emoji: '🥬', bg: 'linear-gradient(135deg, #78e08f, #1e824c)', zone: 'fridge', days: 6, unit: 'packs' },
   'cabbage': { emoji: '🥬', bg: 'linear-gradient(135deg, #d4fc79, #96e6a1)', zone: 'fridge', days: 14, unit: 'pcs' },
   'napa cabbage': { emoji: '🥬', bg: 'linear-gradient(135deg, #d4fc79, #96e6a1)', zone: 'fridge', days: 14, unit: 'pcs' },
+  'purple cabbage': { emoji: '🥬', bg: 'linear-gradient(135deg, #d6a2e8, #6c5ce7)', zone: 'fridge', days: 14, unit: 'pcs' },
+  'red cabbage': { emoji: '🥬', bg: 'linear-gradient(135deg, #d6a2e8, #6c5ce7)', zone: 'fridge', days: 14, unit: 'pcs' },
   'bok choy': { emoji: '🥬', bg: 'linear-gradient(135deg, #78e08f, #2ecc71)', zone: 'fridge', days: 6, unit: 'pcs' },
+  'iceberg lettuce': { emoji: '🥬', bg: 'linear-gradient(135deg, #d4fc79, #55efc4)', zone: 'fridge', days: 7, unit: 'pcs' },
+  'iceberg': { emoji: '🥬', bg: 'linear-gradient(135deg, #d4fc79, #55efc4)', zone: 'fridge', days: 7, unit: 'pcs' },
   'bell pepper': { emoji: '🫑', bg: 'linear-gradient(135deg, #fffa65, #ffb8b8)', zone: 'fridge', days: 8, unit: 'pcs' },
   'pepper': { emoji: '🌶️', bg: 'linear-gradient(135deg, #ff7675, #ff2e2e)', zone: 'fridge', days: 10, unit: 'pcs' },
   'jalapeno': { emoji: '🌶️', bg: 'linear-gradient(135deg, #78e08f, #2ecc71)', zone: 'fridge', days: 10, unit: 'pcs' },
   'habanero': { emoji: '🌶️', bg: 'linear-gradient(135deg, #ff7675, #e67e22)', zone: 'fridge', days: 14, unit: 'pcs' },
   'chili': { emoji: '🌶️', bg: 'linear-gradient(135deg, #ff7675, #c0392b)', zone: 'fridge', days: 14, unit: 'pcs' },
   'cucumber': { emoji: '🥒', bg: 'linear-gradient(135deg, #a8e6cf, #3b7a57)', zone: 'fridge', days: 7, unit: 'pcs' },
+  'korean cucumber': { emoji: '🥒', bg: 'linear-gradient(135deg, #a8e6cf, #10ac84)', zone: 'fridge', days: 7, unit: 'pcs' },
   'zucchini': { emoji: '🥒', bg: 'linear-gradient(135deg, #81ecec, #00cec9)', zone: 'fridge', days: 7, unit: 'pcs' },
   'squash': { emoji: '🎃', bg: 'linear-gradient(135deg, #ffeaa7, #f39c12)', zone: 'pantry', days: 20, unit: 'pcs' },
+  'spaghetti squash': { emoji: '🎃', bg: 'linear-gradient(135deg, #ffeaa7, #fdcb6e)', zone: 'pantry', days: 25, unit: 'pcs' },
   'butternut': { emoji: '🎃', bg: 'linear-gradient(135deg, #ffeaa7, #e67e22)', zone: 'pantry', days: 30, unit: 'pcs' },
   'pumpkin': { emoji: '🎃', bg: 'linear-gradient(135deg, #ffb8b8, #e67e22)', zone: 'pantry', days: 30, unit: 'pcs' },
   'eggplant': { emoji: '🍆', bg: 'linear-gradient(135deg, #d6a2e8, #9b59b6)', zone: 'fridge', days: 6, unit: 'pcs' },
@@ -133,7 +139,10 @@ const GROCERY_DATABASE = {
   'grapefruit': { emoji: '🍊', bg: 'linear-gradient(135deg, #ff7675, #e67e22)', zone: 'pantry', days: 14, unit: 'pcs' },
   'lemon': { emoji: '🍋', bg: 'linear-gradient(135deg, #fffbeb, #f1c40f)', zone: 'fridge', days: 21, unit: 'pcs' },
   'lime': { emoji: '🍋', bg: 'linear-gradient(135deg, #a8e6cf, #2ecc71)', zone: 'fridge', days: 21, unit: 'pcs' },
+  'limes': { emoji: '🍋', bg: 'linear-gradient(135deg, #a8e6cf, #2ecc71)', zone: 'fridge', days: 21, unit: 'packs' },
   'strawberry': { emoji: '🍓', bg: 'linear-gradient(135deg, #ffb8b8, #e84393)', zone: 'fridge', days: 3, unit: 'packs' },
+  'strawberries': { emoji: '🍓', bg: 'linear-gradient(135deg, #ffb8b8, #e84393)', zone: 'fridge', days: 3, unit: 'packs' },
+  'fresh strawberries': { emoji: '🍓', bg: 'linear-gradient(135deg, #ffb8b8, #e84393)', zone: 'fridge', days: 3, unit: 'packs' },
   'blueberry': { emoji: '🫐', bg: 'linear-gradient(135deg, #74b9ff, #0984e3)', zone: 'fridge', days: 6, unit: 'packs' },
   'raspberry': { emoji: '🍓', bg: 'linear-gradient(135deg, #ffb8b8, #e84393)', zone: 'fridge', days: 3, unit: 'packs' },
   'blackberry': { emoji: '🫐', bg: 'linear-gradient(135deg, #a29bfe, #6c5ce7)', zone: 'fridge', days: 4, unit: 'packs' },
@@ -192,6 +201,7 @@ const GROCERY_DATABASE = {
   'shrimp': { emoji: '🍤', bg: 'linear-gradient(135deg, #ffb8b8, #e17055)', zone: 'freezer', days: 30, unit: 'g' },
   'prawn': { emoji: '🍤', bg: 'linear-gradient(135deg, #ffb8b8, #e17055)', zone: 'freezer', days: 30, unit: 'g' },
   'crab': { emoji: '🦀', bg: 'linear-gradient(135deg, #ff7675, #c0392b)', zone: 'fridge', days: 2, unit: 'pcs' },
+  'crab meat': { emoji: '🦀', bg: 'linear-gradient(135deg, #ff7675, #d63031)', zone: 'fridge', days: 2, unit: 'pcs' },
   'lobster': { emoji: '🦞', bg: 'linear-gradient(135deg, #ff7675, #c0392b)', zone: 'fridge', days: 2, unit: 'pcs' },
   'scallop': { emoji: '🦪', bg: 'linear-gradient(135deg, #ffffff, #ffeaa7)', zone: 'fridge', days: 2, unit: 'g' },
   'mussel': { emoji: '🦪', bg: 'linear-gradient(135deg, #2d3436, #0984e3)', zone: 'fridge', days: 2, unit: 'g' },
@@ -251,6 +261,10 @@ const GROCERY_DATABASE = {
   'donut': { emoji: '🍩', bg: 'linear-gradient(135deg, #fd79a8, #e84393)', zone: 'pantry', days: 2, unit: 'pcs' },
   'waffle': { emoji: '🧇', bg: 'linear-gradient(135deg, #ffeaa7, #d7a15c)', zone: 'freezer', days: 30, unit: 'packs' },
   'pancake': { emoji: '🥞', bg: 'linear-gradient(135deg, #ffeaa7, #d7a15c)', zone: 'fridge', days: 4, unit: 'pcs' },
+  'hush puppy': { emoji: '🧆', bg: 'linear-gradient(135deg, #ffeaa7, #d35400)', zone: 'fridge', days: 4, unit: 'pcs' },
+  'hush puppies': { emoji: '🧆', bg: 'linear-gradient(135deg, #ffeaa7, #d35400)', zone: 'fridge', days: 4, unit: 'pcs' },
+  'hushpuppy': { emoji: '🧆', bg: 'linear-gradient(135deg, #ffeaa7, #d35400)', zone: 'fridge', days: 4, unit: 'pcs' },
+  'hushpuppies': { emoji: '🧆', bg: 'linear-gradient(135deg, #ffeaa7, #d35400)', zone: 'fridge', days: 4, unit: 'pcs' },
   'rice': { emoji: '🍚', bg: 'linear-gradient(135deg, #ffffff, #dfe6e9)', zone: 'pantry', days: 180, unit: 'kg' },
   'brown rice': { emoji: '🍚', bg: 'linear-gradient(135deg, #ffeaa7, #bd843c)', zone: 'pantry', days: 180, unit: 'kg' },
   'jasmine rice': { emoji: '🍚', bg: 'linear-gradient(135deg, #ffffff, #dfe6e9)', zone: 'pantry', days: 180, unit: 'kg' },
@@ -882,7 +896,7 @@ let firestoreInstance = null;
 let firestoreUnsubscribe = null;
 
 // Application Version
-const APP_VERSION = '1.8.8';
+const APP_VERSION = '1.9.0';
 
 // Initialize Application
 function init() {
@@ -1201,7 +1215,7 @@ async function renderCuratorFeed() {
 
     const snap = await firestoreInstance.collection('uncataloged_foods')
       .orderBy('requestCount', 'desc')
-      .limit(20)
+      .limit(30)
       .get();
 
     if (snap.empty) {
@@ -1222,13 +1236,68 @@ async function renderCuratorFeed() {
             <span class="curator-sub">${escapeHTML((data.suggestedZone || 'fridge').toUpperCase())} • ${data.suggestedShelfLife || 7}d • ${escapeHTML(data.suggestedUnit || 'pcs')}</span>
           </div>
         </div>
-        <span class="curator-badge">🔥 ${data.requestCount || 1} ${data.requestCount === 1 ? 'request' : 'requests'}</span>
+        <div class="curator-card-right">
+          <span class="curator-badge">🔥 ${data.requestCount || 1} ${data.requestCount === 1 ? 'request' : 'requests'}</span>
+          <button type="button" class="curator-dismiss-btn" data-doc-id="${escapeHTML(docSnap.id)}" title="Resolve item & remove from feed">✓ Resolve</button>
+        </div>
       `;
       container.appendChild(card);
+    });
+
+    // Attach listeners to dismiss buttons
+    container.querySelectorAll('.curator-dismiss-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const docId = btn.getAttribute('data-doc-id');
+        if (!docId) return;
+        btn.disabled = true;
+        btn.textContent = '...';
+        await deleteCuratorItem(docId);
+      });
     });
   } catch (err) {
     container.innerHTML = '<div class="curator-loading-state">Unable to load feed (offline or reconnecting).</div>';
     console.debug('Curator feed notice:', err);
+  }
+}
+
+async function deleteCuratorItem(docId) {
+  const config = getActiveFirebaseConfig();
+  if (!config || !firestoreInstance) return;
+  try {
+    await firestoreInstance.collection('uncataloged_foods').doc(docId).delete();
+    showToast('✨', 'Food request resolved & removed from feed!');
+    renderCuratorFeed();
+  } catch (err) {
+    console.error('Error deleting uncataloged food item:', err);
+    showToast('⚠️', 'Could not delete item.');
+    renderCuratorFeed();
+  }
+}
+
+async function flushCuratorFeed() {
+  if (!confirm('Resolve and clear all items from the Missing Food Icons feed?')) return;
+  const config = getActiveFirebaseConfig();
+  if (!config) return;
+  try {
+    if (!firestoreInstance) {
+      if (!firebase.apps || !firebase.apps.length) {
+        firebase.initializeApp(config);
+      }
+      firestoreInstance = firebase.firestore();
+    }
+    const snap = await firestoreInstance.collection('uncataloged_foods').get();
+    if (snap.empty) {
+      showToast('✨', 'Feed is already empty!');
+      return;
+    }
+    const batch = firestoreInstance.batch();
+    snap.forEach(docSnap => batch.delete(docSnap.ref));
+    await batch.commit();
+    showToast('🧹', 'Missing Food Icons feed cleared!');
+    renderCuratorFeed();
+  } catch (err) {
+    alert('Error clearing feed: ' + (err.message || err));
   }
 }
 
@@ -2779,6 +2848,14 @@ function setupEventListeners() {
     refreshCuratorFeedBtn.addEventListener('click', () => {
       triggerHaptic('light');
       renderCuratorFeed();
+    });
+  }
+
+  const flushCuratorFeedBtn = document.getElementById('flushCuratorFeedBtn');
+  if (flushCuratorFeedBtn) {
+    flushCuratorFeedBtn.addEventListener('click', () => {
+      triggerHaptic('medium');
+      flushCuratorFeed();
     });
   }
 

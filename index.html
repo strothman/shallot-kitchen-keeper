@@ -32,9 +32,11 @@
     <!-- Header -->
     <header class="app-header">
       <div class="logo-container">
-        <img src="icon.png" alt="Shallot Logo" class="logo-img"
-          style="width: 28px; height: 28px; border-radius: 7px; object-fit: cover;">
-        <h1>Shallot <span class="logo-subtitle">Kitchen Keeper</span></h1>
+        <img src="icon.png" alt="Shallot Logo" class="logo-img">
+        <div class="logo-text-block">
+          <h1 class="logo-title">Shallot</h1>
+          <span class="logo-subtitle">Kitchen Keeper</span>
+        </div>
       </div>
       <div class="header-actions">
         <!-- Recipe Rescue Generator -->
@@ -375,7 +377,7 @@
           <div class="modal-title-group">
             <div style="display: flex; align-items: center; gap: 8px;">
               <h2>Kitchen Dashboard</h2>
-              <span class="app-version-pill" id="appVersionPill">v1.8.7</span>
+              <span class="app-version-pill" id="appVersionPill">v1.9.0</span>
             </div>
             <p class="modal-subtitle">Settings, freshness score & cloud sync</p>
           </div>
@@ -562,7 +564,10 @@
                 <h3>📡 Missing Food Icons (Dev Feed)</h3>
                 <p class="section-subtitle">Real-time list of uncataloged foods entered by users</p>
               </div>
-              <button type="button" class="refresh-curator-btn" id="refreshCuratorFeedBtn">🔄 Refresh</button>
+              <div class="curator-btn-group">
+                <button type="button" class="refresh-curator-btn" id="refreshCuratorFeedBtn">🔄 Refresh</button>
+                <button type="button" class="flush-curator-btn" id="flushCuratorFeedBtn" title="Clear all resolved missing icon entries from cloud feed">🧹 Clear Feed</button>
+              </div>
             </div>
             <div class="curator-items-list" id="curatorItemsList">
               <div class="curator-loading-state">Tap refresh to load uncataloged community food requests...</div>
@@ -573,7 +578,7 @@
           <div class="app-version-footer">
             <div class="version-status-pill">
               <span class="version-pulse-dot"></span>
-              <span id="appVersionFooterLabel">Shallot v1.8.7 • Mobile Edition</span>
+              <span id="appVersionFooterLabel">Shallot v1.9.0 • Mobile Edition</span>
             </div>
             <button type="button" class="check-updates-btn" id="checkForUpdatesBtn">🔄 Check for Updates & Reload</button>
             <span class="copyright-label">Copyright (c) 2026 Shallot (strothman)</span>
