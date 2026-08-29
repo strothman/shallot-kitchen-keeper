@@ -5,6 +5,17 @@ This changelog is updated at least once per development day.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.1] - 2026-08-29
+
+### Fixed & Streamlined
+- **Search Bar Text Overlap Fix**:
+  - Resolved WebKit / iOS Safari search input text overlapping with the magnifying glass icon by increasing left padding to 42px with explicit appearance normalization.
+  - Simplified mobile placeholder text to `Search groceries...` for clean presentation.
+- **Streamlined Food Item Card Actions**:
+  - Removed the standalone `🧊` quick-action button on food cards to eliminate clutter and provide more space for Cook, Edit, and Delete actions. (Zone changes can still be made in the item Edit modal).
+
+---
+
 ## [1.9.0] - 2026-08-29
 
 ### Fixed & Enhanced

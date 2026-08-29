@@ -896,7 +896,7 @@ let firestoreInstance = null;
 let firestoreUnsubscribe = null;
 
 // Application Version
-const APP_VERSION = '1.9.0';
+const APP_VERSION = '1.9.1';
 
 // Initialize Application
 function init() {
@@ -1381,7 +1381,6 @@ function render() {
               ${daysLeft <= 0 ? 'Expired!' : daysLeft === 1 ? '1 day left' : `${daysLeft} days left`}
             </span>
             <div class="item-actions-row">
-              ${item.zone !== 'freezer' ? `<button class="item-btn freeze-item-btn" data-id="${escapeHTML(item.id)}" title="Move to Freezer (+30d)">🧊</button>` : ''}
               <button class="item-btn cook-item-btn" data-id="${escapeHTML(item.id)}" title="Cook / Save">🍳 Cook</button>
               <button class="item-btn edit-item-btn" data-id="${escapeHTML(item.id)}" title="Edit">✏️</button>
               <button class="item-btn delete-item-btn" data-id="${escapeHTML(item.id)}" title="Delete">🗑️</button>
@@ -1400,15 +1399,6 @@ function render() {
         else selectedItemIds.delete(item.id);
         updateBatchToolbar();
       });
-
-      // Freeze button handler
-      const freezeBtn = wrapperEl.querySelector('.freeze-item-btn');
-      if (freezeBtn) {
-        freezeBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          freezeItem(item);
-        });
-      }
 
       // Cook button handler (with partial quantity support!)
       wrapperEl.querySelector('.cook-item-btn').addEventListener('click', (e) => {
