@@ -522,8 +522,8 @@ function extractRootFoodTokens(rawName) {
     if (singleSingular !== single) candidateKeys.push(singleSingular);
 
     if (i < words.length - 1) {
-      candidateKeys.push(`${words[i]} ${words[i+1]}`);
-      candidateKeys.push(`${singularize(words[i])} ${singularize(words[i+1])}`);
+      candidateKeys.push(`${words[i]} ${words[i + 1]}`);
+      candidateKeys.push(`${singularize(words[i])} ${singularize(words[i + 1])}`);
     }
   }
 
@@ -1021,7 +1021,7 @@ function getActiveFirebaseConfig() {
     try {
       const parsed = JSON.parse(custom);
       if (parsed && (parsed.apiKey || parsed.projectId)) return parsed;
-    } catch {}
+    } catch { }
   }
   if (window.SHALLOT_FIREBASE_CONFIG && window.SHALLOT_FIREBASE_CONFIG.apiKey) {
     return window.SHALLOT_FIREBASE_CONFIG;
@@ -1119,7 +1119,7 @@ function applyRemoteCloudData(data) {
   if (Array.isArray(data.shoppingList)) shoppingList = data.shoppingList;
   if (data.customGroceryDB && typeof data.customGroceryDB === 'object') {
     customGroceryDB = { ...customGroceryDB, ...data.customGroceryDB };
-    try { localStorage.setItem('kk_custom_grocery_db', JSON.stringify(customGroceryDB)); } catch {}
+    try { localStorage.setItem('kk_custom_grocery_db', JSON.stringify(customGroceryDB)); } catch { }
   }
   saveData(false);
   render();
@@ -1721,7 +1721,7 @@ function shareShoppingList() {
     navigator.share({
       title: 'Shallot Shopping List',
       text: listText
-    }).catch(() => {});
+    }).catch(() => { });
   } else if (navigator.clipboard) {
     navigator.clipboard.writeText(listText).then(() => {
       showToast('📋', 'Shopping list copied to clipboard!');
@@ -2069,9 +2069,9 @@ function updateStatsCounters() {
   // PWA App Icon Badging API
   if ('setAppBadge' in navigator) {
     if (urgentCount > 0) {
-      navigator.setAppBadge(urgentCount).catch(() => {});
+      navigator.setAppBadge(urgentCount).catch(() => { });
     } else if ('clearAppBadge' in navigator) {
-      navigator.clearAppBadge().catch(() => {});
+      navigator.clearAppBadge().catch(() => { });
     }
   }
 
@@ -2306,8 +2306,8 @@ function prepareImportData(data) {
     return;
   }
 
-  const rawFood = Array.isArray(data) 
-    ? data 
+  const rawFood = Array.isArray(data)
+    ? data
     : (data.foodItems || data.items || data.foodList || data.groceries || []);
   const rawCooked = data.cookedItems || data.cookedLog || data.cookedHistory || [];
   const rawArchived = data.archivedItems || data.archive || data.archived || [];
@@ -2391,7 +2391,7 @@ function executeMergeImport() {
     customGroceryDB = { ...customGroceryDB, ...pendingImportData.cleanCustomDB };
     try {
       localStorage.setItem('kk_custom_grocery_db', JSON.stringify(customGroceryDB));
-    } catch {}
+    } catch { }
   }
 
   saveData();
@@ -2418,7 +2418,7 @@ function executeReplaceImport() {
   customGroceryDB = pendingImportData.cleanCustomDB || {};
   try {
     localStorage.setItem('kk_custom_grocery_db', JSON.stringify(customGroceryDB));
-  } catch {}
+  } catch { }
   applyTheme(pendingImportData.targetTheme);
 
   saveData();
@@ -2961,7 +2961,7 @@ function setupEventListeners() {
       activeHouseholdId = newCode;
       localStorage.setItem('kk_household_id', newCode);
       updateHouseholdUIState();
-      
+
       const config = getActiveFirebaseConfig();
       if (!config) {
         showToast('⚙️', `Household code created: ${newCode}!`);
