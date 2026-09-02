@@ -2741,6 +2741,8 @@ async function lookupBarcodeDetails(barcode) {
     } catch (err) {
       console.debug('Barcode online lookup notice:', err);
     }
+  }
+
   // 3. Fallback: Secondary Open Barcode Registry (UPCitemdb)
   try {
     const upcUrl = `https://api.upcitemdb.com/prod/trial/lookup?upc=${encodeURIComponent(cleanCode)}`;
@@ -3012,6 +3014,9 @@ async function stopBarcodeScanner() {
   }
   isBarcodeScannerActive = false;
   isScannerTorchOn = false;
+  scannerModal.classList.add('hidden');
+}
+
 // ==========================================================================
 // Voice & Natural Language Grocery Haul Batch Ingestion
 // ==========================================================================
