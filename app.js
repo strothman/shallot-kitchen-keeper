@@ -2684,13 +2684,16 @@ async function startBarcodeScanner() {
     return;
   }
 
-  if (scannerStatusBadge) scannerStatusBadge.textContent = 'Starting camera...';
+  if (scannerStatusBadge) scannerStatusBadge.textContent = 'Starting camera & autofocus...';
   scannerModal.classList.remove('hidden');
 
   try {
     if (!barcodeScannerInstance) {
       barcodeScannerInstance = new Html5Qrcode('scannerVideoRegion', {
         verbose: false,
+        experimentalFeatures: {
+          useBarCodeDetectorIfSupported: true
+        },
         formatsToSupport: [
           Html5QrcodeSupportedFormats.UPC_A,
           Html5QrcodeSupportedFormats.UPC_E,
@@ -2703,13 +2706,27 @@ async function startBarcodeScanner() {
     }
 
     const config = {
-      fps: 15,
-      qrbox: { width: 250, height: 160 },
-      aspectRatio: 1.0
+      fps: 20,
+      qrbox: (viewfinderWidth, viewfinderHeight) => {
+        const width = Math.min(Math.floor(viewfinderWidth * 0.9), 340);
+        const height = Math.min(Math.floor(viewfinderHeight * 0.68), 190);
+        return { width, height };
+      },
+      aspectRatio: 1.333333
+    };
+
+    // Continuous macro auto-focus constraints with high-definition resolution to eliminate blur
+    const cameraConstraints = {
+      facingMode: scannerCameraFacing,
+      width: { min: 640, ideal: 1280, max: 1920 },
+      height: { min: 480, ideal: 720, max: 1080 },
+      advanced: [
+        { focusMode: 'continuous' }
+      ]
     };
 
     await barcodeScannerInstance.start(
-      { facingMode: scannerCameraFacing },
+      cameraConstraints,
       config,
       (decodedText) => {
         handleScannedBarcode(decodedText);
@@ -2720,24 +2737,42 @@ async function startBarcodeScanner() {
     );
 
     isBarcodeScannerActive = true;
-    if (scannerStatusBadge) scannerStatusBadge.textContent = 'Align barcode within frame';
+    if (scannerStatusBadge) scannerStatusBadge.textContent = 'Align barcode (Tap frame to focus)';
 
+    // Verify track capabilities and enforce continuous autofocus if available
     try {
       const capabilities = barcodeScannerInstance.getRunningTrackCapabilities();
       if (scannerTorchBtn) {
         scannerTorchBtn.disabled = !capabilities.torch;
+      }
+      if (capabilities.focusMode && capabilities.focusMode.includes('continuous')) {
+        await barcodeScannerInstance.applyVideoConstraints({
+          advanced: [{ focusMode: 'continuous' }]
+        });
       }
     } catch {
       if (scannerTorchBtn) scannerTorchBtn.disabled = true;
     }
 
   } catch (err) {
-    console.error('Camera startup error:', err);
-    if (scannerStatusBadge) {
-      scannerStatusBadge.textContent = 'Camera access denied or unavailable.';
-    }
-    if (manualBarcodeDetails) {
-      manualBarcodeDetails.open = true;
+    console.debug('Primary camera constraint notice, trying standard mode:', err);
+    try {
+      await barcodeScannerInstance.start(
+        { facingMode: scannerCameraFacing },
+        { fps: 20, qrbox: { width: 280, height: 160 } },
+        (decodedText) => handleScannedBarcode(decodedText),
+        () => {}
+      );
+      isBarcodeScannerActive = true;
+      if (scannerStatusBadge) scannerStatusBadge.textContent = 'Align barcode within frame';
+    } catch (fallbackErr) {
+      console.error('Camera startup error:', fallbackErr);
+      if (scannerStatusBadge) {
+        scannerStatusBadge.textContent = 'Camera access denied or unavailable.';
+      }
+      if (manualBarcodeDetails) {
+        manualBarcodeDetails.open = true;
+      }
     }
   }
 }
@@ -2924,6 +2959,31 @@ function setupEventListeners() {
       scannerCameraFacing = scannerCameraFacing === 'environment' ? 'user' : 'environment';
       await stopBarcodeScanner();
       await startBarcodeScanner();
+    });
+  }
+
+  // Tap viewfinder to trigger instant macro auto-focus
+  const scannerViewfinder = document.querySelector('.scanner-viewfinder-container');
+  if (scannerViewfinder) {
+    scannerViewfinder.addEventListener('click', async (e) => {
+      if (!isBarcodeScannerActive || !barcodeScannerInstance) return;
+      try {
+        await barcodeScannerInstance.applyVideoConstraints({
+          advanced: [{ focusMode: 'continuous' }]
+        });
+        triggerHaptic('light');
+        if (scannerStatusBadge) {
+          const prev = scannerStatusBadge.textContent;
+          scannerStatusBadge.textContent = '🎯 Autofocus Refreshed';
+          setTimeout(() => {
+            if (isBarcodeScannerActive && scannerStatusBadge.textContent === '🎯 Autofocus Refreshed') {
+              scannerStatusBadge.textContent = prev;
+            }
+          }, 1200);
+        }
+      } catch (err) {
+        console.debug('Autofocus refresh notice:', err);
+      }
     });
   }
 
