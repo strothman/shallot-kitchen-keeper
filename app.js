@@ -2730,63 +2730,62 @@ async function startBarcodeScanner() {
   }
 
   lockPortraitOrientation();
-  if (scannerStatusBadge) scannerStatusBadge.textContent = 'Starting camera & autofocus...';
+  if (scannerStatusBadge) scannerStatusBadge.textContent = 'Starting camera...';
   if (scannerFailAssist) scannerFailAssist.classList.add('hidden');
   const laserGuide = document.getElementById('scannerLaserGuide');
   if (laserGuide) laserGuide.classList.remove('stalled-scan-pulse');
   scannerModal.classList.remove('hidden');
 
+  // Cleanly clear any previous instance to ensure fresh clean state
+  if (barcodeScannerInstance) {
+    try {
+      await barcodeScannerInstance.stop();
+    } catch {}
+    try {
+      barcodeScannerInstance.clear();
+    } catch {}
+    barcodeScannerInstance = null;
+  }
+
   try {
-    if (!barcodeScannerInstance) {
-      barcodeScannerInstance = new Html5Qrcode('scannerVideoRegion', {
-        verbose: false,
-        experimentalFeatures: {
-          useBarCodeDetectorIfSupported: true
-        },
-        formatsToSupport: [
-          Html5QrcodeSupportedFormats.UPC_A,
-          Html5QrcodeSupportedFormats.UPC_E,
-          Html5QrcodeSupportedFormats.EAN_13,
-          Html5QrcodeSupportedFormats.EAN_8,
-          Html5QrcodeSupportedFormats.CODE_128,
-          Html5QrcodeSupportedFormats.QR_CODE
-        ]
-      });
-    }
+    barcodeScannerInstance = new Html5Qrcode('scannerVideoRegion', {
+      verbose: false,
+      formatsToSupport: [
+        Html5QrcodeSupportedFormats.UPC_A,
+        Html5QrcodeSupportedFormats.UPC_E,
+        Html5QrcodeSupportedFormats.EAN_13,
+        Html5QrcodeSupportedFormats.EAN_8,
+        Html5QrcodeSupportedFormats.CODE_128,
+        Html5QrcodeSupportedFormats.QR_CODE
+      ]
+    });
 
     const config = {
-      fps: 20,
+      fps: 15,
       qrbox: (viewfinderWidth, viewfinderHeight) => {
-        const width = Math.min(Math.floor(viewfinderWidth * 0.9), 340);
-        const height = Math.min(Math.floor(viewfinderHeight * 0.68), 190);
+        const width = Math.min(Math.floor(viewfinderWidth * 0.88), 320);
+        const height = Math.min(Math.floor(viewfinderHeight * 0.65), 180);
         return { width, height };
       },
-      aspectRatio: 1.333333
+      aspectRatio: 1.0
     };
 
-    // Continuous macro auto-focus constraints with high-definition resolution to eliminate blur
-    const cameraConstraints = {
-      facingMode: scannerCameraFacing,
-      width: { min: 640, ideal: 1280, max: 1920 },
-      height: { min: 480, ideal: 720, max: 1080 },
-      advanced: [
-        { focusMode: 'continuous' }
-      ]
-    };
+    // Standard facingMode object (fully compatible with iOS Safari & Android PWA)
+    const cameraConfig = { facingMode: scannerCameraFacing };
 
     await barcodeScannerInstance.start(
-      cameraConstraints,
+      cameraConfig,
       config,
       (decodedText) => {
         handleScannedBarcode(decodedText);
       },
       (errorMessage) => {
-        // Normal frame tick
+        // Normal frame scan tick
       }
     );
 
     isBarcodeScannerActive = true;
-    if (scannerStatusBadge) scannerStatusBadge.textContent = 'Align barcode (Tap frame to focus)';
+    if (scannerStatusBadge) scannerStatusBadge.textContent = 'Align barcode within frame';
 
     // Start 6-second scan assistance timer in case barcode fails to decode
     if (scanAssistTimer) clearTimeout(scanAssistTimer);
@@ -2794,46 +2793,40 @@ async function startBarcodeScanner() {
       if (isBarcodeScannerActive) {
         if (scannerFailAssist) scannerFailAssist.classList.remove('hidden');
         if (scannerStatusBadge) {
-          scannerStatusBadge.textContent = '⚠️ Hard to scan? Tap frame to focus or turn on 🔦';
+          scannerStatusBadge.textContent = '⚠️ Hard to scan? Tap screen to focus or turn on 🔦';
         }
         if (laserGuide) laserGuide.classList.add('stalled-scan-pulse');
       }
     }, 6000);
 
-    // Verify track capabilities and enforce continuous autofocus if available
+    // Verify track capabilities for torch
     try {
       const capabilities = barcodeScannerInstance.getRunningTrackCapabilities();
       if (scannerTorchBtn) {
         scannerTorchBtn.disabled = !capabilities.torch;
       }
       if (capabilities.focusMode && capabilities.focusMode.includes('continuous')) {
-        await barcodeScannerInstance.applyVideoConstraints({
+        barcodeScannerInstance.applyVideoConstraints({
           advanced: [{ focusMode: 'continuous' }]
-        });
+        }).catch(() => {});
       }
     } catch {
       if (scannerTorchBtn) scannerTorchBtn.disabled = true;
     }
 
   } catch (err) {
-    console.debug('Primary camera constraint notice, trying standard mode:', err);
-    try {
-      await barcodeScannerInstance.start(
-        { facingMode: scannerCameraFacing },
-        { fps: 20, qrbox: { width: 280, height: 160 } },
-        (decodedText) => handleScannedBarcode(decodedText),
-        () => {}
-      );
-      isBarcodeScannerActive = true;
-      if (scannerStatusBadge) scannerStatusBadge.textContent = 'Align barcode within frame';
-    } catch (fallbackErr) {
-      console.error('Camera startup error:', fallbackErr);
-      if (scannerStatusBadge) {
-        scannerStatusBadge.textContent = 'Camera access denied or unavailable.';
+    console.error('Camera startup error:', err);
+    isBarcodeScannerActive = false;
+    if (scannerStatusBadge) {
+      const errStr = String(err);
+      if (errStr.includes('NotAllowedError') || errStr.includes('Permission')) {
+        scannerStatusBadge.textContent = 'Camera permission denied. Enable in iOS Settings.';
+      } else {
+        scannerStatusBadge.textContent = 'Camera unavailable. Tap below to type UPC.';
       }
-      if (manualBarcodeDetails) {
-        manualBarcodeDetails.open = true;
-      }
+    }
+    if (manualBarcodeDetails) {
+      manualBarcodeDetails.open = true;
     }
   }
 }
@@ -2850,6 +2843,10 @@ async function stopBarcodeScanner() {
     } catch (err) {
       console.debug('Scanner stop error:', err);
     }
+    try {
+      barcodeScannerInstance.clear();
+    } catch {}
+    barcodeScannerInstance = null;
   }
   isBarcodeScannerActive = false;
   isScannerTorchOn = false;
