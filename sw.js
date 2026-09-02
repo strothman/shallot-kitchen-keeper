@@ -1,5 +1,5 @@
 // Shallot: Kitchen Keeper Service Worker — Offline PWA & Auto-Update Engine
-const CACHE_NAME = 'shallot-v2.1.1';
+const CACHE_NAME = 'shallot-v2.1.2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

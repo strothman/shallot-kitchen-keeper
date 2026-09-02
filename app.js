@@ -913,7 +913,7 @@ let firestoreUnsubscribe = null;
 // Application Version
 const APP_VERSION = '2.1.0';
 
-// Lock screen to portrait orientation
+// Lock screen to portrait orientation (Screen Orientation API + iOS WebKit Counter-Rotation)
 function lockPortraitOrientation() {
   try {
     if (screen && screen.orientation && typeof screen.orientation.lock === 'function') {
@@ -922,11 +922,41 @@ function lockPortraitOrientation() {
       });
     }
   } catch {}
+
+  // iOS Safari / Mobile Browser Tilt Lock: Force vertical frame even if phone turns
+  const container = document.querySelector('.app-container');
+  if (!container) return;
+
+  const isLandscape = window.innerWidth > window.innerHeight && window.innerHeight < 650;
+  if (isLandscape) {
+    const angle = window.orientation === 90 ? -90 : (window.orientation === -90 ? 90 : -90);
+    container.style.position = 'fixed';
+    container.style.top = '50%';
+    container.style.left = '50%';
+    container.style.width = window.innerHeight + 'px';
+    container.style.height = window.innerWidth + 'px';
+    container.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+    container.style.transformOrigin = 'center center';
+    container.style.zIndex = '99999';
+    document.body.style.overflow = 'hidden';
+  } else {
+    container.style.position = '';
+    container.style.top = '';
+    container.style.left = '';
+    container.style.width = '';
+    container.style.height = '';
+    container.style.transform = '';
+    container.style.transformOrigin = '';
+    container.style.zIndex = '';
+    document.body.style.overflow = '';
+  }
 }
 
 // Initialize Application
 function init() {
   lockPortraitOrientation();
+  window.addEventListener('resize', lockPortraitOrientation);
+  window.addEventListener('orientationchange', () => setTimeout(lockPortraitOrientation, 150));
   loadData();
   applyTheme(currentTheme);
   render();
@@ -2748,26 +2778,15 @@ async function startBarcodeScanner() {
   }
 
   try {
+    // Enable all-format decoder (UPC-A, UPC-E, EAN-13, EAN-8, Code 128, Code 39, ITF, QR)
     barcodeScannerInstance = new Html5Qrcode('scannerVideoRegion', {
-      verbose: false,
-      formatsToSupport: [
-        Html5QrcodeSupportedFormats.UPC_A,
-        Html5QrcodeSupportedFormats.UPC_E,
-        Html5QrcodeSupportedFormats.EAN_13,
-        Html5QrcodeSupportedFormats.EAN_8,
-        Html5QrcodeSupportedFormats.CODE_128,
-        Html5QrcodeSupportedFormats.QR_CODE
-      ]
+      verbose: false
     });
 
     const config = {
-      fps: 15,
-      qrbox: (viewfinderWidth, viewfinderHeight) => {
-        const width = Math.min(Math.floor(viewfinderWidth * 0.88), 320);
-        const height = Math.min(Math.floor(viewfinderHeight * 0.65), 180);
-        return { width, height };
-      },
-      aspectRatio: 1.0
+      fps: 10,
+      aspectRatio: 1.0,
+      disableFlip: false
     };
 
     // Standard facingMode object (fully compatible with iOS Safari & Android PWA)
