@@ -5,6 +5,21 @@ This changelog is updated at least once per development day.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-09-02
+
+### Added & Enhanced
+- **Vertical Portrait Lock & Tilt Protection**:
+  - Enforced portrait orientation lock (`screen.orientation.lock('portrait-primary')`) on mobile devices.
+  - Implemented CSS landscape tilt shielding so the app container never stretches or distorts if the phone is tipped sideways.
+- **Interactive Scan Fail State & Assisted Mode**:
+  - **Stalled Scan Timeout**: If a barcode does not decode within 6 seconds, an amber laser pulse and helpful interactive assistance card (`💡 Barcode taking too long?`) automatically appears with 1-tap button to expand manual entry.
+  - **Audio & Haptic Fail Cue**: If an uncataloged item is scanned, a gentle descending 2-tone alert and double-vibration notifies the user, seamlessly opening the *"Pair Uncataloged Barcode"* sheet to save the custom item name.
+- **Continuous Macro Autofocus & Tap-to-Refocus**:
+  - Integrated `focusMode: 'continuous'` hardware constraints, 720p HD stream resolution, and hardware-accelerated `BarcodeDetector` vision decoding to eliminate blurry camera focus.
+  - Added tap-to-focus on the camera viewfinder container to manually trigger an immediate lens autofocus pulse.
+
+---
+
 ## [2.0.0] - 2026-09-02
 
 ### Added & Enhanced

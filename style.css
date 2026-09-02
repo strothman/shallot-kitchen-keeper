@@ -3566,6 +3566,99 @@ body {
   transform: scale(0.94);
 }
 
+/* ==========================================================================
+   Scanner Fail State & Interactive Assistance
+   ========================================================================== */
+.scanner-fail-assist {
+  background: linear-gradient(135deg, rgba(243, 156, 18, 0.12), rgba(231, 76, 60, 0.12));
+  border: 1px solid rgba(243, 156, 18, 0.35);
+  border-radius: 14px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: fadeIn 0.3s ease;
+}
+
+.fail-assist-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.fail-assist-icon {
+  font-size: 1.2rem;
+  line-height: 1.2;
+}
+
+.fail-assist-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fail-assist-text strong {
+  font-size: 0.82rem;
+  color: var(--color-warning);
+}
+
+.fail-assist-text span {
+  font-size: 0.74rem;
+  color: var(--color-text-muted);
+  line-height: 1.35;
+}
+
+.fail-assist-manual-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--color-warning);
+  color: var(--color-warning);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-family: var(--font-main);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: all 0.15s ease;
+}
+
+.fail-assist-manual-btn:active {
+  transform: scale(0.94);
+  background: var(--color-warning-light);
+}
+
+.scanner-laser-guide.stalled-scan-pulse .scanner-corner {
+  border-color: var(--color-warning);
+  animation: pulseAmber 1.5s infinite;
+}
+
+@keyframes pulseAmber {
+  0%, 100% {
+    filter: drop-shadow(0 0 2px rgba(243, 156, 18, 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 8px rgba(243, 156, 18, 0.9));
+  }
+}
+
+/* ==========================================================================
+   Portrait Lock & Landscape Tilt Protection
+   ========================================================================== */
+@media screen and (orientation: landscape) and (max-device-width: 950px) {
+  body {
+    overflow: hidden;
+  }
+
+  .app-container {
+    max-width: 440px !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    margin: 0 auto;
+    border-radius: 0 !important;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+  }
+}
+
 
 
 

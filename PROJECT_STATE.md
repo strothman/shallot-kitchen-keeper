@@ -1,8 +1,8 @@
 # Shallot: Kitchen Keeper — Project State
 
 **Last Updated:** September 2, 2026  
-**Current Version:** `v2.0.0`  
-**Status:** In active development / all core capabilities & barcode scanning complete.
+**Current Version:** `v2.1.0`  
+**Status:** In active development / barcode scanning, portrait lock & assisted fail state complete.
 
 ---
 

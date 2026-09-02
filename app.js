@@ -790,6 +790,8 @@ const rapidAutoAddToggle = document.getElementById('rapidAutoAddToggle');
 const manualBarcodeInput = document.getElementById('manualBarcodeInput');
 const manualBarcodeLookupBtn = document.getElementById('manualBarcodeLookupBtn');
 const manualBarcodeDetails = document.getElementById('manualBarcodeDetails');
+const scannerFailAssist = document.getElementById('scannerFailAssist');
+const failAssistManualBtn = document.getElementById('failAssistManualBtn');
 
 // 1-Tap Emoji Picker Tray Modal DOM
 const emojiPickerModal = document.getElementById('emojiPickerModal');
@@ -909,10 +911,22 @@ let firestoreInstance = null;
 let firestoreUnsubscribe = null;
 
 // Application Version
-const APP_VERSION = '1.9.1';
+const APP_VERSION = '2.1.0';
+
+// Lock screen to portrait orientation
+function lockPortraitOrientation() {
+  try {
+    if (screen && screen.orientation && typeof screen.orientation.lock === 'function') {
+      screen.orientation.lock('portrait-primary').catch(() => {
+        screen.orientation.lock('portrait').catch(() => {});
+      });
+    }
+  } catch {}
+}
 
 // Initialize Application
 function init() {
+  lockPortraitOrientation();
   loadData();
   applyTheme(currentTheme);
   render();
@@ -2522,7 +2536,31 @@ function playScanChime() {
   }
 }
 
+function playScanFailTone() {
+  try {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (AudioContextClass) {
+      const audioCtx = new AudioContextClass();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(320, audioCtx.currentTime);
+      osc.frequency.linearRampToValueAtTime(180, audioCtx.currentTime + 0.22);
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.26);
+    }
+  } catch {}
+  if (navigator.vibrate) {
+    try { navigator.vibrate([80, 50, 80]); } catch {}
+  }
+}
+
 let activePendingBarcodePair = null;
+let scanAssistTimer = null;
 
 async function lookupBarcodeDetails(barcode) {
   const cleanCode = barcode.trim().replace(/[^0-9]/g, '');
@@ -2600,6 +2638,12 @@ async function handleScannedBarcode(decodedText) {
   lastScannedBarcode = decodedText;
   lastScannedTimestamp = now;
 
+  // Clear assistance timeout on successful decode
+  if (scanAssistTimer) clearTimeout(scanAssistTimer);
+  if (scannerFailAssist) scannerFailAssist.classList.add('hidden');
+  const laserGuide = document.getElementById('scannerLaserGuide');
+  if (laserGuide) laserGuide.classList.remove('stalled-scan-pulse');
+
   playScanChime();
   if (scannerStatusBadge) {
     scannerStatusBadge.textContent = `🔍 Looking up ${decodedText}...`;
@@ -2608,18 +2652,19 @@ async function handleScannedBarcode(decodedText) {
   let product = await lookupBarcodeDetails(decodedText);
 
   if (!product) {
-    // Graceful fallback for uncataloged items: Open Stock modal without blocking dialogs
+    // Fail State: Product not found in database -> Play fail tone and open pairing dialog
+    playScanFailTone();
     stopBarcodeScanner();
     modalTitle.textContent = "Pair Uncataloged Barcode";
     editItemId.value = "";
     itemNameInput.value = "";
     itemQuantityInput.value = 1;
     activePendingBarcodePair = decodedText;
-    autoPresetText.textContent = `Barcode ${decodedText} not in cloud. Enter name once to remember!`;
+    autoPresetText.textContent = `Barcode ${decodedText} not found online. Enter name once to remember!`;
     autoPresetPill.classList.remove('hidden');
     quickFreezeEditBtn.classList.add('hidden');
     itemModal.classList.remove('hidden');
-    showToast('🏷️', `Barcode not in cloud. Enter name once to save!`);
+    showToast('⚠️', `Barcode ${decodedText} not in cloud. Enter name once to save!`);
     itemNameInput.focus();
     return;
   }
@@ -2647,7 +2692,7 @@ async function handleScannedBarcode(decodedText) {
 
     setTimeout(() => {
       if (isBarcodeScannerActive && scannerStatusBadge) {
-        scannerStatusBadge.textContent = `Align next barcode within frame`;
+        scannerStatusBadge.textContent = `Align next barcode (Tap frame to focus)`;
       }
     }, 2200);
 
@@ -2684,7 +2729,11 @@ async function startBarcodeScanner() {
     return;
   }
 
+  lockPortraitOrientation();
   if (scannerStatusBadge) scannerStatusBadge.textContent = 'Starting camera & autofocus...';
+  if (scannerFailAssist) scannerFailAssist.classList.add('hidden');
+  const laserGuide = document.getElementById('scannerLaserGuide');
+  if (laserGuide) laserGuide.classList.remove('stalled-scan-pulse');
   scannerModal.classList.remove('hidden');
 
   try {
@@ -2739,6 +2788,18 @@ async function startBarcodeScanner() {
     isBarcodeScannerActive = true;
     if (scannerStatusBadge) scannerStatusBadge.textContent = 'Align barcode (Tap frame to focus)';
 
+    // Start 6-second scan assistance timer in case barcode fails to decode
+    if (scanAssistTimer) clearTimeout(scanAssistTimer);
+    scanAssistTimer = setTimeout(() => {
+      if (isBarcodeScannerActive) {
+        if (scannerFailAssist) scannerFailAssist.classList.remove('hidden');
+        if (scannerStatusBadge) {
+          scannerStatusBadge.textContent = '⚠️ Hard to scan? Tap frame to focus or turn on 🔦';
+        }
+        if (laserGuide) laserGuide.classList.add('stalled-scan-pulse');
+      }
+    }, 6000);
+
     // Verify track capabilities and enforce continuous autofocus if available
     try {
       const capabilities = barcodeScannerInstance.getRunningTrackCapabilities();
@@ -2778,6 +2839,11 @@ async function startBarcodeScanner() {
 }
 
 async function stopBarcodeScanner() {
+  if (scanAssistTimer) clearTimeout(scanAssistTimer);
+  if (scannerFailAssist) scannerFailAssist.classList.add('hidden');
+  const laserGuide = document.getElementById('scannerLaserGuide');
+  if (laserGuide) laserGuide.classList.remove('stalled-scan-pulse');
+
   if (barcodeScannerInstance && isBarcodeScannerActive) {
     try {
       await barcodeScannerInstance.stop();
@@ -2983,6 +3049,18 @@ function setupEventListeners() {
         }
       } catch (err) {
         console.debug('Autofocus refresh notice:', err);
+      }
+    });
+  }
+
+  if (failAssistManualBtn) {
+    failAssistManualBtn.addEventListener('click', () => {
+      triggerHaptic('light');
+      if (manualBarcodeDetails) {
+        manualBarcodeDetails.open = true;
+        if (manualBarcodeInput) {
+          manualBarcodeInput.focus();
+        }
       }
     });
   }

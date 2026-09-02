@@ -824,10 +824,22 @@
             </label>
           </div>
 
+          <!-- Scanner Fail State / Assistance Banner -->
+          <div class="scanner-fail-assist hidden" id="scannerFailAssist">
+            <div class="fail-assist-content">
+              <span class="fail-assist-icon">💡</span>
+              <div class="fail-assist-text">
+                <strong>Barcode taking too long?</strong>
+                <span>Try tapping to refocus, turning on 🔦 Flash, or entering the UPC digits below.</span>
+              </div>
+            </div>
+            <button type="button" class="fail-assist-manual-btn" id="failAssistManualBtn">⌨️ Enter Number</button>
+          </div>
+
           <!-- Manual Barcode Fallback -->
           <div class="manual-barcode-section">
             <details class="manual-barcode-details" id="manualBarcodeDetails">
-              <summary>Having trouble? Enter barcode manually</summary>
+              <summary id="manualBarcodeSummary">Having trouble? Enter barcode manually</summary>
               <div class="manual-barcode-input-row">
                 <input type="text" id="manualBarcodeInput" placeholder="e.g. 078742351865 (UPC)" inputmode="numeric">
                 <button type="button" class="manual-barcode-btn" id="manualBarcodeLookupBtn">Look Up</button>
