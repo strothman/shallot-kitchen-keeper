@@ -5,6 +5,21 @@ This changelog is updated at least once per development day.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-09-02
+
+### Added & Enhanced
+- **High-Speed 1D Barcode Scanner (UPC / EAN)**:
+  - Integrated zero-dependency local `html5-qrcode` camera barcode engine with support for UPC-A, UPC-E, EAN-13, EAN-8, Code 128, and QR codes.
+  - **Open Food Facts API Integration**: Real-time product name and category lookup covering Sam's Club (Member's Mark), Walmart (Great Value), Kroger, Meijer, Target (Good & Gather), and all major national brands.
+  - **⚡ Rapid Continuous Auto-Add Mode**: Point camera to instantly add multiple groceries into your inventory with auto-assigned storage zone, shelf-life, and dynamic icons without touching the screen.
+  - **Quick Review Mode**: Scan to prefill the Stock Kitchen dialog for 1-tap review and quantity adjustment.
+  - **Offline Local Barcode Cache**: Scanned products are persistently saved in `shallot_barcode_cache` for instant 0ms offline recalls and custom product definitions.
+  - **Audio & Haptic Feedback**: Web Audio API chime synthesizer and vibration pulse on successful barcode scan.
+  - **Viewfinder & Hardware Controls**: Animated laser targeting reticle, flashlight/torch toggle, front/rear camera flip, and manual barcode fallback.
+  - **Keyboard Shortcut**: Press `B` on desktop to instantly toggle the barcode scanner.
+
+---
+
 ## [1.9.1] - 2026-08-29
 
 ### Fixed & Streamlined

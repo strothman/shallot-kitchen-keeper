@@ -3215,6 +3215,355 @@ body {
   transform: scale(0.96);
 }
 
+/* ==========================================================================
+   Bottom Action Bar (Scan Barcode + Add Food)
+   ========================================================================== */
+.app-bottom-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px max(14px, env(safe-area-inset-bottom)) 16px;
+  background: var(--bg-header);
+  border-top: 1px solid var(--color-border);
+  z-index: 10;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.bottom-scanner-btn,
+.bottom-add-btn {
+  flex: 1;
+  height: 46px;
+  border-radius: 14px;
+  border: none;
+  font-family: var(--font-main);
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  touch-action: manipulation;
+  transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.bottom-scanner-btn {
+  background: linear-gradient(135deg, rgba(231, 76, 60, 0.12), rgba(52, 152, 219, 0.14));
+  border: 1px solid rgba(231, 76, 60, 0.35);
+  color: var(--color-text-main);
+  box-shadow: var(--shadow-sm);
+}
+
+.bottom-scanner-btn:active {
+  transform: scale(0.95);
+  background: linear-gradient(135deg, rgba(231, 76, 60, 0.22), rgba(52, 152, 219, 0.22));
+}
+
+.bottom-add-btn {
+  background: var(--color-primary);
+  color: #121212;
+  box-shadow: 0 4px 12px rgba(82, 164, 71, 0.25);
+}
+
+.bottom-add-btn:active {
+  transform: scale(0.95);
+}
+
+/* In-Modal Inline Barcode Scan Trigger */
+.form-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.form-scan-trigger-btn {
+  background: var(--color-primary-light);
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.form-scan-trigger-btn:active {
+  transform: scale(0.92);
+}
+
+/* ==========================================================================
+   Barcode Scanner Modal & Camera Viewfinder Reticle
+   ========================================================================== */
+.scanner-modal-card {
+  max-width: 480px;
+  max-height: 90vh;
+  max-height: 90dvh;
+}
+
+.scanner-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.scanner-viewfinder-container {
+  position: relative;
+  width: 100%;
+  height: 270px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #090909;
+  border: 2px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.8), 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.scanner-video-region {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.scanner-video-region video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border-radius: 18px;
+}
+
+#scannerVideoRegion__scan_region {
+  background: transparent !important;
+}
+
+.scanner-laser-guide {
+  position: absolute;
+  width: 80%;
+  max-width: 280px;
+  height: 160px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.scanner-corner {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-color: var(--color-primary);
+  border-style: solid;
+}
+
+.scanner-corner.tl {
+  top: 0;
+  left: 0;
+  border-width: 3.5px 0 0 3.5px;
+  border-top-left-radius: 8px;
+}
+
+.scanner-corner.tr {
+  top: 0;
+  right: 0;
+  border-width: 3.5px 3.5px 0 0;
+  border-top-right-radius: 8px;
+}
+
+.scanner-corner.bl {
+  bottom: 0;
+  left: 0;
+  border-width: 0 0 3.5px 3.5px;
+  border-bottom-left-radius: 8px;
+}
+
+.scanner-corner.br {
+  bottom: 0;
+  right: 0;
+  border-width: 0 3.5px 3.5px 0;
+  border-bottom-right-radius: 8px;
+}
+
+.scanner-laser-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #e74c3c 25%, #ff7675 50%, #e74c3c 75%, transparent);
+  box-shadow: 0 0 10px rgba(231, 76, 60, 0.95);
+  animation: laserScan 2.2s ease-in-out infinite alternate;
+}
+
+@keyframes laserScan {
+  0% {
+    top: 8%;
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    top: 92%;
+    opacity: 0.7;
+  }
+}
+
+.scanner-overlay-status {
+  position: absolute;
+  bottom: 12px;
+  padding: 5px 14px;
+  background: rgba(18, 13, 33, 0.85);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: 20px;
+  font-size: 0.75rem;
+  color: #ffffff;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  pointer-events: none;
+  z-index: 6;
+  text-align: center;
+  max-width: 90%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  animation: fadeIn 0.2s ease;
+}
+
+/* Scanner Controls Bar */
+.scanner-controls-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.scanner-ctrl-btn {
+  background: var(--bg-app);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 8px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-main);
+  font-family: var(--font-main);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.scanner-ctrl-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.scanner-ctrl-btn:not(:disabled):active {
+  transform: scale(0.94);
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
+.rapid-scan-toggle-wrap {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.rapid-scan-toggle-wrap input {
+  display: none;
+}
+
+.rapid-toggle-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  background: var(--bg-app);
+  border: 1px solid var(--color-border);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.rapid-scan-toggle-wrap input:checked + .rapid-toggle-pill {
+  background: linear-gradient(135deg, rgba(46, 204, 113, 0.18), rgba(82, 164, 71, 0.25));
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  box-shadow: 0 0 10px rgba(82, 164, 71, 0.2);
+}
+
+/* Manual Barcode Lookup Fallback */
+.manual-barcode-section {
+  margin-top: 2px;
+}
+
+.manual-barcode-details {
+  background: var(--bg-app);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 0.8rem;
+}
+
+.manual-barcode-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  outline: none;
+}
+
+.manual-barcode-details summary:hover {
+  color: var(--color-text-main);
+}
+
+.manual-barcode-input-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.manual-barcode-input-row input {
+  flex: 1;
+  background: var(--bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: var(--color-text-main);
+  outline: none;
+}
+
+.manual-barcode-input-row input:focus {
+  border-color: var(--color-primary);
+}
+
+.manual-barcode-btn {
+  background: var(--color-primary);
+  color: #121212;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-family: var(--font-main);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.manual-barcode-btn:active {
+  transform: scale(0.94);
+}
+
 
 
 

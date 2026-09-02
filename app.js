@@ -778,6 +778,19 @@ const veggieSuggestions = document.getElementById('veggieSuggestions');
 const formIconPreviewBtn = document.getElementById('formIconPreviewBtn');
 const formIconPreviewEmoji = document.getElementById('formIconPreviewEmoji');
 
+// Barcode Scanner DOM
+const openScannerFabBtn = document.getElementById('openScannerFabBtn');
+const modalScanBarcodeBtn = document.getElementById('modalScanBarcodeBtn');
+const scannerModal = document.getElementById('scannerModal');
+const closeScannerBtn = document.getElementById('closeScannerBtn');
+const scannerStatusBadge = document.getElementById('scannerStatusBadge');
+const scannerTorchBtn = document.getElementById('scannerTorchBtn');
+const scannerFlipBtn = document.getElementById('scannerFlipBtn');
+const rapidAutoAddToggle = document.getElementById('rapidAutoAddToggle');
+const manualBarcodeInput = document.getElementById('manualBarcodeInput');
+const manualBarcodeLookupBtn = document.getElementById('manualBarcodeLookupBtn');
+const manualBarcodeDetails = document.getElementById('manualBarcodeDetails');
+
 // 1-Tap Emoji Picker Tray Modal DOM
 const emojiPickerModal = document.getElementById('emojiPickerModal');
 const closeEmojiPickerBtn = document.getElementById('closeEmojiPickerBtn');
@@ -2469,6 +2482,279 @@ function checkDailyNotifications() {
   }
 }
 
+// ==========================================================================
+// 1D Barcode Scanner & Open Food Facts Cloud Lookup Engine
+// ==========================================================================
+let barcodeScannerInstance = null;
+let isBarcodeScannerActive = false;
+let scannerCameraFacing = 'environment';
+let isScannerTorchOn = false;
+let lastScannedBarcode = null;
+let lastScannedTimestamp = 0;
+let barcodeLookupCache = {};
+try {
+  const cached = localStorage.getItem('shallot_barcode_cache');
+  if (cached) barcodeLookupCache = JSON.parse(cached);
+} catch {
+  barcodeLookupCache = {};
+}
+
+function playScanChime() {
+  try {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (AudioContextClass) {
+      const audioCtx = new AudioContextClass();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1760, audioCtx.currentTime + 0.1);
+      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.13);
+    }
+  } catch {}
+  if (navigator.vibrate) {
+    try { navigator.vibrate([45]); } catch {}
+  }
+}
+
+let activePendingBarcodePair = null;
+
+async function lookupBarcodeDetails(barcode) {
+  const cleanCode = barcode.trim().replace(/[^0-9]/g, '');
+  if (!cleanCode) return null;
+
+  // 1. Instant 0ms offline hit from local persistent cache
+  if (barcodeLookupCache[cleanCode]) {
+    return barcodeLookupCache[cleanCode];
+  }
+
+  // 2. Query Open Food Facts API (covers Sam's Club, Walmart, Kroger, Meijer, Target & national brands)
+  const codesToTry = [cleanCode];
+  if (cleanCode.startsWith('0')) {
+    codesToTry.push(cleanCode.slice(1));
+  } else {
+    codesToTry.push('0' + cleanCode);
+  }
+
+  for (const code of codesToTry) {
+    try {
+      const url = `https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(code)}.json?fields=product_name,product_name_en,brands,generic_name,categories_tags,quantity`;
+      const resp = await fetch(url, { method: 'GET', headers: { 'Accept': 'application/json' } });
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data && (data.status === 1 || data.product)) {
+          const prod = data.product || {};
+          const rawName = prod.product_name || prod.product_name_en || prod.generic_name || '';
+          const brand = (prod.brands || '').split(',')[0].trim();
+
+          let displayName = rawName.trim();
+          if (brand && displayName && !displayName.toLowerCase().includes(brand.toLowerCase())) {
+            displayName = `${brand} ${displayName}`;
+          } else if (!displayName && brand) {
+            displayName = brand;
+          }
+
+          if (displayName) {
+            const knowledge = findGroceryKnowledge(displayName);
+            const matchedZone = knowledge ? knowledge.zone : 'fridge';
+            const matchedDays = knowledge ? knowledge.days : 7;
+            const matchedUnit = knowledge && knowledge.unit ? knowledge.unit : 'pcs';
+            const matchedEmoji = knowledge && knowledge.emoji ? knowledge.emoji : '🥗';
+
+            const result = {
+              barcode: cleanCode,
+              name: displayName,
+              zone: matchedZone,
+              days: matchedDays,
+              unit: matchedUnit,
+              emoji: matchedEmoji
+            };
+
+            barcodeLookupCache[cleanCode] = result;
+            try {
+              localStorage.setItem('shallot_barcode_cache', JSON.stringify(barcodeLookupCache));
+            } catch {}
+
+            return result;
+          }
+        }
+      }
+    } catch (err) {
+      console.debug('Barcode online lookup notice:', err);
+    }
+  }
+
+  return null;
+}
+
+async function handleScannedBarcode(decodedText) {
+  const now = Date.now();
+  if (decodedText === lastScannedBarcode && (now - lastScannedTimestamp) < 2500) {
+    return;
+  }
+  lastScannedBarcode = decodedText;
+  lastScannedTimestamp = now;
+
+  playScanChime();
+  if (scannerStatusBadge) {
+    scannerStatusBadge.textContent = `🔍 Looking up ${decodedText}...`;
+  }
+
+  let product = await lookupBarcodeDetails(decodedText);
+
+  if (!product) {
+    // Graceful fallback for uncataloged items: Open Stock modal without blocking dialogs
+    stopBarcodeScanner();
+    modalTitle.textContent = "Pair Uncataloged Barcode";
+    editItemId.value = "";
+    itemNameInput.value = "";
+    itemQuantityInput.value = 1;
+    activePendingBarcodePair = decodedText;
+    autoPresetText.textContent = `Barcode ${decodedText} not in cloud. Enter name once to remember!`;
+    autoPresetPill.classList.remove('hidden');
+    quickFreezeEditBtn.classList.add('hidden');
+    itemModal.classList.remove('hidden');
+    showToast('🏷️', `Barcode not in cloud. Enter name once to save!`);
+    itemNameInput.focus();
+    return;
+  }
+
+  const isRapidMode = rapidAutoAddToggle ? rapidAutoAddToggle.checked : true;
+
+  if (isRapidMode) {
+    foodItems.unshift({
+      id: 'food_' + Date.now(),
+      name: product.name,
+      quantity: 1,
+      unit: product.unit || 'pcs',
+      shelfLife: product.days || 7,
+      zone: product.zone || 'fridge',
+      addedDate: new Date().toISOString()
+    });
+    learnGroceryItem(product.name, product.zone, product.days, product.unit, product.emoji);
+    saveData();
+    render();
+
+    if (scannerStatusBadge) {
+      scannerStatusBadge.textContent = `⚡ Added "${product.name}" to ${product.zone.toUpperCase()}!`;
+    }
+    showToast(product.emoji || '📦', `⚡ Added "${product.name}" to ${product.zone.toUpperCase()}`);
+
+    setTimeout(() => {
+      if (isBarcodeScannerActive && scannerStatusBadge) {
+        scannerStatusBadge.textContent = `Align next barcode within frame`;
+      }
+    }, 2200);
+
+  } else {
+    stopBarcodeScanner();
+    modalTitle.textContent = "Stock Kitchen (Scanned)";
+    editItemId.value = "";
+    itemNameInput.value = product.name;
+    itemQuantityInput.value = 1;
+    if (itemUnitSelect.querySelector(`option[value="${product.unit}"]`)) {
+      itemUnitSelect.value = product.unit;
+    }
+    setShelfLifeValue(product.days);
+    activeSelectedEmoji = product.emoji;
+    if (formIconPreviewEmoji) formIconPreviewEmoji.textContent = product.emoji;
+
+    const radios = document.getElementsByName('itemZone');
+    radios.forEach(r => {
+      if (r.value === product.zone) r.checked = true;
+    });
+
+    autoPresetText.textContent = `Scanned preset: ${product.zone.toUpperCase()} • ${product.days} days`;
+    autoPresetPill.classList.remove('hidden');
+    quickFreezeEditBtn.classList.add('hidden');
+    itemModal.classList.remove('hidden');
+    showToast(product.emoji || '📦', `Scanned: "${product.name}"`);
+  }
+}
+
+async function startBarcodeScanner() {
+  if (isBarcodeScannerActive) return;
+  if (typeof Html5Qrcode === 'undefined') {
+    alert('Barcode scanner library is initializing. Please try again in a moment.');
+    return;
+  }
+
+  if (scannerStatusBadge) scannerStatusBadge.textContent = 'Starting camera...';
+  scannerModal.classList.remove('hidden');
+
+  try {
+    if (!barcodeScannerInstance) {
+      barcodeScannerInstance = new Html5Qrcode('scannerVideoRegion', {
+        verbose: false,
+        formatsToSupport: [
+          Html5QrcodeSupportedFormats.UPC_A,
+          Html5QrcodeSupportedFormats.UPC_E,
+          Html5QrcodeSupportedFormats.EAN_13,
+          Html5QrcodeSupportedFormats.EAN_8,
+          Html5QrcodeSupportedFormats.CODE_128,
+          Html5QrcodeSupportedFormats.QR_CODE
+        ]
+      });
+    }
+
+    const config = {
+      fps: 15,
+      qrbox: { width: 250, height: 160 },
+      aspectRatio: 1.0
+    };
+
+    await barcodeScannerInstance.start(
+      { facingMode: scannerCameraFacing },
+      config,
+      (decodedText) => {
+        handleScannedBarcode(decodedText);
+      },
+      (errorMessage) => {
+        // Normal frame tick
+      }
+    );
+
+    isBarcodeScannerActive = true;
+    if (scannerStatusBadge) scannerStatusBadge.textContent = 'Align barcode within frame';
+
+    try {
+      const capabilities = barcodeScannerInstance.getRunningTrackCapabilities();
+      if (scannerTorchBtn) {
+        scannerTorchBtn.disabled = !capabilities.torch;
+      }
+    } catch {
+      if (scannerTorchBtn) scannerTorchBtn.disabled = true;
+    }
+
+  } catch (err) {
+    console.error('Camera startup error:', err);
+    if (scannerStatusBadge) {
+      scannerStatusBadge.textContent = 'Camera access denied or unavailable.';
+    }
+    if (manualBarcodeDetails) {
+      manualBarcodeDetails.open = true;
+    }
+  }
+}
+
+async function stopBarcodeScanner() {
+  if (barcodeScannerInstance && isBarcodeScannerActive) {
+    try {
+      await barcodeScannerInstance.stop();
+    } catch (err) {
+      console.debug('Scanner stop error:', err);
+    }
+  }
+  isBarcodeScannerActive = false;
+  isScannerTorchOn = false;
+  scannerModal.classList.add('hidden');
+}
+
 // --- Event Listeners & Power-User Desktop Shortcuts ---
 function setupEventListeners() {
   // Search & Sort (with lightweight debounce for rapid keystrokes)
@@ -2592,6 +2878,72 @@ function setupEventListeners() {
   closeModalBtn.addEventListener('click', () => {
     itemModal.classList.add('hidden');
   });
+
+  // Barcode Scanner Triggers & Modal Listeners
+  if (openScannerFabBtn) {
+    openScannerFabBtn.addEventListener('click', () => {
+      triggerHaptic('medium');
+      startBarcodeScanner();
+    });
+  }
+
+  if (modalScanBarcodeBtn) {
+    modalScanBarcodeBtn.addEventListener('click', () => {
+      triggerHaptic('light');
+      itemModal.classList.add('hidden');
+      startBarcodeScanner();
+    });
+  }
+
+  if (closeScannerBtn) {
+    closeScannerBtn.addEventListener('click', () => {
+      stopBarcodeScanner();
+    });
+  }
+
+  if (scannerTorchBtn) {
+    scannerTorchBtn.addEventListener('click', async () => {
+      if (!isBarcodeScannerActive || !barcodeScannerInstance) return;
+      try {
+        isScannerTorchOn = !isScannerTorchOn;
+        await barcodeScannerInstance.applyVideoConstraints({
+          advanced: [{ torch: isScannerTorchOn }]
+        });
+        scannerTorchBtn.style.background = isScannerTorchOn ? 'var(--color-primary-light)' : '';
+        scannerTorchBtn.style.borderColor = isScannerTorchOn ? 'var(--color-primary)' : '';
+        triggerHaptic('light');
+      } catch (err) {
+        console.debug('Torch toggle error:', err);
+      }
+    });
+  }
+
+  if (scannerFlipBtn) {
+    scannerFlipBtn.addEventListener('click', async () => {
+      triggerHaptic('medium');
+      scannerCameraFacing = scannerCameraFacing === 'environment' ? 'user' : 'environment';
+      await stopBarcodeScanner();
+      await startBarcodeScanner();
+    });
+  }
+
+  if (manualBarcodeLookupBtn) {
+    manualBarcodeLookupBtn.addEventListener('click', () => {
+      const code = manualBarcodeInput.value.trim();
+      if (!code) return;
+      handleScannedBarcode(code);
+      manualBarcodeInput.value = '';
+    });
+  }
+
+  if (manualBarcodeInput) {
+    manualBarcodeInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        manualBarcodeLookupBtn.click();
+      }
+    });
+  }
 
   // Interactive Emoji Customizer Tray Trigger
   if (formIconPreviewBtn) {
@@ -2720,6 +3072,22 @@ function setupEventListeners() {
 
     // Self-Learning: Automatically commit grocery profile and custom emoji to memory
     learnGroceryItem(name, zone, shelfLife, unit, activeSelectedEmoji);
+
+    // If an uncataloged barcode was scanned, remember it locally forever
+    if (activePendingBarcodePair) {
+      barcodeLookupCache[activePendingBarcodePair] = {
+        barcode: activePendingBarcodePair,
+        name,
+        zone,
+        days: shelfLife,
+        unit,
+        emoji: activeSelectedEmoji || '🥗'
+      };
+      try {
+        localStorage.setItem('shallot_barcode_cache', JSON.stringify(barcodeLookupCache));
+      } catch {}
+      activePendingBarcodePair = null;
+    }
 
     if (editId) {
       const idx = foodItems.findIndex(item => item.id === editId);
@@ -3105,6 +3473,9 @@ function setupEventListeners() {
     const isInputActive = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
 
     if (e.key === 'Escape') {
+      if (isBarcodeScannerActive) {
+        stopBarcodeScanner();
+      }
       document.querySelectorAll('.modal-backdrop').forEach(modal => modal.classList.add('hidden'));
       return;
     }
@@ -3114,6 +3485,13 @@ function setupEventListeners() {
     if (e.key === '/' || e.key === 's' || e.key === 'S') {
       e.preventDefault();
       searchInput.focus();
+    } else if (e.key === 'b' || e.key === 'B') {
+      e.preventDefault();
+      if (isBarcodeScannerActive) {
+        stopBarcodeScanner();
+      } else {
+        startBarcodeScanner();
+      }
     } else if (e.key === 'n' || e.key === 'N' || e.key === '+') {
       e.preventDefault();
       addFabBtn.click();

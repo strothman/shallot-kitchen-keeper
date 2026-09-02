@@ -1,10 +1,11 @@
 // Shallot: Kitchen Keeper Service Worker — Offline PWA & Auto-Update Engine
-const CACHE_NAME = 'shallot-v1.9.1';
+const CACHE_NAME = 'shallot-v2.0.0';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './style.css',
   './app.js',
+  './html5-qrcode.min.js',
   './firebase-config.js',
   './manifest.json',
   './icon.ico',

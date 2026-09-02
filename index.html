@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://www.gstatic.com; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com wss://*.firebaseio.com;">
+    content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.openfoodfacts.org; script-src 'self' 'unsafe-inline' https://www.gstatic.com; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com wss://*.firebaseio.com https://world.openfoodfacts.org https://*.openfoodfacts.org;">
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -166,8 +166,21 @@
 
     <!-- Dedicated Bottom Action Bar -->
     <footer class="app-bottom-bar">
-      <button type="button" class="bottom-add-btn" id="addFabBtn" aria-label="Add Food">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6">
+      <button type="button" class="bottom-scanner-btn" id="openScannerFabBtn" aria-label="Scan Barcode" title="Scan Barcode (B)">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
+          <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
+          <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
+          <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
+          <line x1="7" y1="8" x2="7" y2="16"></line>
+          <line x1="11" y1="8" x2="11" y2="16"></line>
+          <line x1="15" y1="8" x2="15" y2="16"></line>
+          <line x1="3" y1="12" x2="21" y2="12" stroke="var(--color-danger)" stroke-width="1.8"></line>
+        </svg>
+        <span>Scan</span>
+      </button>
+      <button type="button" class="bottom-add-btn" id="addFabBtn" aria-label="Add Food" title="Add Food (N)">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6">
           <circle cx="12" cy="12" r="10"></circle>
           <line x1="12" y1="8" x2="12" y2="16"></line>
           <line x1="8" y1="12" x2="16" y2="12"></line>
@@ -221,7 +234,19 @@
               </button>
             </div>
             <div class="form-group form-name-group">
-              <label for="itemName">Food Name</label>
+              <div class="form-label-row">
+                <label for="itemName">Food Name</label>
+                <button type="button" class="form-scan-trigger-btn" id="modalScanBarcodeBtn" title="Scan barcode to auto-fill">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
+                    <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
+                    <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
+                    <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                  </svg>
+                  <span>Scan Barcode</span>
+                </button>
+              </div>
               <input type="text" id="itemName" placeholder="e.g. Tomato, Milk, Chicken" required>
             </div>
           </div>
@@ -578,7 +603,7 @@
           <div class="app-version-footer">
             <div class="version-status-pill">
               <span class="version-pulse-dot"></span>
-              <span id="appVersionFooterLabel">Shallot v1.9.1 • Mobile Edition</span>
+              <span id="appVersionFooterLabel">Shallot v2.0.0 • Mobile Edition</span>
             </div>
             <button type="button" class="check-updates-btn" id="checkForUpdatesBtn">🔄 Check for Updates & Reload</button>
             <span class="copyright-label">Copyright (c) 2026 Shallot (strothman)</span>
@@ -756,6 +781,63 @@
       </div>
     </div>
 
+    <!-- Barcode Scanner Modal -->
+    <div class="modal-backdrop hidden" id="scannerModal">
+      <div class="modal-card scanner-modal-card">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <h2 id="scannerModalTitle">Scan Barcode</h2>
+            <p class="modal-subtitle">Point camera at UPC/EAN food barcode</p>
+          </div>
+          <button class="close-btn" id="closeScannerBtn">&times;</button>
+        </div>
+        <div class="scanner-modal-body">
+          <!-- Viewfinder Frame -->
+          <div class="scanner-viewfinder-container">
+            <div id="scannerVideoRegion" class="scanner-video-region"></div>
+            <div class="scanner-laser-guide" id="scannerLaserGuide">
+              <div class="scanner-corner tl"></div>
+              <div class="scanner-corner tr"></div>
+              <div class="scanner-corner bl"></div>
+              <div class="scanner-corner br"></div>
+              <div class="scanner-laser-line"></div>
+            </div>
+            <div class="scanner-overlay-status" id="scannerStatusBadge">Starting camera...</div>
+          </div>
+
+          <!-- Scanner Controls Bar -->
+          <div class="scanner-controls-bar">
+            <button type="button" class="scanner-ctrl-btn" id="scannerTorchBtn" title="Toggle Flashlight" disabled>
+              <span class="ctrl-icon">🔦</span>
+              <span class="ctrl-label">Flash</span>
+            </button>
+            <button type="button" class="scanner-ctrl-btn" id="scannerFlipBtn" title="Flip Camera">
+              <span class="ctrl-icon">🔄</span>
+              <span class="ctrl-label">Flip</span>
+            </button>
+            <label class="rapid-scan-toggle-wrap" title="Automatically add items without review confirmation dialog">
+              <input type="checkbox" id="rapidAutoAddToggle" checked>
+              <div class="rapid-toggle-pill">
+                <span class="rapid-sparkle">⚡</span>
+                <span class="rapid-label">Rapid Auto-Add</span>
+              </div>
+            </label>
+          </div>
+
+          <!-- Manual Barcode Fallback -->
+          <div class="manual-barcode-section">
+            <details class="manual-barcode-details" id="manualBarcodeDetails">
+              <summary>Having trouble? Enter barcode manually</summary>
+              <div class="manual-barcode-input-row">
+                <input type="text" id="manualBarcodeInput" placeholder="e.g. 078742351865 (UPC)" inputmode="numeric">
+                <button type="button" class="manual-barcode-btn" id="manualBarcodeLookupBtn">Look Up</button>
+              </div>
+            </details>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Undo Toast Notification -->
     <div class="undo-toast hidden" id="undoToast">
       <div class="undo-toast-content">
@@ -766,6 +848,7 @@
     </div>
   </div>
 
+  <script src="html5-qrcode.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <script src="firebase-config.js"></script>
