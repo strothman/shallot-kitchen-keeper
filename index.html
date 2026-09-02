@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.openfoodfacts.org; script-src 'self' 'unsafe-inline' https://www.gstatic.com; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com wss://*.firebaseio.com https://world.openfoodfacts.org https://*.openfoodfacts.org;">
+    content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.openfoodfacts.org; script-src 'self' 'unsafe-inline' https://www.gstatic.com; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com wss://*.firebaseio.com https://world.openfoodfacts.org https://*.openfoodfacts.org https://api.upcitemdb.com;">
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -167,7 +167,7 @@
     <!-- Dedicated Bottom Action Bar -->
     <footer class="app-bottom-bar">
       <button type="button" class="bottom-scanner-btn" id="openScannerFabBtn" aria-label="Scan Barcode" title="Scan Barcode (B)">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
           <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
           <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
@@ -179,8 +179,12 @@
         </svg>
         <span>Scan</span>
       </button>
+      <button type="button" class="bottom-batch-btn" id="openBatchAddBtn" aria-label="Voice & Batch Haul" title="Voice & Batch Haul (V)">
+        <span class="batch-btn-icon">🎙️</span>
+        <span>Batch Haul</span>
+      </button>
       <button type="button" class="bottom-add-btn" id="addFabBtn" aria-label="Add Food" title="Add Food (N)">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6">
           <circle cx="12" cy="12" r="10"></circle>
           <line x1="12" y1="8" x2="12" y2="16"></line>
           <line x1="8" y1="12" x2="16" y2="12"></line>
@@ -388,6 +392,13 @@
             <p class="modal-subtitle">Smart culinary ideas to use up your expiring ingredients!</p>
           </div>
           <button class="close-btn" id="closeRecipeBtn">&times;</button>
+        </div>
+        <div class="recipe-filter-bar" id="recipeFilterBar">
+          <button type="button" class="recipe-filter-chip active" data-filter="all">All Ideas</button>
+          <button type="button" class="recipe-filter-chip" data-filter="quick">⚡ Quick (&lt;15m)</button>
+          <button type="button" class="recipe-filter-chip" data-filter="vegetarian">🥗 Vegetarian</button>
+          <button type="button" class="recipe-filter-chip" data-filter="protein">🥩 High Protein</button>
+          <button type="button" class="recipe-filter-chip" data-filter="onepot">🍲 One-Pot</button>
         </div>
         <div class="recipe-modal-body" id="recipeSuggestionsContainer">
           <!-- Dynamic recipe cards injected here -->
@@ -815,11 +826,16 @@
               <span class="ctrl-icon">🔄</span>
               <span class="ctrl-label">Flip</span>
             </button>
+            <button type="button" class="scanner-ctrl-btn" id="scannerSnapPhotoBtn" title="Snap High-Res Flash Photo">
+              <span class="ctrl-icon">📸</span>
+              <span class="ctrl-label">Snap</span>
+            </button>
+            <input type="file" id="barcodePhotoInput" accept="image/*" capture="environment" style="display: none;">
             <label class="rapid-scan-toggle-wrap" title="Automatically add items without review confirmation dialog">
               <input type="checkbox" id="rapidAutoAddToggle" checked>
               <div class="rapid-toggle-pill">
                 <span class="rapid-sparkle">⚡</span>
-                <span class="rapid-label">Rapid Auto-Add</span>
+                <span class="rapid-label">Auto-Add</span>
               </div>
             </label>
           </div>
@@ -830,7 +846,7 @@
               <span class="fail-assist-icon">💡</span>
               <div class="fail-assist-text">
                 <strong>Barcode taking too long?</strong>
-                <span>Try tapping to refocus, turning on 🔦 Flash, or entering the UPC digits below.</span>
+                <span>Try tapping 📸 Snap for a high-res photo, or type the code below.</span>
               </div>
             </div>
             <button type="button" class="fail-assist-manual-btn" id="failAssistManualBtn">⌨️ Enter Number</button>
@@ -845,6 +861,60 @@
                 <button type="button" class="manual-barcode-btn" id="manualBarcodeLookupBtn">Look Up</button>
               </div>
             </details>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Voice & Batch Grocery Ingestion Modal -->
+    <div class="modal-backdrop hidden" id="batchAddModal">
+      <div class="modal-card batch-add-card">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <h2 id="batchAddTitle">🎙️ Voice & Batch Haul</h2>
+            <p class="modal-subtitle">Speak or paste groceries to unpack your entire haul at once</p>
+          </div>
+          <button class="close-btn" id="closeBatchAddBtn">&times;</button>
+        </div>
+        <div class="batch-add-body">
+          <!-- Voice Dictation Box -->
+          <div class="voice-dictation-box" id="voiceDictationBox">
+            <button type="button" class="voice-record-btn" id="voiceRecordBtn">
+              <span class="voice-mic-icon" id="voiceMicIcon">🎙️</span>
+              <span class="voice-record-label" id="voiceRecordLabel">Tap to Speak Groceries</span>
+            </button>
+            <div class="voice-listening-visualizer hidden" id="voiceVisualizer">
+              <div class="voice-wave-bar"></div>
+              <div class="voice-wave-bar"></div>
+              <div class="voice-wave-bar"></div>
+              <div class="voice-wave-bar"></div>
+              <div class="voice-wave-bar"></div>
+            </div>
+          </div>
+
+          <!-- Text List Input Area -->
+          <div class="batch-input-wrap">
+            <label for="batchTextInput" class="form-label">Or paste grocery receipt / text list:</label>
+            <textarea id="batchTextInput" rows="3" placeholder="e.g. 2 gallons whole milk, 1 loaf sourdough, 3 avocados, carton eggs, frozen blueberries..."></textarea>
+          </div>
+
+          <!-- Live Parsed Items Preview -->
+          <div class="batch-preview-section">
+            <div class="batch-preview-header">
+              <span class="batch-preview-title">Detected Items (<span id="batchCountBadge">0</span>)</span>
+              <button type="button" class="batch-clear-btn" id="batchClearBtn">Clear All</button>
+            </div>
+            <div class="batch-parsed-items-list" id="batchParsedItemsList">
+              <div class="batch-empty-hint">Type, paste, or speak groceries above to auto-detect shelf life and zones.</div>
+            </div>
+          </div>
+
+          <!-- Action Footer -->
+          <div class="batch-modal-footer">
+            <button type="button" class="cancel-btn" id="cancelBatchAddBtn">Cancel</button>
+            <button type="button" class="submit-btn batch-confirm-btn" id="confirmBatchAddBtn" disabled>
+              <span>➕ Add All to Kitchen</span>
+            </button>
           </div>
         </div>
       </div>

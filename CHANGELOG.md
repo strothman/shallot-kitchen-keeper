@@ -5,6 +5,26 @@ This changelog is updated at least once per development day.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-09-02
+
+### Added & Enhanced
+- **🎙️ Natural Language Voice & Text Batch Haul Ingestion**:
+  - Added dedicated **Batch Haul** modal accessible via bottom action bar and <kbd>V</kbd> shortcut.
+  - Hands-free dictation using Web Speech API with live waveform visualizer: speak multiple groceries at once (e.g. *"2 gallons whole milk, 3 avocados, carton eggs, frozen blueberries"*).
+  - Intelligent parser auto-detects quantities, units, and food names, matching against Shallot's 400+ food ontology for instant zone and shelf-life assignment.
+  - 1-tap **"Add All to Kitchen"** batch ingestion into active inventory.
+- **🌐 Multi-Registry Barcode Chain & High-Res Snap**:
+  - Added secondary open barcode database (UPCitemdb) fallback after Open Food Facts to maximize store brand match rates (Sam's Club, Walmart, Kroger, Meijer, Target).
+  - Added **📸 Snap** button to capture high-resolution, flash-assisted still photos using native camera optics when live video stream experiences glare on shiny packaging.
+- **🛒 Department & Aisle-Sorted Shopping List**:
+  - Shopping list items are automatically categorized into **Fresh Produce 🥦**, **Dairy & Cold 🥛**, **Meat & Seafood 🥩**, **Bakery & Grains 🍞**, **Pantry & Dry Goods 🥫**, and **Frozen 🧊**.
+  - Renders collapsible supermarket aisle sections with item counters to speed up in-store navigation.
+- **🍳 Interactive Recipe Rescue & 1-Tap Cooking**:
+  - Added dietary and preparation time filter chips (*All*, *⚡ Quick <15m*, *🥗 Vegetarian*, *🥩 High Protein*, *🍲 One-Pot*).
+  - Added **"🍳 Cook Meal"** button that logs all used ingredients directly to the Cooked Log and updates kitchen stock in one tap.
+
+---
+
 ## [2.1.0] - 2026-09-02
 
 ### Added & Enhanced

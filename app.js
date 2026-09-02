@@ -792,6 +792,29 @@ const manualBarcodeLookupBtn = document.getElementById('manualBarcodeLookupBtn')
 const manualBarcodeDetails = document.getElementById('manualBarcodeDetails');
 const scannerFailAssist = document.getElementById('scannerFailAssist');
 const failAssistManualBtn = document.getElementById('failAssistManualBtn');
+const scannerSnapPhotoBtn = document.getElementById('scannerSnapPhotoBtn');
+const barcodePhotoInput = document.getElementById('barcodePhotoInput');
+
+// Voice & Batch Grocery Ingestion DOM
+const openBatchAddBtn = document.getElementById('openBatchAddBtn');
+const batchAddModal = document.getElementById('batchAddModal');
+const closeBatchAddBtn = document.getElementById('closeBatchAddBtn');
+const cancelBatchAddBtn = document.getElementById('cancelBatchAddBtn');
+const confirmBatchAddBtn = document.getElementById('confirmBatchAddBtn');
+const voiceRecordBtn = document.getElementById('voiceRecordBtn');
+const voiceRecordLabel = document.getElementById('voiceRecordLabel');
+const voiceVisualizer = document.getElementById('voiceVisualizer');
+const batchTextInput = document.getElementById('batchTextInput');
+const batchParsedItemsList = document.getElementById('batchParsedItemsList');
+const batchCountBadge = document.getElementById('batchCountBadge');
+const batchClearBtn = document.getElementById('batchClearBtn');
+let parsedBatchItems = [];
+let voiceSpeechRecognition = null;
+let isVoiceRecording = false;
+
+// Recipe Rescue Filter DOM
+const recipeFilterBar = document.getElementById('recipeFilterBar');
+let activeRecipeFilter = 'all';
 
 // 1-Tap Emoji Picker Tray Modal DOM
 const emojiPickerModal = document.getElementById('emojiPickerModal');
@@ -911,7 +934,7 @@ let firestoreInstance = null;
 let firestoreUnsubscribe = null;
 
 // Application Version
-const APP_VERSION = '2.1.0';
+const APP_VERSION = '2.2.0';
 
 // Lock screen to portrait orientation (Screen Orientation API + iOS WebKit Counter-Rotation)
 function lockPortraitOrientation() {
@@ -1724,6 +1747,32 @@ function restockFromShoppingItem(item) {
   showToast('✨', `"${item.name}" restocked into ${defaultZone.toUpperCase()}!`);
 }
 
+// Aisle Categorization Map for Smart In-Store Organization
+function getAisleCategory(itemName) {
+  const match = findGroceryKnowledge(itemName);
+  const name = itemName.toLowerCase();
+
+  if (match && match.zone === 'freezer') {
+    return { id: 'frozen', label: '🧊 Frozen & Ice', order: 5 };
+  }
+  if (['apple', 'banana', 'berry', 'spinach', 'lettuce', 'tomato', 'onion', 'garlic', 'potato', 'carrot', 'broccoli', 'avocado', 'lemon', 'lime', 'pepper', 'herb', 'celery', 'cucumber', 'kale', 'cilantro', 'orange', 'grape', 'mushroom'].some(k => name.includes(k))) {
+    return { id: 'produce', label: '🥦 Fresh Produce', order: 1 };
+  }
+  if (['milk', 'cheese', 'yogurt', 'butter', 'egg', 'cream', 'sour cream', 'parmesan', 'cheddar', 'mozzarella'].some(k => name.includes(k))) {
+    return { id: 'dairy', label: '🥛 Dairy & Refrigerated', order: 2 };
+  }
+  if (['chicken', 'beef', 'pork', 'turkey', 'fish', 'salmon', 'shrimp', 'steak', 'bacon', 'meat', 'tofu', 'sausage', 'ground'].some(k => name.includes(k))) {
+    return { id: 'meat', label: '🥩 Meat & Protein', order: 3 };
+  }
+  if (['bread', 'sourdough', 'bagel', 'tortilla', 'muffin', 'croissant', 'bun', 'roll', 'pita'].some(k => name.includes(k))) {
+    return { id: 'bakery', label: '🍞 Bakery & Grains', order: 4 };
+  }
+  if ((match && match.zone === 'pantry') || ['pasta', 'rice', 'cereal', 'bean', 'soup', 'sauce', 'oil', 'spice', 'chip', 'coffee', 'tea', 'sugar', 'flour', 'cracker', 'snack', 'oat'].some(k => name.includes(k))) {
+    return { id: 'pantry', label: '🥫 Pantry & Dry Goods', order: 6 };
+  }
+  return { id: 'other', label: '📦 General Groceries', order: 7 };
+}
+
 function renderShoppingModal() {
   shoppingListContainer.innerHTML = '';
   shoppingTotalLabel.textContent = `${shoppingList.length} item${shoppingList.length === 1 ? '' : 's'} on list`;
@@ -1739,30 +1788,57 @@ function renderShoppingModal() {
     return;
   }
 
+  // Group items by supermarket aisle / department
+  const aisleMap = {};
   shoppingList.forEach(item => {
-    const card = document.createElement('div');
-    card.className = `shopping-item-card ${item.bought ? 'is-bought' : ''}`;
-    card.innerHTML = `
-      <div class="shopping-item-left">
-        <input type="checkbox" class="shopping-checkbox" ${item.bought ? 'checked' : ''} title="Mark bought & restock">
-        <span class="shopping-item-name">${escapeHTML(item.name)}</span>
-        <span style="font-size: 0.8rem; color: var(--color-text-muted);">(${item.quantity} ${escapeHTML(item.unit)})</span>
-      </div>
-      <button class="delete-archived-btn" data-id="${escapeHTML(item.id)}" title="Remove">✕</button>
+    const aisle = getAisleCategory(item.name);
+    if (!aisleMap[aisle.id]) {
+      aisleMap[aisle.id] = { label: aisle.label, order: aisle.order, items: [] };
+    }
+    aisleMap[aisle.id].items.push(item);
+  });
+
+  const sortedAisles = Object.values(aisleMap).sort((a, b) => a.order - b.order);
+
+  sortedAisles.forEach(aisle => {
+    const groupEl = document.createElement('div');
+    groupEl.className = 'shopping-aisle-group';
+
+    const headerEl = document.createElement('div');
+    headerEl.className = 'shopping-aisle-header';
+    headerEl.innerHTML = `
+      <span>${escapeHTML(aisle.label)}</span>
+      <span class="aisle-count-badge">${aisle.items.length}</span>
     `;
+    groupEl.appendChild(headerEl);
 
-    card.querySelector('.shopping-checkbox').addEventListener('change', () => {
-      restockFromShoppingItem(item);
+    aisle.items.forEach(item => {
+      const card = document.createElement('div');
+      card.className = `shopping-item-card ${item.bought ? 'is-bought' : ''}`;
+      card.innerHTML = `
+        <div class="shopping-item-left">
+          <input type="checkbox" class="shopping-checkbox" ${item.bought ? 'checked' : ''} title="Mark bought & restock">
+          <span class="shopping-item-name">${escapeHTML(item.name)}</span>
+          <span style="font-size: 0.8rem; color: var(--color-text-muted);">(${item.quantity} ${escapeHTML(item.unit)})</span>
+        </div>
+        <button class="delete-archived-btn" data-id="${escapeHTML(item.id)}" title="Remove">✕</button>
+      `;
+
+      card.querySelector('.shopping-checkbox').addEventListener('change', () => {
+        restockFromShoppingItem(item);
+      });
+
+      card.querySelector('.delete-archived-btn').addEventListener('click', () => {
+        shoppingList = shoppingList.filter(s => s.id !== item.id);
+        saveData();
+        renderShoppingModal();
+        updateStatsCounters();
+      });
+
+      groupEl.appendChild(card);
     });
 
-    card.querySelector('.delete-archived-btn').addEventListener('click', () => {
-      shoppingList = shoppingList.filter(s => s.id !== item.id);
-      saveData();
-      renderShoppingModal();
-      updateStatsCounters();
-    });
-
-    shoppingListContainer.appendChild(card);
+    shoppingListContainer.appendChild(groupEl);
   });
 }
 
@@ -1786,12 +1862,13 @@ function shareShoppingList() {
   }
 }
 
-// --- Recipe Rescue Generator ---
+// --- Recipe Rescue Generator with Dietary Filter Tags ---
 const CULINARY_RECIPES = [
   {
     title: 'Farmhouse Skillet Frittata',
     time: '15 min',
     difficulty: 'Easy',
+    tags: ['quick', 'vegetarian', 'protein', 'onepot'],
     keywords: ['egg', 'spinach', 'cheese', 'tomato', 'mushroom', 'onion', 'pepper', 'bacon', 'milk', 'shallot'],
     desc: 'Whisk eggs with a splash of milk. Sauté your chopped veggies until tender, pour over eggs, top with cheese, and cook on low heat until golden.'
   },
@@ -1799,6 +1876,7 @@ const CULINARY_RECIPES = [
     title: 'Sizzling Kitchen Stir-Fry',
     time: '20 min',
     difficulty: 'Easy',
+    tags: ['protein', 'onepot'],
     keywords: ['chicken', 'beef', 'pork', 'broccoli', 'carrot', 'pepper', 'onion', 'garlic', 'rice', 'zucchini', 'shallot'],
     desc: 'High heat sear your protein with aromatics, toss in crisp veggies, and finish with soy sauce or pantry spices over hot steamed rice.'
   },
@@ -1806,6 +1884,7 @@ const CULINARY_RECIPES = [
     title: 'Rustic Clean-the-Pantry Soup',
     time: '30 min',
     difficulty: 'Easy',
+    tags: ['vegetarian', 'onepot'],
     keywords: ['potato', 'carrot', 'celery', 'onion', 'garlic', 'bean', 'chicken', 'tomato', 'shallot'],
     desc: 'Simmer aromatics and hearty root veggies in rich broth. Season with salt and pepper for a comforting zero-waste meal.'
   },
@@ -1813,6 +1892,7 @@ const CULINARY_RECIPES = [
     title: 'Golden Garlic Herb Pasta',
     time: '15 min',
     difficulty: 'Quick',
+    tags: ['quick', 'vegetarian'],
     keywords: ['pasta', 'garlic', 'tomato', 'cheese', 'spinach', 'butter', 'oil', 'shallot'],
     desc: 'Boil pasta al dente. In a pan, gently warm olive oil and sliced aromatics, fold in fresh tomatoes or greens, and toss with cheese.'
   },
@@ -1820,17 +1900,22 @@ const CULINARY_RECIPES = [
     title: 'Vibrant Sunshine Smoothie',
     time: '5 min',
     difficulty: 'Super Fast',
+    tags: ['quick', 'vegetarian'],
     keywords: ['strawberry', 'banana', 'blueberry', 'milk', 'yogurt', 'spinach', 'apple'],
     desc: 'Blend fresh/frozen fruit with a generous spoonful of yogurt and milk for a refreshing boost that rescues ripe produce.'
   }
 ];
 
-function generateRecipeRescue() {
+function generateRecipeRescue(filter = activeRecipeFilter) {
   recipeSuggestionsContainer.innerHTML = '';
-  const urgentItems = foodItems.filter(item => calculateDaysRemaining(item) <= 4);
 
-  // Rank recipes by matched ingredients
-  const scoredRecipes = CULINARY_RECIPES.map(recipe => {
+  let recipePool = CULINARY_RECIPES;
+  if (filter && filter !== 'all') {
+    recipePool = CULINARY_RECIPES.filter(r => r.tags && r.tags.includes(filter));
+  }
+
+  // Rank recipes by matched ingredients in active kitchen
+  const scoredRecipes = recipePool.map(recipe => {
     const matched = [];
     const missing = [];
 
@@ -1850,8 +1935,8 @@ function generateRecipeRescue() {
     recipeSuggestionsContainer.innerHTML = `
       <div class="archive-empty-state">
         <span class="archive-empty-icon">🍳</span>
-        <p>No matching recipes yet.</p>
-        <small>Add staple groceries like eggs, veggies, pasta, or fruit to generate recipe rescue plans!</small>
+        <p>No matching recipes found.</p>
+        <small>Try selecting "All Ideas" or add staple groceries to generate meal plans!</small>
       </div>
     `;
     return;
@@ -1871,20 +1956,21 @@ function generateRecipeRescue() {
             <span>⭐ ${escapeHTML(recipe.difficulty)}</span>
           </div>
         </div>
-        <span class="recipe-match-badge">${score} items in kitchen</span>
+        <span class="recipe-match-badge">${score} in kitchen</span>
       </div>
       <div class="recipe-ingredients-preview">
         ${matched.map(m => `<span class="recipe-tag matched">✓ ${escapeHTML(m.name)}</span>`).join('')}
         ${missing.slice(0, 3).map(mis => `<span class="recipe-tag">+ ${escapeHTML(mis)}</span>`).join('')}
       </div>
       <p class="recipe-instructions">${escapeHTML(recipe.desc)}</p>
-      <button class="recipe-cook-btn">
-        <span>🍳</span> Cook & Save ${matched.length} Items
+      <button type="button" class="recipe-cook-btn" data-title="${escapeHTML(recipe.title)}">
+        <span>🍳</span> Cook Meal (${matched.length} Ingredients)
       </button>
     `;
 
     card.querySelector('.recipe-cook-btn').addEventListener('click', () => {
       if (confirm(`Cook "${recipe.title}" and save ${matched.length} ingredients to your Cooked Log?`)) {
+        triggerHaptic('success');
         matched.forEach(item => cookItemDirectly(item, false));
         saveData();
         render();
@@ -2655,9 +2741,66 @@ async function lookupBarcodeDetails(barcode) {
     } catch (err) {
       console.debug('Barcode online lookup notice:', err);
     }
+  // 3. Fallback: Secondary Open Barcode Registry (UPCitemdb)
+  try {
+    const upcUrl = `https://api.upcitemdb.com/prod/trial/lookup?upc=${encodeURIComponent(cleanCode)}`;
+    const upcResp = await fetch(upcUrl, { method: 'GET', headers: { 'Accept': 'application/json' } });
+    if (upcResp.ok) {
+      const upcData = await upcResp.json();
+      if (upcData && upcData.items && upcData.items.length > 0) {
+        const item = upcData.items[0];
+        let title = (item.title || item.description || '').trim();
+        const brand = (item.brand || '').trim();
+        if (brand && title && !title.toLowerCase().includes(brand.toLowerCase())) {
+          title = `${brand} ${title}`;
+        }
+        if (title) {
+          const knowledge = findGroceryKnowledge(title);
+          const result = {
+            barcode: cleanCode,
+            name: title,
+            zone: knowledge ? knowledge.zone : 'fridge',
+            days: knowledge ? knowledge.days : 7,
+            unit: knowledge && knowledge.unit ? knowledge.unit : 'pcs',
+            emoji: knowledge && knowledge.emoji ? knowledge.emoji : '🥗'
+          };
+          barcodeLookupCache[cleanCode] = result;
+          try {
+            localStorage.setItem('shallot_barcode_cache', JSON.stringify(barcodeLookupCache));
+          } catch {}
+          return result;
+        }
+      }
+    }
+  } catch (err) {
+    console.debug('UPCitemdb fallback notice:', err);
   }
 
   return null;
+}
+
+// Decode High-Resolution Still Photo from Camera / Gallery
+async function decodeBarcodeFromImageFile(file) {
+  if (!file) return;
+  if (scannerStatusBadge) scannerStatusBadge.textContent = 'Analyzing high-res photo...';
+  triggerHaptic('medium');
+
+  try {
+    const tempScanner = new Html5Qrcode('scannerVideoRegion', { verbose: false });
+    const decodedText = await tempScanner.scanFileV2(file, true);
+    if (decodedText && decodedText.decodedText) {
+      handleScannedBarcode(decodedText.decodedText);
+    } else if (typeof decodedText === 'string') {
+      handleScannedBarcode(decodedText);
+    } else {
+      throw new Error('No barcode found');
+    }
+  } catch (err) {
+    console.debug('Photo barcode decode notice:', err);
+    if (scannerStatusBadge) scannerStatusBadge.textContent = '❌ No barcode detected. Try closer with flash.';
+    playScanFailTone();
+    showToast('📸', 'Could not read barcode in photo. Try closer with flash.');
+  }
 }
 
 async function handleScannedBarcode(decodedText) {
@@ -2869,7 +3012,216 @@ async function stopBarcodeScanner() {
   }
   isBarcodeScannerActive = false;
   isScannerTorchOn = false;
-  scannerModal.classList.add('hidden');
+// ==========================================================================
+// Voice & Natural Language Grocery Haul Batch Ingestion
+// ==========================================================================
+function parseGroceryHaulText(rawText) {
+  if (!rawText || !rawText.trim()) return [];
+  const lines = rawText.split(/\r?\n|,|\band\b/i).map(l => l.trim()).filter(Boolean);
+  const items = [];
+
+  lines.forEach(line => {
+    let clean = line.replace(/^[•\-\*\d+\.\)]\s*/, '').trim();
+    if (!clean) return;
+
+    let qty = 1;
+    let unit = 'pcs';
+    let name = clean;
+
+    const matchQtyUnit = clean.match(/^(\d+(?:\.\d+)?|\b(?:a|an|one|two|three|four|five|six|seven|eight|nine|ten)\b)?\s*([a-zA-Z]+)?\s+(?:of\s+)?(.+)$/i);
+
+    if (matchQtyUnit) {
+      const rawQty = matchQtyUnit[1];
+      const rawUnit = matchQtyUnit[2];
+      const rawName = matchQtyUnit[3];
+
+      if (rawQty) {
+        const wordNums = { a: 1, an: 1, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10 };
+        qty = wordNums[rawQty.toLowerCase()] || parseFloat(rawQty) || 1;
+      }
+
+      if (rawUnit) {
+        const u = rawUnit.toLowerCase();
+        const standardUnits = {
+          gal: 'gal', gallon: 'gal', gallons: 'gal',
+          l: 'L', liter: 'L', liters: 'L',
+          lb: 'lbs', lbs: 'lbs', pound: 'lbs', pounds: 'lbs',
+          oz: 'oz', ounce: 'oz', ounces: 'oz',
+          g: 'g', gram: 'g', grams: 'g',
+          kg: 'kg', kilo: 'kg', kilograms: 'kg',
+          box: 'box', boxes: 'box',
+          can: 'can', cans: 'can',
+          carton: 'carton', cartons: 'carton',
+          bag: 'bag', bags: 'bag',
+          pack: 'pack', packs: 'pack', package: 'pack',
+          loaf: 'loaf', loaves: 'loaf',
+          bunch: 'bunch', bunches: 'bunch',
+          bottle: 'bottle', bottles: 'bottle',
+          pcs: 'pcs', piece: 'pcs', pieces: 'pcs'
+        };
+
+        if (standardUnits[u] && rawName) {
+          unit = standardUnits[u];
+          name = rawName.trim();
+        } else {
+          name = `${rawUnit} ${rawName}`.trim();
+        }
+      }
+    }
+
+    if (name) {
+      const knowledge = findGroceryKnowledge(name);
+      items.push({
+        id: 'parsed_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+        name,
+        quantity: qty,
+        unit: unit,
+        zone: knowledge ? knowledge.zone : 'fridge',
+        days: knowledge ? knowledge.days : 7,
+        emoji: knowledge ? knowledge.emoji : '🥗'
+      });
+    }
+  });
+
+  return items;
+}
+
+function handleBatchTextInput() {
+  const text = batchTextInput ? batchTextInput.value : '';
+  parsedBatchItems = parseGroceryHaulText(text);
+  renderBatchPreview();
+}
+
+function renderBatchPreview() {
+  if (!batchParsedItemsList) return;
+  batchParsedItemsList.innerHTML = '';
+  if (batchCountBadge) batchCountBadge.textContent = parsedBatchItems.length;
+  if (confirmBatchAddBtn) confirmBatchAddBtn.disabled = parsedBatchItems.length === 0;
+
+  if (parsedBatchItems.length === 0) {
+    batchParsedItemsList.innerHTML = `
+      <div class="batch-empty-hint">Type, paste, or speak groceries above to auto-detect shelf life and zones.</div>
+    `;
+    return;
+  }
+
+  parsedBatchItems.forEach((item, idx) => {
+    const card = document.createElement('div');
+    card.className = 'batch-item-card';
+    card.innerHTML = `
+      <div class="batch-item-left">
+        <span class="batch-item-emoji">${escapeHTML(item.emoji)}</span>
+        <div class="batch-item-info">
+          <span class="batch-item-name">${escapeHTML(item.name)}</span>
+          <span class="batch-item-meta">${item.quantity} ${escapeHTML(item.unit)} • ${item.days}d shelf life</span>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="batch-item-zone-badge ${escapeHTML(item.zone)}">${escapeHTML(item.zone)}</span>
+        <button type="button" class="batch-item-remove-btn" data-idx="${idx}" title="Remove item">&times;</button>
+      </div>
+    `;
+
+    card.querySelector('.batch-item-remove-btn').addEventListener('click', () => {
+      parsedBatchItems.splice(idx, 1);
+      renderBatchPreview();
+    });
+
+    batchParsedItemsList.appendChild(card);
+  });
+}
+
+function commitBatchAdd() {
+  if (parsedBatchItems.length === 0) return;
+  triggerHaptic('success');
+
+  parsedBatchItems.forEach(item => {
+    foodItems.unshift({
+      id: 'food_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+      name: item.name,
+      quantity: item.quantity,
+      unit: item.unit,
+      shelfLife: item.days,
+      zone: item.zone,
+      addedDate: new Date().toISOString()
+    });
+    learnGroceryItem(item.name, item.zone, item.days, item.unit, item.emoji);
+  });
+
+  const count = parsedBatchItems.length;
+  parsedBatchItems = [];
+  if (batchTextInput) batchTextInput.value = '';
+  saveData();
+  render();
+  batchAddModal.classList.add('hidden');
+  showToast('🎉', `Added ${count} groceries to your kitchen!`);
+}
+
+function startVoiceGroceryRecognition() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert('Voice recognition is not supported in this browser. Please type or paste your groceries.');
+    return;
+  }
+
+  if (isVoiceRecording) {
+    stopVoiceGroceryRecognition();
+    return;
+  }
+
+  try {
+    voiceSpeechRecognition = new SpeechRecognition();
+    voiceSpeechRecognition.continuous = true;
+    voiceSpeechRecognition.interimResults = true;
+    voiceSpeechRecognition.lang = 'en-US';
+
+    voiceSpeechRecognition.onstart = () => {
+      isVoiceRecording = true;
+      if (voiceRecordBtn) voiceRecordBtn.classList.add('recording');
+      if (voiceRecordLabel) voiceRecordLabel.textContent = 'Listening... Speak list';
+      if (voiceVisualizer) voiceVisualizer.classList.remove('hidden');
+      triggerHaptic('medium');
+    };
+
+    voiceSpeechRecognition.onresult = (event) => {
+      let finalTranscript = '';
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript + ' ';
+        }
+      }
+      if (finalTranscript.trim()) {
+        const current = batchTextInput.value.trim();
+        batchTextInput.value = current ? `${current}, ${finalTranscript.trim()}` : finalTranscript.trim();
+        handleBatchTextInput();
+      }
+    };
+
+    voiceSpeechRecognition.onerror = (e) => {
+      console.debug('Speech recognition notice:', e);
+      stopVoiceGroceryRecognition();
+    };
+
+    voiceSpeechRecognition.onend = () => {
+      stopVoiceGroceryRecognition();
+    };
+
+    voiceSpeechRecognition.start();
+  } catch (err) {
+    console.error('Speech recognition error:', err);
+    stopVoiceGroceryRecognition();
+  }
+}
+
+function stopVoiceGroceryRecognition() {
+  isVoiceRecording = false;
+  if (voiceRecordBtn) voiceRecordBtn.classList.remove('recording');
+  if (voiceRecordLabel) voiceRecordLabel.textContent = 'Tap to Speak Groceries';
+  if (voiceVisualizer) voiceVisualizer.classList.add('hidden');
+  if (voiceSpeechRecognition) {
+    try { voiceSpeechRecognition.stop(); } catch {}
+    voiceSpeechRecognition = null;
+  }
 }
 
 // --- Event Listeners & Power-User Desktop Shortcuts ---
@@ -3622,6 +3974,88 @@ function setupEventListeners() {
     });
   }
 
+  // Snap High-Res Photo Fallback Trigger
+  if (scannerSnapPhotoBtn && barcodePhotoInput) {
+    scannerSnapPhotoBtn.addEventListener('click', () => {
+      triggerHaptic('light');
+      barcodePhotoInput.click();
+    });
+
+    barcodePhotoInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) {
+        decodeBarcodeFromImageFile(e.target.files[0]);
+        e.target.value = '';
+      }
+    });
+  }
+
+  // Voice & Batch Grocery Ingestion Modal Listeners
+  if (openBatchAddBtn) {
+    openBatchAddBtn.addEventListener('click', () => {
+      triggerHaptic('medium');
+      parsedBatchItems = [];
+      if (batchTextInput) batchTextInput.value = '';
+      renderBatchPreview();
+      batchAddModal.classList.remove('hidden');
+      if (batchTextInput) batchTextInput.focus();
+    });
+  }
+
+  if (closeBatchAddBtn) {
+    closeBatchAddBtn.addEventListener('click', () => {
+      stopVoiceGroceryRecognition();
+      batchAddModal.classList.add('hidden');
+    });
+  }
+
+  if (cancelBatchAddBtn) {
+    cancelBatchAddBtn.addEventListener('click', () => {
+      stopVoiceGroceryRecognition();
+      batchAddModal.classList.add('hidden');
+    });
+  }
+
+  if (confirmBatchAddBtn) {
+    confirmBatchAddBtn.addEventListener('click', () => {
+      stopVoiceGroceryRecognition();
+      commitBatchAdd();
+    });
+  }
+
+  if (voiceRecordBtn) {
+    voiceRecordBtn.addEventListener('click', () => {
+      startVoiceGroceryRecognition();
+    });
+  }
+
+  if (batchTextInput) {
+    batchTextInput.addEventListener('input', () => {
+      handleBatchTextInput();
+    });
+  }
+
+  if (batchClearBtn) {
+    batchClearBtn.addEventListener('click', () => {
+      stopVoiceGroceryRecognition();
+      parsedBatchItems = [];
+      if (batchTextInput) batchTextInput.value = '';
+      renderBatchPreview();
+    });
+  }
+
+  // Recipe Rescue Filter Chips Listener
+  if (recipeFilterBar) {
+    recipeFilterBar.addEventListener('click', (e) => {
+      const chip = e.target.closest('.recipe-filter-chip');
+      if (!chip) return;
+      triggerHaptic('light');
+      recipeFilterBar.querySelectorAll('.recipe-filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      activeRecipeFilter = chip.getAttribute('data-filter') || 'all';
+      generateRecipeRescue(activeRecipeFilter);
+    });
+  }
+
   // Desktop Power-User Keyboard Shortcuts
   window.addEventListener('keydown', (e) => {
     const isInputActive = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
@@ -3649,6 +4083,9 @@ function setupEventListeners() {
     } else if (e.key === 'n' || e.key === 'N' || e.key === '+') {
       e.preventDefault();
       addFabBtn.click();
+    } else if (e.key === 'v' || e.key === 'V') {
+      e.preventDefault();
+      if (openBatchAddBtn) openBatchAddBtn.click();
     } else if (e.key === 'r' || e.key === 'R') {
       e.preventDefault();
       recipeRescueBtn.click();

@@ -1,28 +1,30 @@
 # Shallot: Kitchen Keeper — Project State
 
 **Last Updated:** September 2, 2026  
-**Current Version:** `v2.1.0`  
-**Status:** In active development / barcode scanning, portrait lock & assisted fail state complete.
+**Current Version:** `v2.2.0`  
+**Status:** In active development / Voice & Batch Haul, Multi-Registry Barcode Search, Aisle Shopping & Interactive Cooking complete.
 
 ---
 
 ## 📌 Summary of Current State
 
-The core app is fully functional as an installable Progressive Web App (PWA) with offline persistence (LocalStorage + Service Worker), real-time multi-device synchronization via Firebase Realtime Database, and automated grocery barcode recognition.
+The core app is fully functional as an installable Progressive Web App (PWA) with offline persistence (LocalStorage + Service Worker), real-time multi-device synchronization via Firebase Realtime Database, automated grocery barcode recognition, and hands-free voice batch ingestion.
 
 ### Active App Capabilities
-1. **1D Barcode Scanner & Open Food Facts Engine (NEW in v2.0.0):**
-   - High-speed camera barcode decoder with support for UPC-A, UPC-E, EAN-13, EAN-8, Code 128, and QR codes.
-   - Real-time product lookup via Open Food Facts API (covering Sam's Club, Walmart, Kroger, Meijer, Target & national brands).
-   - Dual-mode operation: **⚡ Rapid Continuous Auto-Add** (batch grocery onboarding) and **Quick Review Mode** (pre-filled manual review).
-   - Local persistent cache (`shallot_barcode_cache`) for 0ms offline recognition and custom uncataloged food pairings.
-   - Animated viewfinder reticle, audio chime synthesizer, vibration haptics, flashlight/torch toggle, and camera flip.
-2. **Pantry, Fridge & Freezer Tracking:** Color-coded countdown cards for food freshness.
-3. **Auto-Categorization & Preset Library:** Automatic assignment of shelf life and storage zones based on item name.
-4. **Recipe Rescue:** Contextual meal suggestions utilizing expiring ingredients.
-5. **Household Live Sync:** Peer syncing across multiple devices via 6-digit household join codes.
-6. **Impact / ROI Analytics:** Waste prevention metrics ($ saved and lbs rescued).
-7. **Optimized Rendering Engine:** Virtualized inventory rendering with `DocumentFragment` batching and memoized gradients.
+1. **🎙️ Natural Language Voice & Text Batch Haul (NEW in v2.2.0):**
+   - Hands-free dictation using Web Speech API with live waveform visualizer: speak multiple groceries at once (e.g. *"2 gallons whole milk, 3 avocados, carton eggs, frozen blueberries"*).
+   - Intelligent parser auto-detects quantities, units, and food names, matching against Shallot's 400+ food ontology for instant zone and shelf-life assignment.
+   - 1-tap **"Add All to Kitchen"** batch ingestion into active inventory.
+2. **🌐 Multi-Registry Barcode Chain & High-Res Snap (NEW in v2.2.0):**
+   - Chained multi-database fallback (Open Food Facts + UPCitemdb) to maximize store brand hit rates (Sam's Club, Walmart, Kroger, Meijer, Target).
+   - Native **📸 Snap** button for high-res, flash-assisted photo capture of barcodes on glossy/curved packages.
+3. **🛒 Aisle & Department-Sorted Shopping List (NEW in v2.2.0):**
+   - Automatic classification into Fresh Produce, Dairy & Cold, Meat & Seafood, Bakery, Pantry, and Frozen aisles.
+4. **🍳 Interactive Recipe Rescue & 1-Tap Cook (NEW in v2.2.0):**
+   - Dietary filter chips (*Quick <15m*, *Vegetarian*, *High Protein*, *One-Pot*) and 1-tap ingredient deduction into Cooked Log.
+5. **Pantry, Fridge & Freezer Tracking:** Color-coded countdown cards for food freshness.
+6. **Household Live Sync:** Peer syncing across multiple devices via 6-digit household join codes.
+7. **Impact / ROI Analytics:** Waste prevention metrics ($ saved and lbs rescued).
 
 ---
 
