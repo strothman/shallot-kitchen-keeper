@@ -25,6 +25,19 @@
   <link rel="apple-touch-icon" href="icon.png">
   <!-- Stylesheet -->
   <link rel="stylesheet" href="style.css?v=2.2.1">
+  <script>
+    // Inline Self-Healing PWA Auto-Updater
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs) {
+        for (var i = 0; i < regs.length; i++) {
+          regs[i].update();
+        }
+      });
+      navigator.serviceWorker.addEventListener('controllerchange', function() {
+        window.location.reload();
+      });
+    }
+  </script>
 </head>
 
 <body>
