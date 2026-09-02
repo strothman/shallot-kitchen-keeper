@@ -934,7 +934,7 @@ let firestoreInstance = null;
 let firestoreUnsubscribe = null;
 
 // Application Version
-const APP_VERSION = '2.2.0';
+const APP_VERSION = '2.2.1';
 
 // Lock screen to portrait orientation (Screen Orientation API + iOS WebKit Counter-Rotation)
 function lockPortraitOrientation() {
